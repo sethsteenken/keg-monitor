@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32516.85
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KegMonitor.Client", "KegMonitor.Client\KegMonitor.Client.csproj", "{533A246A-91E3-4811-AFEA-69C002F0DCCA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KegMonitor.Server", "KegMonitor.Server\KegMonitor.Server.csproj", "{ED0C9D2B-4B8E-4DD5-ABE5-601178BFBD2C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{533A246A-91E3-4811-AFEA-69C002F0DCCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{533A246A-91E3-4811-AFEA-69C002F0DCCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{533A246A-91E3-4811-AFEA-69C002F0DCCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{533A246A-91E3-4811-AFEA-69C002F0DCCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED0C9D2B-4B8E-4DD5-ABE5-601178BFBD2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED0C9D2B-4B8E-4DD5-ABE5-601178BFBD2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED0C9D2B-4B8E-4DD5-ABE5-601178BFBD2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED0C9D2B-4B8E-4DD5-ABE5-601178BFBD2C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B4C3CBA7-77B3-42B2-8936-BF2B66F9F549}
+	EndGlobalSection
+EndGlobal
