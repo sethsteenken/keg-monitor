@@ -5,9 +5,11 @@ namespace KegMonitor.Server
 {
     internal class ApplicationMessageInterceptor : IMqttServerApplicationMessageInterceptor
     {
-        public ApplicationMessageInterceptor()
-        {
+        private readonly ILogger<ApplicationMessageInterceptor> _logger;
 
+        public ApplicationMessageInterceptor(ILogger<ApplicationMessageInterceptor> logger)
+        {
+            _logger = logger;
         }
 
         public Task InterceptApplicationMessagePublishAsync(MqttApplicationMessageInterceptorContext context)
@@ -15,9 +17,16 @@ namespace KegMonitor.Server
             var payload = context.ApplicationMessage?.Payload == null ?
                                null : Encoding.UTF8.GetString(context.ApplicationMessage.Payload);
 
-            if (context.ApplicationMessage?.Topic == "tele/keg1/SENSOR")
+            if (context.ApplicationMessage == null)
             {
-                Console.WriteLine($"New Message - TimeStamp: {DateTime.Now} -- Message: ClientId = {context.ClientId}, Topic = {context.ApplicationMessage?.Topic}, Payload = {payload}, QoS = {context.ApplicationMessage?.QualityOfServiceLevel}, Retain-Flag = {context.ApplicationMessage?.Retain}");
+                context.CloseConnection = true;
+            }
+            else if (context.ApplicationMessage.IsSensorMessage())
+            {
+                _logger.LogInformation($"New Message - TimeStamp: {DateTime.Now} -- Message: ClientId = {context.ClientId}, Topic = {context.ApplicationMessage.Topic}, Payload = {payload}, QoS = {context.ApplicationMessage.QualityOfServiceLevel}, Retain-Flag = {context.ApplicationMessage.Retain}");
+
+                if (context.ApplicationMessage.TryGetKegNumber(out int kegNumber))
+                    _logger.LogInformation($" -- Keg Number: {kegNumber}");
             }
 
             return Task.CompletedTask;

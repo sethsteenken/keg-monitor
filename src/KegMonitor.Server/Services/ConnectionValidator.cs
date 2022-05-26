@@ -5,9 +5,11 @@ namespace KegMonitor.Server
 {
     internal class ConnectionValidator : IMqttServerConnectionValidator
     {
-        public ConnectionValidator()
-        {
+        private readonly ILogger<ConnectionValidator> _logger;
 
+        public ConnectionValidator(ILogger<ConnectionValidator> logger)
+        {
+            _logger = logger;
         }
 
         public Task ValidateConnectionAsync(MqttConnectionValidatorContext context)
@@ -15,10 +17,10 @@ namespace KegMonitor.Server
             if (context.ClientId != "DVES_50B067")
             {
                 context.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
-                Console.WriteLine($"FAILED connection: ClientId = {context.ClientId}, Endpoint = {context.Endpoint}");
+                _logger.LogWarning($"FAILED connection: ClientId = {context.ClientId}, Endpoint = {context.Endpoint}");
             }
 
-            Console.WriteLine($"New valid connection: ClientId = {context.ClientId}, Endpoint = {context.Endpoint}");
+            _logger.LogInformation($"New valid connection: ClientId = {context.ClientId}, Endpoint = {context.Endpoint}");
 
             return Task.CompletedTask;
         }
