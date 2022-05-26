@@ -14,8 +14,8 @@ namespace KegMonitor.Server
 
         public Task InterceptApplicationMessagePublishAsync(MqttApplicationMessageInterceptorContext context)
         {
-            var payload = context.ApplicationMessage?.Payload == null ?
-                               null : Encoding.UTF8.GetString(context.ApplicationMessage.Payload);
+            if (context == null)
+                return Task.CompletedTask;
 
             if (context.ApplicationMessage == null)
             {
@@ -23,10 +23,14 @@ namespace KegMonitor.Server
             }
             else if (context.ApplicationMessage.IsSensorMessage())
             {
-                _logger.LogInformation($"New Message - TimeStamp: {DateTime.Now} -- Message: ClientId = {context.ClientId}, Topic = {context.ApplicationMessage.Topic}, Payload = {payload}, QoS = {context.ApplicationMessage.QualityOfServiceLevel}, Retain-Flag = {context.ApplicationMessage.Retain}");
+                _logger.LogDebug($"New Message - TimeStamp: {DateTime.Now} -- Message: ClientId = {context.ClientId}, Topic = {context.ApplicationMessage.Topic}, Payload = {Encoding.UTF8.GetString(context.ApplicationMessage.Payload)}, QoS = {context.ApplicationMessage.QualityOfServiceLevel}, Retain-Flag = {context.ApplicationMessage.Retain}");
 
                 if (context.ApplicationMessage.TryGetKegNumber(out int kegNumber))
-                    _logger.LogInformation($" -- Keg Number: {kegNumber}");
+                    _logger.LogDebug($" -- Keg Number: {kegNumber}");
+
+                var payload = System.Text.Json.JsonSerializer.Deserialize<SensorPayload>(context.ApplicationMessage.Payload);
+                if (payload != null)
+                    _logger.LogDebug($" -- Payload: {payload.Time} - {payload.HX711.WeightRaw}");
             }
 
             return Task.CompletedTask;

@@ -1,12 +1,13 @@
 using KegMonitor.Server;
 using MQTTnet.Server;
 
-var configuration = new ConfigurationBuilder().BuildConfiguration();
+var configuration = new ConfigurationManager().AddJsonFile("appsettings.json").Build();
 
 var serviceProvider = new ServiceCollection()
                         .AddSingleton<IConfiguration>(configuration)
                         .AddLogging(builder =>
                         {
+                            builder.AddConfiguration(configuration.GetSection("Logging"));
                             builder.AddConsole();
                         })
                         .AddKegMonitorServices()

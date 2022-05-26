@@ -30,6 +30,9 @@ namespace KegMonitor.Server
 
             services.AddSingleton<IMqttServerOptions>(serviceProvider => serviceProvider.GetRequiredService<MqttServerOptionsBuilder>().Build());
 
+
+            //services.AddOptions<ConnectionValidator>();
+
             return services;
         }
     }

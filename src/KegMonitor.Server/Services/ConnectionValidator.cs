@@ -18,9 +18,10 @@ namespace KegMonitor.Server
             {
                 context.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
                 _logger.LogWarning($"FAILED connection: ClientId = {context.ClientId}, Endpoint = {context.Endpoint}");
+                return Task.CompletedTask;
             }
 
-            _logger.LogInformation($"New valid connection: ClientId = {context.ClientId}, Endpoint = {context.Endpoint}");
+            _logger.LogDebug($"New valid connection: ClientId = {context.ClientId}, Endpoint = {context.Endpoint}");
 
             return Task.CompletedTask;
         }
