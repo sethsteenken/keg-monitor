@@ -17,16 +17,16 @@ namespace KegMonitor.Server
             return message.Topic.Contains("SENSOR");
         }
 
-        public static bool TryGetKegNumber(this MqttApplicationMessage message, out int kegNumber)
+        public static bool TryGetScaleNumber(this MqttApplicationMessage message, out int scaleNumber)
         { 
-            kegNumber = 0;
+            scaleNumber = 0;
 
             if (message == null || string.IsNullOrWhiteSpace(message.Topic))
                 return false;
 
             var topicArgs = message.Topic.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
 
-            if (topicArgs.Length == 3 && topicArgs[0] == "tele" && topicArgs[2] == "SENSOR" && int.TryParse(topicArgs[1].Replace("keg", ""), out kegNumber))
+            if (topicArgs.Length == 3 && topicArgs[0] == "tele" && topicArgs[2] == "SENSOR" && int.TryParse(topicArgs[1].Replace("scale", ""), out scaleNumber))
                 return true;
 
             return false;
