@@ -10,7 +10,7 @@ var serviceProvider = new ServiceCollection()
                             builder.AddConfiguration(configuration.GetSection("Logging"));
                             builder.AddConsole();
                         })
-                        .AddKegMonitorServices()
+                        .AddKegMonitorServices(configuration)
                         .BuildServiceProvider(new ServiceProviderOptions() { ValidateOnBuild = true });
 
 var options = serviceProvider.GetRequiredService<IMqttServerOptions>();
