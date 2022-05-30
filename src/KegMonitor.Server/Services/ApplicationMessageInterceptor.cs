@@ -1,4 +1,5 @@
-﻿using MQTTnet.Server;
+﻿using KegMonitor.Core.Interfaces;
+using MQTTnet.Server;
 using System.Text;
 using System.Text.Json;
 
@@ -7,16 +8,20 @@ namespace KegMonitor.Server
     internal class ApplicationMessageInterceptor : IMqttServerApplicationMessageInterceptor
     {
         private readonly ILogger<ApplicationMessageInterceptor> _logger;
+        private readonly IScaleWeightHandler _scaleWeightHandler;
 
-        public ApplicationMessageInterceptor(ILogger<ApplicationMessageInterceptor> logger)
+        public ApplicationMessageInterceptor(
+            ILogger<ApplicationMessageInterceptor> logger,
+            IScaleWeightHandler scaleWeightHandler)
         {
             _logger = logger;
+            _scaleWeightHandler = scaleWeightHandler;
         }
 
-        public Task InterceptApplicationMessagePublishAsync(MqttApplicationMessageInterceptorContext context)
+        public async Task InterceptApplicationMessagePublishAsync(MqttApplicationMessageInterceptorContext context)
         {
             if (context == null)
-                return Task.CompletedTask;
+                return;
 
             _logger.LogTrace($"New Message - TimeStamp: {DateTime.Now} -- Message: ClientId = {context.ClientId}, Topic = {context.ApplicationMessage.Topic}, Payload = {Encoding.UTF8.GetString(context.ApplicationMessage.Payload)}, QoS = {context.ApplicationMessage.QualityOfServiceLevel}, Retain-Flag = {context.ApplicationMessage.Retain}");
 
@@ -32,10 +37,9 @@ namespace KegMonitor.Server
                 if (payload != null)
                 {
                     _logger.LogDebug($"Payload: {payload.Time} - {payload.HX711.WeightRaw}");
+                    await _scaleWeightHandler.HandleAsync(scaleNumber, payload.HX711.WeightRaw);
                 }  
             }
-
-            return Task.CompletedTask;
         }
     }
 }

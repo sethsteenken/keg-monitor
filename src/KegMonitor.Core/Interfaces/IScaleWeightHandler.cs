@@ -2,6 +2,6 @@
 {
     public interface IScaleWeightHandler
     {
-        Task HandleAsync(int scaleId, int weight);
+        Task HandleAsync(int scaleId, long weight);
     }
 }

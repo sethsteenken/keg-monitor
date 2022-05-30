@@ -1,10 +1,5 @@
 ﻿using KegMonitor.Core.Interfaces;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KegMonitor.Core.Services
 {
@@ -24,7 +19,7 @@ namespace KegMonitor.Core.Services
             _recordingThreshold = recordingThreshold;
         }
 
-        public async Task HandleAsync(int scaleId, int weight)
+        public async Task HandleAsync(int scaleId, long weight)
         {
             var scale = await _scaleRepository.GetByIdAsync(scaleId);
             if (scale == null)
@@ -33,7 +28,7 @@ namespace KegMonitor.Core.Services
                 return;
             }
 
-            int difference = Math.Abs(scale.CurrentWeight - weight);
+            var difference = Math.Abs(scale.CurrentWeight - weight);
 
             if (difference > _recordingThreshold)
                 scale.UpdateWeight(weight);
@@ -41,8 +36,6 @@ namespace KegMonitor.Core.Services
                 _logger.LogDebug($"Weight difference {difference} less than threshold {_recordingThreshold}.");
             
             await _scaleRepository.AddOrUpdateAsync(scale);
-
-            
         }
     }
 }
