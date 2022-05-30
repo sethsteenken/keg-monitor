@@ -19,7 +19,7 @@ namespace KegMonitor.Core.Services
             _recordingThreshold = recordingThreshold;
         }
 
-        public async Task HandleAsync(int scaleId, long weight)
+        public async Task HandleAsync(int scaleId, int weight)
         {
             var scale = await _scaleRepository.GetByIdAsync(scaleId);
             if (scale == null)
