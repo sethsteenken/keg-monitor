@@ -1,14 +1,8 @@
 ﻿using KegMonitor.Core.Interfaces;
 using KegMonitor.Infrastructure.EntityFramework;
 using MQTTnet;
-using MQTTnet.Protocol;
 using MQTTnet.Server;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KegMonitor.Server
 {
@@ -17,8 +11,8 @@ namespace KegMonitor.Server
         public static IServiceCollection AddKegMonitorServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<AuthSettings>(configuration.GetSection("Auth"));
-             
-            services.AddDbContextFactory<KegMonitorDbContext>();
+
+            services.AddKegMonitorDataAccess(configuration);
 
             services.AddSingleton<IScaleWeightHandler, ScaleWeightHandler>();
 

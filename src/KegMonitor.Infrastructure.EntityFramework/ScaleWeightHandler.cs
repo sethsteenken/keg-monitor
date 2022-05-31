@@ -20,24 +20,25 @@ namespace KegMonitor.Infrastructure.EntityFramework
 
         public async Task HandleAsync(int scaleId, int weight)
         {
-            await using var context = await _dbContextFactory.CreateDbContextAsync();
-
-            var scale = await context.Scales.FirstOrDefaultAsync(s => s.Id == scaleId);
-            if (scale == null)
+            await using (var context = await _dbContextFactory.CreateDbContextAsync())
             {
-                _logger.LogError($"Scale ({scaleId}) not found.");
-                return;
-            }
+                var scale = await context.Scales.FirstOrDefaultAsync(s => s.Id == scaleId);
+                if (scale == null)
+                {
+                    _logger.LogError($"Scale ({scaleId}) not found.");
+                    return;
+                }
 
-            var difference = Math.Abs(scale.CurrentWeight - weight);
+                var difference = Math.Abs(scale.CurrentWeight - weight);
 
-            if (difference > _recordingThreshold)
-            {
-                scale.UpdateWeight(weight);
-                await context.SaveChangesAsync();
+                if (difference > _recordingThreshold)
+                {
+                    scale.UpdateWeight(weight);
+                    await context.SaveChangesAsync();
+                }
+                else
+                    _logger.LogDebug($"Weight difference {difference} less than threshold {_recordingThreshold}.");
             }
-            else
-                _logger.LogDebug($"Weight difference {difference} less than threshold {_recordingThreshold}.");
         }
     }
 }
