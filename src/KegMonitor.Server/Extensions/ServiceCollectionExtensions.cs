@@ -1,4 +1,6 @@
-﻿using MQTTnet;
+﻿using KegMonitor.Core.Interfaces;
+using KegMonitor.Infrastructure.EntityFramework;
+using MQTTnet;
 using MQTTnet.Protocol;
 using MQTTnet.Server;
 using System;
@@ -15,6 +17,10 @@ namespace KegMonitor.Server
         public static IServiceCollection AddKegMonitorServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<AuthSettings>(configuration.GetSection("Auth"));
+             
+            services.AddDbContextFactory<KegMonitorDbContext>();
+
+            services.AddSingleton<IScaleWeightHandler, ScaleWeightHandler>();
 
             services.AddSingleton<IMqttServerConnectionValidator, ConnectionValidator>();
             services.AddSingleton<IMqttServerApplicationMessageInterceptor, ApplicationMessageInterceptor>();

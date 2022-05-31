@@ -2,6 +2,8 @@
 {
     public class Scale : Entity
     {
+        private Scale() { }
+
         public int CurrentWeight { get; private set; }
         public int FullWeight { get; set; }
         public int EmptyWeight { get; set; }

@@ -1,27 +1,28 @@
 ﻿using KegMonitor.Core.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace KegMonitor.Core.Services
+namespace KegMonitor.Infrastructure.EntityFramework
 {
     public class ScaleWeightHandler : IScaleWeightHandler
     {
-        private readonly IScaleRepository _scaleRepository;
+        private readonly IDbContextFactory<KegMonitorDbContext> _dbContextFactory;
         private readonly ILogger<ScaleWeightHandler> _logger;
-        private readonly int _recordingThreshold;
+        private readonly int _recordingThreshold = 100; // TODO - pass in / configure
 
         public ScaleWeightHandler(
-            IScaleRepository scaleRepository, 
-            ILogger<ScaleWeightHandler> logger,
-            int recordingThreshold)
+            IDbContextFactory<KegMonitorDbContext> dbContextFactory,
+            ILogger<ScaleWeightHandler> logger)
         {
-            _scaleRepository = scaleRepository;
+            _dbContextFactory = dbContextFactory;
             _logger = logger;
-            _recordingThreshold = recordingThreshold;
         }
 
         public async Task HandleAsync(int scaleId, int weight)
         {
-            var scale = await _scaleRepository.GetByIdAsync(scaleId);
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+
+            var scale = await context.Scales.FirstOrDefaultAsync(s => s.Id == scaleId);
             if (scale == null)
             {
                 _logger.LogError($"Scale ({scaleId}) not found.");
@@ -31,11 +32,12 @@ namespace KegMonitor.Core.Services
             var difference = Math.Abs(scale.CurrentWeight - weight);
 
             if (difference > _recordingThreshold)
+            {
                 scale.UpdateWeight(weight);
+                await context.SaveChangesAsync();
+            }
             else
                 _logger.LogDebug($"Weight difference {difference} less than threshold {_recordingThreshold}.");
-            
-            await _scaleRepository.AddOrUpdateAsync(scale);
         }
     }
 }

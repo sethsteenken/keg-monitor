@@ -7,12 +7,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KegMonitor.Client", "KegMon
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KegMonitor.Server", "KegMonitor.Server\KegMonitor.Server.csproj", "{ED0C9D2B-4B8E-4DD5-ABE5-601178BFBD2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KegMonitor.Core", "KegMonitor.Core\KegMonitor.Core.csproj", "{2C75E67F-1D13-48CC-AC5C-A1E2DA2FD932}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KegMonitor.Core", "KegMonitor.Core\KegMonitor.Core.csproj", "{2C75E67F-1D13-48CC-AC5C-A1E2DA2FD932}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B4B70C5F-2903-417A-8825-0323D0C49AD7}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KegMonitor.Infrastructure.EntityFramework", "KegMonitor.Infrastructure.EntityFramework\KegMonitor.Infrastructure.EntityFramework.csproj", "{1CEA40B7-4188-464A-8C19-F73AE513EA05}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,10 @@ Global
 		{2C75E67F-1D13-48CC-AC5C-A1E2DA2FD932}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C75E67F-1D13-48CC-AC5C-A1E2DA2FD932}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C75E67F-1D13-48CC-AC5C-A1E2DA2FD932}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CEA40B7-4188-464A-8C19-F73AE513EA05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CEA40B7-4188-464A-8C19-F73AE513EA05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CEA40B7-4188-464A-8C19-F73AE513EA05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CEA40B7-4188-464A-8C19-F73AE513EA05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
