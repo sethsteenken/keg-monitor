@@ -1,7 +1,12 @@
+using KegMonitor.Infrastructure.EntityFramework;
 using KegMonitor.Server;
+using Microsoft.EntityFrameworkCore;
 using MQTTnet.Server;
 
-var configuration = new ConfigurationManager().AddJsonFile("appsettings.json").Build();
+var configuration = new ConfigurationManager()
+                        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+                        .AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: false)
+                        .Build();
 
 var serviceProvider = new ServiceCollection()
                         .AddSingleton<IConfiguration>(configuration)
@@ -12,6 +17,11 @@ var serviceProvider = new ServiceCollection()
                         })
                         .AddKegMonitorServices(configuration)
                         .BuildServiceProvider(new ServiceProviderOptions() { ValidateOnBuild = true });
+
+await using (var context = serviceProvider.GetRequiredService<IDbContextFactory<KegMonitorDbContext>>().CreateDbContext())
+{
+    await context.Database.MigrateAsync();
+}
 
 var options = serviceProvider.GetRequiredService<IMqttServerOptions>();
 

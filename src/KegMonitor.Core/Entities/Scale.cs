@@ -20,6 +20,7 @@
         {
             CurrentWeight = weight;
             (WeightChanges as List<ScaleWeightChange>).Add(new ScaleWeightChange(this, weight));
+            LastUpdatedDated = DateTime.UtcNow;
         }
     }
 }

@@ -10,7 +10,7 @@
         {
             Scale = scale;
             Weight = weight;
-            TimeStamp = DateTime.Now;
+            TimeStamp = DateTime.UtcNow;
         }
 
         public Scale Scale { get; private set; }  

@@ -17,3 +17,4 @@ packages
 *.dtbcache
 *.dbmdl
 .vs*
+/src/KegMonitor.Server/appsettings.local.json
