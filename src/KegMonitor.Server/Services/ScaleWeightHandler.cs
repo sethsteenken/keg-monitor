@@ -1,14 +1,13 @@
 ﻿using KegMonitor.Core.Interfaces;
+using KegMonitor.Infrastructure.EntityFramework;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
-namespace KegMonitor.Infrastructure.EntityFramework
+namespace KegMonitor.Server
 {
     public class ScaleWeightHandler : IScaleWeightHandler
     {
         private readonly IDbContextFactory<KegMonitorDbContext> _dbContextFactory;
         private readonly ILogger<ScaleWeightHandler> _logger;
-        private readonly int _recordingThreshold = 100; // TODO - pass in / configure
 
         public ScaleWeightHandler(
             IDbContextFactory<KegMonitorDbContext> dbContextFactory,
@@ -22,22 +21,29 @@ namespace KegMonitor.Infrastructure.EntityFramework
         {
             await using (var context = await _dbContextFactory.CreateDbContextAsync())
             {
-                var scale = await context.Scales.FirstOrDefaultAsync(s => s.Id == scaleId);
+                var scale = await context.Scales.Include(s => s.Beer)
+                                                .FirstOrDefaultAsync(s => s.Id == scaleId);
                 if (scale == null)
                 {
                     _logger.LogError($"Scale ({scaleId}) not found.");
                     return;
                 }
 
+                if (!scale.Active || scale.Beer is null)
+                {
+                    _logger.LogInformation($"Scale {scaleId} currently inactive. Weight change recordings disabled.");
+                    return;
+                }
+
                 var difference = Math.Abs(scale.CurrentWeight - weight);
 
-                if (difference > _recordingThreshold)
+                if (difference > scale.RecordingDifferenceThreshold)
                 {
                     scale.UpdateWeight(weight);
                     await context.SaveChangesAsync();
                 }
                 else
-                    _logger.LogDebug($"Weight difference {difference} less than threshold {_recordingThreshold}.");
+                    _logger.LogDebug($"Weight difference {difference} less than Scale's ({scaleId}) threshold {scale.RecordingDifferenceThreshold}.");
             }
         }
     }

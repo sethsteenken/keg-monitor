@@ -6,14 +6,16 @@
         private ScaleWeightChange() { }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-        public ScaleWeightChange(Scale scale, int weight)
+        public ScaleWeightChange(Scale scale, Beer beer, int weight)
         {
             Scale = scale;
+            Beer = beer;
             Weight = weight;
             TimeStamp = DateTime.UtcNow;
         }
 
         public Scale Scale { get; private set; }  
+        public Beer Beer { get; private set; }
         public int Weight { get; private set; }
         public DateTime TimeStamp { get; private set; }
     }

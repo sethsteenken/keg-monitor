@@ -7,6 +7,7 @@
         public int CurrentWeight { get; private set; }
         public int FullWeight { get; set; }
         public int EmptyWeight { get; set; }
+        public int RecordingDifferenceThreshold { get; set; }
 
         public bool Active { get; set; }
 
@@ -18,8 +19,11 @@
 
         public void UpdateWeight(int weight)
         {
+            if (Beer is null)
+                return;
+
             CurrentWeight = weight;
-            (WeightChanges as List<ScaleWeightChange>).Add(new ScaleWeightChange(this, weight));
+            (WeightChanges as List<ScaleWeightChange>).Add(new ScaleWeightChange(this, Beer, weight));
             LastUpdatedDated = DateTime.UtcNow;
         }
     }
