@@ -15,7 +15,7 @@
 
         public Beer? Beer { get; private set; }
         public IEnumerable<ScaleWeightChange> WeightChanges { get; private set; } = new List<ScaleWeightChange>();
-        public DateTime LastUpdatedDated { get; set; }
+        public DateTime LastUpdatedDate { get; set; }
 
         public void UpdateWeight(int weight)
         {
@@ -24,7 +24,7 @@
 
             CurrentWeight = weight;
             (WeightChanges as List<ScaleWeightChange>).Add(new ScaleWeightChange(this, Beer, weight));
-            LastUpdatedDated = DateTime.UtcNow;
+            LastUpdatedDate = DateTime.UtcNow;
         }
     }
 }

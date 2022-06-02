@@ -3,6 +3,7 @@ using System;
 using KegMonitor.Infrastructure.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KegMonitor.Infrastructure.EntityFramework.Migrations
 {
     [DbContext(typeof(KegMonitorDbContext))]
-    partial class KegMonitorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220602023018_BeerOnWeightChangesAndTypoFixes")]
+    partial class BeerOnWeightChangesAndTypoFixes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
