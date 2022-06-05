@@ -35,6 +35,7 @@ namespace KegMonitor.Web.Application
                 beer.Type = model.Type;
             }
 
+            beer.ABV = model.ABV;
             beer.LastUpdatedDate = DateTime.UtcNow;
 
             if (isNew)

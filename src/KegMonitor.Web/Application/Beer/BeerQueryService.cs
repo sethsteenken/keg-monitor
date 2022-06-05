@@ -1,4 +1,5 @@
-﻿using KegMonitor.Infrastructure.EntityFramework;
+﻿using KegMonitor.Core.Entities;
+using KegMonitor.Infrastructure.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 
 namespace KegMonitor.Web.Application
@@ -28,6 +29,13 @@ namespace KegMonitor.Web.Application
                 Type = beer.Type,
                 ABV = beer.ABV
             };
+        }
+
+        public async Task<IEnumerable<Beer>> GetAllAsync()
+        {
+            return await _dbContext.Beers.AsNoTracking()
+                                         .OrderByDescending(b => b.LastUpdatedDate)
+                                         .ToListAsync();                                  
         }
     }
 }
