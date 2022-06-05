@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KegMonitor.Infrastructure.EntityFramework", "KegMonitor.Infrastructure.EntityFramework\KegMonitor.Infrastructure.EntityFramework.csproj", "{1CEA40B7-4188-464A-8C19-F73AE513EA05}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KegMonitor.Web", "KegMonitor.Web\KegMonitor.Web.csproj", "{40103C82-D53B-4527-BC5F-36489BACCC1E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,10 @@ Global
 		{1CEA40B7-4188-464A-8C19-F73AE513EA05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1CEA40B7-4188-464A-8C19-F73AE513EA05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1CEA40B7-4188-464A-8C19-F73AE513EA05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40103C82-D53B-4527-BC5F-36489BACCC1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40103C82-D53B-4527-BC5F-36489BACCC1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40103C82-D53B-4527-BC5F-36489BACCC1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40103C82-D53B-4527-BC5F-36489BACCC1E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
