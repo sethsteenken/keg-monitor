@@ -43,7 +43,7 @@
     {
         Id = await CommandService.SaveAsync(model);
         model.Id = Id;
-        Snackbar.Add("Beer saved successfully.", Severity.Success);
+        Snackbar.Add("Beer saved successfully.", Severity.Success, config => config.CloseAfterNavigation = true);
         StateHasChanged();
     }
 }

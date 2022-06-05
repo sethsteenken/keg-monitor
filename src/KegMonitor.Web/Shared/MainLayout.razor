@@ -1,26 +1,28 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider IsDarkMode="true"/>
-<MudDialogProvider/>
-<MudSnackbarProvider/>
+<MudThemeProvider Theme="@theme" @bind-IsDarkMode="@isDarkMode" />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudText Typo="Typo.h5" Class="ml-3">Keg Monitor</MudText>
-        </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <MudSpacer />
+        <MudSwitch @bind-Checked="@isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Dark Mode" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <MudNavMenu>
             <MudNavLink Href="/" Match="NavLinkMatch.All">Dashboard</MudNavLink>
             <MudNavGroup Title="Beer" Expanded="true">
-                <MudNavLink Href="/beer/"  Match="NavLinkMatch.All">List</MudNavLink>
-                <MudNavLink Href="/beer/edit/"  Match="NavLinkMatch.Prefix">Add New</MudNavLink>
+                <MudNavLink Href="/beer/" Match="NavLinkMatch.All">List</MudNavLink>
+                <MudNavLink Href="/beer/edit/" Match="NavLinkMatch.Prefix">Add New</MudNavLink>
             </MudNavGroup>
             <MudNavGroup Title="Scales" Expanded="true">
                 <MudNavLink Href="/scale/edit/1/" Match="NavLinkMatch.All">Scale #1</MudNavLink>
                 <MudNavLink Href="/scale/edit/2/" Match="NavLinkMatch.All">Scale #2</MudNavLink>
             </MudNavGroup>
-            <MudNavLink Href="/about"  Match="NavLinkMatch.Prefix">About</MudNavLink>
+            <MudNavLink Href="/about" Match="NavLinkMatch.Prefix">About</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
     <MudMainContent>
@@ -31,10 +33,13 @@
 </MudLayout>
 
 @code {
-    bool _drawerOpen = true;
+    bool drawerOpen = true;
+    bool isDarkMode = false;
 
     void DrawerToggle()
     {
-        _drawerOpen = !_drawerOpen;
+        drawerOpen = !drawerOpen;
     }
+
+    MudTheme theme = new MudTheme();
 }
