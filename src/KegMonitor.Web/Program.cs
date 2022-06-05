@@ -1,6 +1,5 @@
-using KegMonitor.Web.Data;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using KegMonitor.Infrastructure.EntityFramework;
+using KegMonitor.Web.Application;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
-builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddKegMonitorDataAccess(builder.Configuration);
+builder.Services.AddScoped<IBeerQueryService, BeerQueryService>();
+builder.Services.AddScoped<IBeerCommandService, BeerCommandService>();
 
 var app = builder.Build();
 

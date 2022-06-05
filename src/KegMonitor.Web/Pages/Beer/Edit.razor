@@ -1,7 +1,51 @@
-﻿@page "/beer/edit/"
+﻿@page "/beer/edit/{Id:int?}/"
 
-<PageHeader>Edit Beer</PageHeader>
+<PageHeader>@Title</PageHeader>
+
+
+
+<EditForm Model="@model" OnValidSubmit="SubmitAsync">
+    <DataAnnotationsValidator />
+    <MudCard>
+        <MudCardContent>
+            <MudTextField Label="Name" HelperText="Unique name. Should probably include a cat."
+                          @bind-Value="model.Name" For="@(() => model.Name)" />
+            <MudTextField Label="Type" HelperText="Beer type (IPA, Porter, etc.)"
+                          @bind-Value="model.Type" For="@(() => model.Type)" />
+            <MudNumericField Label="ABV" HelperText="Alcohol by Volume"
+                             @bind-Value="model.ABV" For="@(() => model.ABV)"
+                             Variant="Variant.Text" Step=".1M" />
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
+                       Color="Color.Primary" Class="ml-auto">Save</MudButton>
+        </MudCardActions>
+    </MudCard>
+</EditForm>
+
+@inject ISnackbar Snackbar
+@inject IBeerCommandService CommandService
+@inject IBeerQueryService QueryService
 
 @code {
+    [Parameter]
+    public int? Id { get; set; }
 
+    protected string Title { get; private set; }
+
+    BeerEditModel model = new BeerEditModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Title = Id == null ? "Add new Beer" : "Edit Beer";
+        model = await QueryService.BuildEditModelAsync(Id);
+    }
+
+    protected async Task SubmitAsync(EditContext context)
+    {
+        Id = await CommandService.SaveAsync(model);
+        model.Id = Id;
+        Snackbar.Add("Beer saved successfully.", Severity.Success);
+        StateHasChanged();
+    }
 }

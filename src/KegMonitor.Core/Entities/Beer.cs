@@ -6,10 +6,10 @@
         private Beer() { }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-        public Beer(string name, string type)
+        public Beer(string? name, string? type)
         {
-            Name = name;
-            Type = type;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Type = type ?? throw new ArgumentNullException(nameof(type));
         }
 
         public string Name { get; set; }
