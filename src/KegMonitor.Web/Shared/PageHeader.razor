@@ -1,0 +1,7 @@
+﻿<PageTitle>@ChildContent</PageTitle>
+<MudText Typo="Typo.h3">@ChildContent</MudText>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}
