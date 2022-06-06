@@ -7,7 +7,7 @@
 
     <MudGrid>
         <MudItem xs="12">
-            <MudPaper Class="pa-6">
+            <MudPaper Class="pa-5">
                 <MudTextField Label="Name" HelperText="Unique name. Should probably include a cat."
                           @bind-Value="model.Name" For="@(() => model.Name)"
                           Class="pb-2"/>
@@ -23,6 +23,27 @@
             </MudPaper>
         </MudItem>
         <MudItem xs="12">
+            <MudPaper Class="pa-5">
+                <InputFile id="fileInput" OnChange="UploadFilesAsync" hidden />
+                <MudButton HtmlTag="label"
+                           Variant="Variant.Filled"
+                           Color="Color.Tertiary"
+                           StartIcon="@Icons.Filled.Image"
+                           for="fileInput">
+                    Upload Image
+                </MudButton>
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Secondary" OnClick="() => model.ImagePath = null"></MudIconButton>
+            </MudPaper>
+            <MudPaper Class="pa-5">
+                @if (model.ImagePath != null)
+                {
+                      <MudImage @bind-Src="model.ImagePath" 
+                          Width="250" Height="250" Alt="@model.Name" 
+                          Elevation="25" Class="rounded-lg ma-2" />
+                }
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12">
             <MudPaper Class="pa-2" Outlined="false" Elevation="0">
                 <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
                        Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save">Save</MudButton>
@@ -34,6 +55,7 @@
 @inject ISnackbar Snackbar
 @inject IBeerCommandService CommandService
 @inject IBeerQueryService QueryService
+@inject IWebHostEnvironment Environment
 
 @code {
     [Parameter]
@@ -54,6 +76,25 @@
         Id = await CommandService.SaveAsync(model);
         model.Id = Id;
         Snackbar.Add("Beer saved successfully.", Severity.Success, config => config.CloseAfterNavigation = true);
+        StateHasChanged();
+    }
+
+    protected async Task UploadFilesAsync(InputFileChangeEventArgs e)
+    {
+        string relativePath = $"/uploads/{e.File.Name}";
+        string absolutePath = Path.Combine(Environment.WebRootPath, "uploads", e.File.Name);
+
+        Directory.CreateDirectory(Path.GetDirectoryName(absolutePath));
+
+        using (var inputStream = e.File.OpenReadStream())
+        {
+            using (var stream = new FileStream(absolutePath, FileMode.Create))
+            {
+                await inputStream.CopyToAsync(stream);
+            }
+        }
+
+        model.ImagePath = relativePath;
         StateHasChanged();
     }
 }

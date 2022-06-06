@@ -19,3 +19,4 @@ packages
 .vs*
 /src/KegMonitor.Server/appsettings.local.json
 /src/KegMonitor.Web/appsettings.local.json
+/src/KegMonitor.Web/wwwroot/uploads
