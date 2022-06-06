@@ -46,7 +46,11 @@ namespace KegMonitor.Web.Application
 
             scale.EmptyWeight = model.EmptyWeight;
             scale.FullWeight = model.FullWeight;
+
             scale.RecordingDifferenceThreshold = model.RecordingDifferenceThreshold;
+            scale.PourDifferenceThreshold = model.PourDifferenceThreshold;
+            scale.MaxThreshold = model.MaxThreshold;
+
             scale.UpdateWeight(model.CurrentWeight);
             scale.LastUpdatedDate = DateTime.UtcNow;
 

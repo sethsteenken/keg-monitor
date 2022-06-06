@@ -33,6 +33,8 @@ namespace KegMonitor.Web.Application
                 EmptyWeight = scale.EmptyWeight,
                 FullWeight = scale.FullWeight,
                 RecordingDifferenceThreshold = scale.RecordingDifferenceThreshold,
+                PourDifferenceThreshold = scale.PourDifferenceThreshold,
+                MaxThreshold = scale.MaxThreshold,
                 BeerOptions = beerOptions
             };
         }

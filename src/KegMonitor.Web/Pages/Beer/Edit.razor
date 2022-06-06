@@ -9,12 +9,17 @@
         <MudItem xs="12">
             <MudPaper Class="pa-6">
                 <MudTextField Label="Name" HelperText="Unique name. Should probably include a cat."
-                          @bind-Value="model.Name" For="@(() => model.Name)" />
+                          @bind-Value="model.Name" For="@(() => model.Name)"
+                          Class="pb-2"/>
                 <MudTextField Label="Type" HelperText="Beer type (IPA, Porter, etc.)"
-                              @bind-Value="model.Type" For="@(() => model.Type)" />
+                              @bind-Value="model.Type" For="@(() => model.Type)"
+                              Class="pb-2" />
                 <MudNumericField Label="ABV" HelperText="Alcohol by Volume"
                                  @bind-Value="model.ABV" For="@(() => model.ABV)"
-                                 Variant="Variant.Text" Step=".1M" />
+                                 Variant="Variant.Text" Step=".1M"
+                                 Class="pb-2"/>
+                <MudTextField Label="Description" HelperText="Describe beer type, hops, etc." Variant="Variant.Text" 
+                              @bind-Value="model.Description" For="@(() => model.Description)" Lines="5" />
             </MudPaper>
         </MudItem>
         <MudItem xs="12">

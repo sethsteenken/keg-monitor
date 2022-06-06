@@ -16,5 +16,7 @@ namespace KegMonitor.Web.Application
 
         [Required(ErrorMessage = "ABV is required.")]
         public decimal ABV { get; set; }
+
+        public string Description { get; set; }
     }
 }

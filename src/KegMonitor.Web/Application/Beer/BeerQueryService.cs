@@ -27,7 +27,8 @@ namespace KegMonitor.Web.Application
                 Id = beer.Id,
                 Name = beer.Name,
                 Type = beer.Type,
-                ABV = beer.ABV
+                ABV = beer.ABV,
+                Description = beer.Description
             };
         }
 

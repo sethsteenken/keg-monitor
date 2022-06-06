@@ -14,6 +14,7 @@
 
         public string Name { get; set; }
         public string Type { get; set; }
+        public string? Description { get; set; }
         public decimal ABV { get; set; }
 
         public string SelectionName => $"{Name} ({Type}) {ABV}%";
