@@ -3,28 +3,26 @@
 
 <PageHeader>Manage Beer List</PageHeader>
 
-<MudCard>
-    <MudTable Items="@Beers" Hover="true" Breakpoint="Breakpoint.Sm" Striped="true"
-        Loading="@loading" LoadingProgressColor="Color.Info" Elevation="2">
-        <HeaderContent>
-            <MudTh>Name</MudTh>
-            <MudTh>Type</MudTh>
-            <MudTh>ABV</MudTh>
-            <MudTh>Manage</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="Name">@context.Name</MudTd>
-            <MudTd DataLabel="Type">@context.Type</MudTd>
-            <MudTd DataLabel="ABV">@(context.ABV)%</MudTd>
-            <MudTd DataLabel="Manage">
-                @{
-                    var editLink = $"/beer/edit/{context.Id}/"; 
-                }
-                <MudIconButton Icon="@Icons.Material.Filled.Edit" Title="Edit" Href="@editLink"></MudIconButton>
-            </MudTd>
-        </RowTemplate>
-    </MudTable>
-</MudCard>
+<MudTable Items="@Beers" Hover="true" Breakpoint="Breakpoint.Sm" Striped="true"
+    Loading="@loading" LoadingProgressColor="Color.Info" Elevation="2">
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Type</MudTh>
+        <MudTh>ABV</MudTh>
+        <MudTh>Manage</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Type">@context.Type</MudTd>
+        <MudTd DataLabel="ABV">@(context.ABV)%</MudTd>
+        <MudTd DataLabel="Manage">
+            @{
+                var editLink = $"/beer/edit/{context.Id}/"; 
+            }
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Title="Edit" Href="@editLink"></MudIconButton>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
 
 <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" 
     Href="/beer/edit/" Size="Size.Large"  />

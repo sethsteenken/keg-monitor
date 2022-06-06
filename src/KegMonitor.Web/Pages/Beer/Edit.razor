@@ -4,21 +4,26 @@
 
 <EditForm Model="@model" OnValidSubmit="SubmitAsync">
     <DataAnnotationsValidator />
-    <MudCard>
-        <MudCardContent>
-            <MudTextField Label="Name" HelperText="Unique name. Should probably include a cat."
+
+    <MudGrid>
+        <MudItem xs="12">
+            <MudPaper Class="pa-6">
+                <MudTextField Label="Name" HelperText="Unique name. Should probably include a cat."
                           @bind-Value="model.Name" For="@(() => model.Name)" />
-            <MudTextField Label="Type" HelperText="Beer type (IPA, Porter, etc.)"
-                          @bind-Value="model.Type" For="@(() => model.Type)" />
-            <MudNumericField Label="ABV" HelperText="Alcohol by Volume"
-                             @bind-Value="model.ABV" For="@(() => model.ABV)"
-                             Variant="Variant.Text" Step=".1M" />
-        </MudCardContent>
-        <MudCardActions>
-            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
-                       Color="Color.Primary" Class="ml-auto">Save</MudButton>
-        </MudCardActions>
-    </MudCard>
+                <MudTextField Label="Type" HelperText="Beer type (IPA, Porter, etc.)"
+                              @bind-Value="model.Type" For="@(() => model.Type)" />
+                <MudNumericField Label="ABV" HelperText="Alcohol by Volume"
+                                 @bind-Value="model.ABV" For="@(() => model.ABV)"
+                                 Variant="Variant.Text" Step=".1M" />
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12">
+            <MudPaper Class="pa-2" Outlined="false" Elevation="0">
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
+                       Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save">Save</MudButton>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
 </EditForm>
 
 @inject ISnackbar Snackbar
