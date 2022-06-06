@@ -1,10 +1,117 @@
 ﻿@page "/scale/edit/{Id:int}/"
+@using KegMonitor.Core.Entities
 
 <PageHeader>Edit Scale #@Id</PageHeader>
 
-    
+<EditForm Model="@model" OnValidSubmit="SubmitAsync">
+    <DataAnnotationsValidator />
+    @if (model.Active)
+    {
+        <MudCard>
+            <MudCardContent>
+                <MudText>This Scale is currently <span class="green-text">Active</span> and cannot be edited.</MudText>
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Archive" Color="Color.Error" 
+                    OnClick="ConfirmDeactivateAsync">Deactivate</MudButton>
+            </MudCardContent>
+        </MudCard>
+    }
+    else
+    {
+        <MudCard>
+            <MudCardContent>
+                <MudText>This Scale is currently <span class="red-text">Inactive</span> and may be edited.</MudText>
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" 
+                    OnClick="ConfirmActivateAsync">Activate</MudButton>
+            </MudCardContent>
+        </MudCard>
+    }
+
+    <MudDivider></MudDivider>
+    <MudCard>
+        <MudCardContent>
+            <MudSelect @bind-Value="model.BeerId" T="int?" Label="Beer" Placeholder="Select Beer"
+                       HelperText="Select a Beer for the keg on this Scale. Deactivate this Scale to manually change." 
+                       OpenIcon="@Icons.Material.Filled.LocalDrink" AdornmentColor="Color.Secondary"
+                       Disabled="model.Active" Clearable="true">
+                @foreach (Beer beer in model.BeerOptions)
+                {
+                    <MudSelectItem Value="@((int?)beer.Id)">@beer.SelectionName</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudNumericField Label="Current Weight" HelperText="Current Weight in grams provided by sensor. Deactivate this Scale to manually change."
+                             @bind-Value="model.CurrentWeight" For="@(() => model.CurrentWeight)" Disabled="model.Active" />
+            <MudNumericField Label="Empty Weight" HelperText="Weight in grams provided by sensor when keg is empty. Deactivate this Scale to manually change."
+                             @bind-Value="model.EmptyWeight" For="@(() => model.EmptyWeight)" Disabled="model.Active" />
+            <MudNumericField Label="Full Weight" HelperText="Weight in grams provided by sensor when keg is full. Deactivate this Scale to manually change."
+                             @bind-Value="model.FullWeight" For="@(() => model.FullWeight)" Disabled="model.Active" />
+            <MudNumericField Label="Recording Weight Threshold" HelperText="Weight in grams that passes threshold on recording a weight change. Deactivate this Scale to manually change."
+                             @bind-Value="model.RecordingDifferenceThreshold" For="@(() => model.RecordingDifferenceThreshold)" Disabled="model.Active" />
+        </MudCardContent>
+    </MudCard>
+
+    <MudCardActions>
+        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
+                   Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save" Disabled="model.Active">Save</MudButton>
+    </MudCardActions>
+</EditForm>
+
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IScaleQueryService QueryService
+@inject IScaleCommandService CommandService
+
 @code {
     [Parameter]
     public int Id { get; set; }
+
+    ScaleEditModel model = new ScaleEditModel();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        model = await QueryService.BuildEditModelAsync(Id);
+    }
+
+    protected async Task ConfirmDeactivateAsync()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+           "Warning", 
+           "Deactivating this Scale will stop all weight recordings.", 
+           yesText:"Deactivate", cancelText:"Cancel");
+
+        if (result == true)
+        {
+            await CommandService.UpdateActiveStateAsync(Id, false);
+            model.Active = false;
+            Snackbar.Add($"Scale #{model.Id} deactivated.", Severity.Warning);
+        }
+
+        StateHasChanged();
+    }
+
+    protected async Task ConfirmActivateAsync()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+           "Warning", 
+           "Activating this Scale will disable all fields and weight changes will be recorded.", 
+           yesText:"Activate", cancelText:"Cancel");
+
+        if (result == true)
+        {
+            await CommandService.UpdateActiveStateAsync(Id, true);
+            model.Active = true;
+            Snackbar.Add($"Scale #{model.Id} activated.", Severity.Success);
+        }
+        
+        StateHasChanged();
+    }
+
+    protected async Task SubmitAsync(EditContext context)
+    {
+        Id = await CommandService.SaveAsync(model);
+        model.Id = Id;
+        Snackbar.Add($"Scale #{model.Id} saved successfully.", Severity.Success, config => config.CloseAfterNavigation = true);
+        StateHasChanged();
+    }
 }
 

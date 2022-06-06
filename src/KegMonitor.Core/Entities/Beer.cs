@@ -16,6 +16,8 @@
         public string Type { get; set; }
         public decimal ABV { get; set; }
 
+        public string SelectionName => $"{Name} ({Type}) {ABV}%";
+
         public DateTime LastUpdatedDate { get; set; }
     }
 }

@@ -33,7 +33,7 @@
 
     BeerEditModel model = new BeerEditModel();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         Title = Id == null ? "Add new Beer" : "Edit Beer";
         model = await QueryService.BuildEditModelAsync(Id);

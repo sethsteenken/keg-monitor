@@ -23,6 +23,8 @@ builder.Services.AddMudServices(config =>
 builder.Services.AddKegMonitorDataAccess(builder.Configuration);
 builder.Services.AddScoped<IBeerQueryService, BeerQueryService>();
 builder.Services.AddScoped<IBeerCommandService, BeerCommandService>();
+builder.Services.AddScoped<IScaleQueryService, ScaleQueryService>();
+builder.Services.AddScoped<IScaleCommandService, ScaleCommandService>();
 
 var app = builder.Build();
 
