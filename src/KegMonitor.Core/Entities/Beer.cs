@@ -16,6 +16,7 @@
         public string Type { get; set; }
         public string? Description { get; set; }
         public decimal ABV { get; set; }
+        public string? ImagePath { get; set; }
 
         public string SelectionName => $"{Name} ({Type}) {ABV}%";
 

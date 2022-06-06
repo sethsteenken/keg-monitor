@@ -5,25 +5,25 @@ namespace KegMonitor.Infrastructure.EntityFramework
 {
     public class KegMonitorDbContext : DbContext
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public KegMonitorDbContext()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        {
-
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseNpgsql("Host=192.168.1.11;Database=keg-monitor;Username=keg-monitor-user;Password=beer1!");
-        }
-
-
 //#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-//        public KegMonitorDbContext(DbContextOptions options)
+//        public KegMonitorDbContext()
 //#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-//            : base(options)
 //        {
+
 //        }
+
+//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//        {
+//            optionsBuilder.UseNpgsql("Host=192.168.1.11;Database=keg-monitor;Username=keg-monitor-user;Password=beer1!");
+//        }
+
+
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        public KegMonitorDbContext(DbContextOptions options)
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+            : base(options)
+        {
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
