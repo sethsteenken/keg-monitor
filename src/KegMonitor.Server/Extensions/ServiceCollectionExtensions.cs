@@ -1,4 +1,5 @@
 ﻿using KegMonitor.Core.Interfaces;
+using KegMonitor.Core.Services;
 using KegMonitor.Infrastructure.EntityFramework;
 using MQTTnet;
 using MQTTnet.Server;
@@ -13,8 +14,14 @@ namespace KegMonitor.Server
             services.Configure<AuthSettings>(configuration.GetSection("Auth"));
 
             services.AddKegMonitorDataAccess(configuration);
-
             services.AddSingleton<IScaleWeightHandler, ScaleWeightHandler>();
+
+            services.AddSingleton<IPourNotifier>(serviceProvider =>
+            {
+                return new WebUIPourNotifier(
+                    serviceProvider.GetRequiredService<IConfiguration>()["WebUI:Domain"],
+                    serviceProvider.GetRequiredService<ILogger<WebUIPourNotifier>>());
+            });
 
             services.AddSingleton<IMqttServerConnectionValidator, ConnectionValidator>();
             services.AddSingleton<IMqttServerApplicationMessageInterceptor, ApplicationMessageInterceptor>();

@@ -25,7 +25,10 @@ await using (var context = serviceProvider.GetRequiredService<IDbContextFactory<
 
 var options = serviceProvider.GetRequiredService<IMqttServerOptions>();
 
+
+Console.WriteLine("Starting MQTT server...");
 await serviceProvider.GetRequiredService<IMqttServer>().StartAsync(options);
+Console.WriteLine("MQTT server started.");
 
 // keep application running until user press a key
 Console.ReadLine();

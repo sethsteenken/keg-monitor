@@ -16,6 +16,8 @@
 
         public decimal Percentage => (decimal)Math.Round((decimal)CurrentWeight / (decimal)FullWeight * 100);
 
+        public int Difference(int weight) => Math.Abs(CurrentWeight - weight);
+
         public Beer? Beer { get; set; }
         public IEnumerable<ScaleWeightChange> WeightChanges { get; private set; } = new List<ScaleWeightChange>();
         public DateTime LastUpdatedDate { get; set; }

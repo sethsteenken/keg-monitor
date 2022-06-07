@@ -6,12 +6,9 @@ using MQTTnet.Client.Options;
 using MQTTnet.Extensions.ManagedClient;
 using System.Text.Json;
 
-Console.WriteLine("Hello, World!");
-
-
 // Creates a new client
 MqttClientOptionsBuilder builder = new MqttClientOptionsBuilder()
-                                        .WithClientId("Dev.To")
+                                        .WithClientId("Tester9")
                                         .WithTcpServer("localhost", 707);
                                         //.WithTcpServer("192.168.1.20", 707);
 
@@ -29,14 +26,50 @@ _mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(context =>
 _mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(context => Console.WriteLine("Successfully disconnected."));
 _mqttClient.ConnectingFailedHandler = new ConnectingFailedHandlerDelegate(context => Console.WriteLine("Failed to connect."));
 
-// Starts a connection with the Broker
-_mqttClient.StartAsync(options).GetAwaiter().GetResult();
+Console.WriteLine("Client started.");
+Menu();
 
-// Send a new message to the broker every second
-while (true)
+void Menu()
 {
-    string json = JsonSerializer.Serialize(new { message = "Heyo :)", sent = DateTimeOffset.UtcNow });
-    _mqttClient.PublishAsync("dev.to/topic/json", json);
+    try
+    {
+        Console.WriteLine(" - New Request -");
+        Console.WriteLine("Enter Scale #:");
+        var scaleIdValue = Console.ReadLine();
+        if (!int.TryParse(scaleIdValue, out int scaleId))
+        {
+            Console.WriteLine("Scale # not a number. Try again.");
+            Menu();
+        }
 
-    Task.Delay(1000).GetAwaiter().GetResult();
+        Console.WriteLine("Enter new Weight:");
+        var weightValue = Console.ReadLine();
+        if (!int.TryParse(weightValue, out int weight))
+        {
+            Console.WriteLine("New weight not a number. Try again.");
+            Menu();
+        }
+
+        string topic = $"tele/scale{scaleId}/SENSOR";
+        string json = JsonSerializer.Serialize(new { Time = DateTimeOffset.UtcNow, HX711 = new { WeightRaw = weight } });
+
+        Console.WriteLine("Starting client...");
+        _mqttClient.StartAsync(options).GetAwaiter().GetResult();
+
+        Console.WriteLine($"Publishing message to {topic}...");
+        _mqttClient.PublishAsync(topic, json).GetAwaiter().GetResult();
+        Console.WriteLine("Publish complete.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"** ERROR ** - {ex}");
+    }
+    finally
+    {
+        Console.WriteLine("Stopping client...");
+        _mqttClient.StopAsync().Wait();
+
+        Console.WriteLine("Press any key to quit...");
+        Console.ReadLine();
+    }
 }
