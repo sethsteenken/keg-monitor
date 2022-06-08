@@ -23,7 +23,7 @@ namespace KegMonitor.Server
             if (context == null)
                 return;
 
-            _logger.LogTrace($"New Message - TimeStamp: {DateTime.Now} -- Message: ClientId = {context.ClientId}, Topic = {context.ApplicationMessage.Topic}, Payload = {Encoding.UTF8.GetString(context.ApplicationMessage.Payload)}, QoS = {context.ApplicationMessage.QualityOfServiceLevel}, Retain-Flag = {context.ApplicationMessage.Retain}");
+            _logger.LogDebug($"New Message - TimeStamp: {DateTime.Now} -- Message: ClientId = {context.ClientId}, Topic = {context.ApplicationMessage.Topic}, Payload = {Encoding.UTF8.GetString(context.ApplicationMessage.Payload)}, QoS = {context.ApplicationMessage.QualityOfServiceLevel}, Retain-Flag = {context.ApplicationMessage.Retain}");
 
             if (context.ApplicationMessage == null)
             {
@@ -38,7 +38,7 @@ namespace KegMonitor.Server
                 {
                     _logger.LogDebug($"Payload: {payload.Time} - {payload.HX711.WeightRaw}");
                     await _scaleWeightHandler.HandleAsync(scaleNumber, payload.HX711.WeightRaw);
-                }  
+                }
             }
         }
     }

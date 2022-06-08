@@ -1,7 +1,7 @@
 using KegMonitor.Core.Interfaces;
-using KegMonitor.Core.Services;
 using KegMonitor.Infrastructure.EntityFramework;
 using KegMonitor.Web.Application;
+using Microsoft.EntityFrameworkCore;
 using MudBlazor;
 using MudBlazor.Services;
 using System.Text;
@@ -24,10 +24,14 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 });
 builder.Services.AddKegMonitorDataAccess(builder.Configuration);
+
 builder.Services.AddScoped<IBeerQueryService, BeerQueryService>();
 builder.Services.AddScoped<IBeerCommandService, BeerCommandService>();
 builder.Services.AddScoped<IScaleQueryService, ScaleQueryService>();
 builder.Services.AddScoped<IScaleCommandService, ScaleCommandService>();
+
+builder.Services.AddSingleton<IScaleWeightHandler, ScaleWeightHandler>();
+builder.Services.AddSingleton<IPourNotifier, ScaleLatestWeightNotifier>();
 
 var app = builder.Build();
 
@@ -43,10 +47,24 @@ app.UseRouting();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
-app.MapPost("/scale/pour/{scaleId}/", delegate (HttpContext context)
+app.MapPost("/scale/weight/", async delegate (HttpContext context)
 {
-    string scaleId = context.Request.RouteValues["scaleId"].ToString();
-    Console.Write($"**** New Request **** - ScaleId: {scaleId}");
+    Console.Write($"* New Request * - '/scale/weight/'");
+
+    if (!int.TryParse(context.Request.Query["id"], out int scaleId))
+        return;
+
+    if (!int.TryParse(context.Request.Query["w"], out int weight))
+        return;
+
+    Console.Write($" - ScaleId: {scaleId} | Weight: {weight}");
+
+    await context.RequestServices.GetRequiredService<IScaleWeightHandler>().HandleAsync(scaleId, weight);
 });
+
+await using (var context = app.Services.GetRequiredService<IDbContextFactory<KegMonitorDbContext>>().CreateDbContext())
+{
+    await context.Database.MigrateAsync();
+}
 
 await app.RunAsync();

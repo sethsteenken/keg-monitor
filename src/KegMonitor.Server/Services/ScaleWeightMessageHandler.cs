@@ -1,34 +1,33 @@
 ﻿using KegMonitor.Core.Interfaces;
-using Microsoft.Extensions.Logging;
 
-namespace KegMonitor.Core.Services
-{
-    public class WebUIPourNotifier : IPourNotifier
+namespace KegMonitor.Server
+{ 
+    public class ScaleWeightMessageHandler : IScaleWeightHandler
     {
         private readonly string _domain;
-        private readonly ILogger<WebUIPourNotifier> _logger;
+        private readonly ILogger<ScaleWeightMessageHandler> _logger;
 
-        public WebUIPourNotifier(
+        public ScaleWeightMessageHandler(
             string domain,
-            ILogger<WebUIPourNotifier> logger)
+            ILogger<ScaleWeightMessageHandler> logger)
         {
             _domain = domain;
             _logger = logger;
         }
 
-        public async Task NotifyAsync(int scaleId)
+        public async Task HandleAsync(int scaleId, int weight)
         {
             try
             {
                 using var client = new HttpClient();
-                string url = $"{_domain.TrimEnd('/')}/scale/pour/{scaleId}/";
+                string url = $"{_domain.TrimEnd('/')}/scale/weight/?id={scaleId}&w={weight}";
                 _logger.LogInformation($"Sending request to web app: '{url}'");
                 await client.PostAsync(url, new StringContent(string.Empty));
                 _logger.LogInformation("Request completed.");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error sending web request on pour notifier.");
+                _logger.LogError(ex, "Error sending web request on weight change.");
             }
         }
     }

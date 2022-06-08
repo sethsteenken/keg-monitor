@@ -3,8 +3,8 @@ using KegMonitor.Core.Interfaces;
 using KegMonitor.Infrastructure.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 
-namespace KegMonitor.Server
-{ 
+namespace KegMonitor.Web.Application
+{
     public class ScaleWeightHandler : IScaleWeightHandler
     {
         private readonly IDbContextFactory<KegMonitorDbContext> _dbContextFactory;
@@ -23,13 +23,15 @@ namespace KegMonitor.Server
 
         public async Task HandleAsync(int scaleId, int weight)
         {
-            Scale? scale;
+            Scale scale;
             bool pourOccurred = false;
+
+            // TODO - signalr notify latest weight value
 
             await using (var context = await _dbContextFactory.CreateDbContextAsync())
             {
                 scale = await context.Scales.Include(s => s.Beer)
-                                                .FirstOrDefaultAsync(s => s.Id == scaleId);
+                                            .FirstOrDefaultAsync(s => s.Id == scaleId);
                 if (scale == null)
                 {
                     _logger.LogError($"Scale ({scaleId}) not found.");
@@ -50,11 +52,12 @@ namespace KegMonitor.Server
                     return;
                 }
 
+                pourOccurred = difference > scale.PourDifferenceThreshold;
+
                 if (difference > scale.RecordingDifferenceThreshold)
                 {
                     scale.UpdateWeight(weight);
                     await context.SaveChangesAsync();
-                    pourOccurred = true;
                 }
                 else
                     _logger.LogDebug($"Weight difference {difference} less than Scale's ({scaleId}) threshold {scale.RecordingDifferenceThreshold}.");
