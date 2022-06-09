@@ -14,7 +14,7 @@
 
         public bool Active { get; set; }
 
-        public decimal Percentage => (decimal)Math.Round((decimal)CurrentWeight / (decimal)FullWeight * 100);
+        public decimal Percentage => (decimal)Math.Round((decimal)(CurrentWeight - EmptyWeight) / (decimal)(FullWeight - EmptyWeight) * 100);
 
         public int Difference(int weight) => Math.Abs(CurrentWeight - weight);
 

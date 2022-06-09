@@ -12,9 +12,13 @@
             <MudPaper Class="pa-8">
                 @if (scale.Active && scale.Beer != null)
                 {
+                    <MudImage Src="@scale.Beer.ImagePath" 
+                          Width="250" Height="250" Alt="@scale.Beer.Name" 
+                          Elevation="25" Class="rounded-lg ma-2" />
                     <MudText Typo="Typo.h4">@scale.Beer.Name (@(scale.Beer.Type)) @(scale.Beer.ABV)%</MudText>
+                    <MudText>@scale.Beer.Description</MudText>
                     <MudText>Weight: @scale.Weight</MudText>
-                    <MudProgressLinear Color="Color.Success" Rounded="true" Size="Size.Large" @bind-Value="@scale.Percentage" />
+                    <MudProgressLinear Color="@scale.Color" Rounded="true" Size="Size.Large" @bind-Value="@scale.Percentage" />
                 }
                 else
                 {

@@ -1,4 +1,6 @@
-﻿namespace KegMonitor.Web.Application
+﻿using MudBlazor;
+
+namespace KegMonitor.Web.Application
 {
     public class ScaleDisplayItem
     {
@@ -7,5 +9,18 @@
         public double Percentage { get; set; }
         public bool Active { get; set; }
         public BeerDisplayItem Beer { get; set; }
+
+        public Color Color
+        {
+            get
+            {
+                if (Percentage <= 8)
+                    return Color.Error;
+                else if (Percentage <= 22)
+                    return Color.Warning;
+                else
+                    return Color.Success;
+            }
+        }
     }
 }
