@@ -1,47 +1,39 @@
-﻿using KegMonitor.Core.Entities;
+﻿using KegMonitor.Core;
 using KegMonitor.Core.Interfaces;
 using KegMonitor.Infrastructure.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 
 namespace KegMonitor.Web.Application
 {
-    public class ScaleWeightHandler : IScaleWeightHandler
+    public class ScaleWeightUpdater : IScaleUpdater
     {
         private readonly IDbContextFactory<KegMonitorDbContext> _dbContextFactory;
-        private readonly IEnumerable<IPourNotifier> _pourNotifiers;
-        private readonly ILogger<ScaleWeightHandler> _logger;
+        private readonly ILogger<ScaleWeightUpdater> _logger;
 
-        public ScaleWeightHandler(
+        public ScaleWeightUpdater(
             IDbContextFactory<KegMonitorDbContext> dbContextFactory,
-            IEnumerable<IPourNotifier> pourNotifiers,
-            ILogger<ScaleWeightHandler> logger)
+            ILogger<ScaleWeightUpdater> logger)
         {
             _dbContextFactory = dbContextFactory;
-            _pourNotifiers = pourNotifiers;
             _logger = logger;
         }
 
-        public async Task HandleAsync(int scaleId, int weight)
+        public async Task<ScaleUpdateResult> UpdateAsync(int scaleId, int weight)
         {
-            Scale scale;
-            bool pourOccurred = false;
-
-            // TODO - signalr notify latest weight value
-
             await using (var context = await _dbContextFactory.CreateDbContextAsync())
             {
-                scale = await context.Scales.Include(s => s.Beer)
-                                            .FirstOrDefaultAsync(s => s.Id == scaleId);
+                var scale = await context.Scales.Include(s => s.Beer)
+                                                .FirstOrDefaultAsync(s => s.Id == scaleId);
                 if (scale == null)
                 {
                     _logger.LogError($"Scale ({scaleId}) not found.");
-                    return;
+                    return new ScaleUpdateResult();
                 }
 
                 if (!scale.Active || scale.Beer is null)
                 {
                     _logger.LogInformation($"Scale {scaleId} currently inactive. Weight change recordings disabled.");
-                    return;
+                    return new ScaleUpdateResult();
                 }
 
                 var difference = scale.Difference(weight);
@@ -49,26 +41,22 @@ namespace KegMonitor.Web.Application
                 if (difference > scale.MaxThreshold)
                 {
                     _logger.LogWarning($"Scale {scaleId} weight difference of {difference} exceeds maximum threshold of {scale.MaxThreshold}.");
-                    return;
+                    return new ScaleUpdateResult();
                 }
-
-                pourOccurred = difference > scale.PourDifferenceThreshold;
 
                 if (difference > scale.RecordingDifferenceThreshold)
                 {
                     scale.UpdateWeight(weight);
                     await context.SaveChangesAsync();
+
+                    return new ScaleUpdateResult(
+                        Recorded: true, 
+                        PourOccurred: difference > scale.PourDifferenceThreshold);
                 }
                 else
                     _logger.LogDebug($"Weight difference {difference} less than Scale's ({scaleId}) threshold {scale.RecordingDifferenceThreshold}.");
-            }
 
-            if (pourOccurred)
-            {
-                foreach (var pourNotifier in _pourNotifiers)
-                {
-                    await pourNotifier.NotifyAsync(scale.Id);
-                }
+                return new ScaleUpdateResult();
             }
         }
     }

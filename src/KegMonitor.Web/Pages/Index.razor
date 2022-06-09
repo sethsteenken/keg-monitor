@@ -1,18 +1,79 @@
 ﻿@page "/"
+@using KegMonitor.Web.Hubs
+@using Microsoft.AspNetCore.SignalR.Client
+@implements IAsyncDisposable
 
 <PageHeader>Keg Monitor Dashboard</PageHeader>
 
 <MudGrid>
-    <MudItem xs="12">
-        <MudPaper Class="pa-8">
-            <MudText Typo="Typo.h5">Scale 1</MudText>
-            <MudProgressLinear Color="Color.Success" Rounded="true" Size="Size.Large" Value="75" />
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12">
-        <MudPaper Class="pa-8">
-            <MudText Typo="Typo.h5">Scale 2</MudText>
-            <MudProgressLinear Color="Color.Success" Rounded="true" Size="Size.Large" Value="25" />
-        </MudPaper>
-    </MudItem>
+    @foreach (var scale in scales)
+    {
+        <MudItem xs="12">
+            <MudPaper Class="pa-8">
+                @if (scale.Active && scale.Beer != null)
+                {
+                    <MudText Typo="Typo.h4">@scale.Beer.Name (@(scale.Beer.Type)) @(scale.Beer.ABV)%</MudText>
+                    <MudText>Weight: @scale.Weight</MudText>
+                    <MudProgressLinear Color="Color.Success" Rounded="true" Size="Size.Large" @bind-Value="@scale.Percentage" />
+                }
+                else
+                {
+                    <MudText Typo="Typo.h4">Scale @scale.Id - <span class="red-text">Inactive</span></MudText>
+                    <MudText>Weight: @scale.Weight</MudText>
+                    <MudProgressLinear Color="Color.Dark" Rounded="true" Size="Size.Large" Value="0" />
+                }
+            </MudPaper>
+        </MudItem>
+    }
 </MudGrid>
+
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+@inject IScaleDashboardQueryService QueryService
+
+@code {
+    private HubConnection hubConnection;
+
+    List<ScaleDisplayItem> scales = new List<ScaleDisplayItem>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        scales = await QueryService.GetScalesAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri(ScaleHub.Endpoint))
+            .Build();
+
+        hubConnection.On<int, int>("ReceiveWeight", (scaleId, weight) =>
+        {
+            scales.Single(s => s.Id == scaleId).Weight = weight;
+            InvokeAsync(StateHasChanged);
+        });
+
+        hubConnection.On<int, decimal>("ReceiveWeightPercentage", (scaleId, percentage) =>
+        {
+            scales.Single(s => s.Id == scaleId).Percentage = (double)percentage;
+            InvokeAsync(StateHasChanged);
+        });
+
+        hubConnection.On<int>("ReceiveNewPour", (scaleId) =>
+        {
+            Snackbar.Add("Beer poured! Nice!.", Severity.Success);
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    public bool IsConnected =>
+        hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+            await hubConnection.DisposeAsync();
+    }
+}
