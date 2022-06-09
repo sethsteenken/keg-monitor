@@ -5,31 +5,40 @@
 
 <PageHeader>Keg Monitor Dashboard</PageHeader>
 
-<MudGrid>
-    @foreach (var scale in scales)
-    {
-        <MudItem xs="12">
-            <MudPaper Class="pa-8">
-                @if (scale.Active && scale.Beer != null)
-                {
-                    <MudImage Src="@scale.Beer.ImagePath" 
-                          Width="250" Height="250" Alt="@scale.Beer.Name" 
-                          Elevation="25" Class="rounded-lg ma-2" />
-                    <MudText Typo="Typo.h4">@scale.Beer.Name (@(scale.Beer.Type)) @(scale.Beer.ABV)%</MudText>
-                    <MudText>@scale.Beer.Description</MudText>
-                    <MudText>Weight: @scale.Weight</MudText>
-                    <MudProgressLinear Color="@scale.Color" Rounded="true" Size="Size.Large" @bind-Value="@scale.Percentage" />
+@foreach (var scale in scales)
+{
+    <MudCard Elevation="10" Class="my-6 mx-2">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText>Weight: @scale.Weight</MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                @{
+                    var editLink = $"/scale/edit/{scale.Id}/"; 
                 }
-                else
-                {
-                    <MudText Typo="Typo.h4">Scale @scale.Id - <span class="red-text">Inactive</span></MudText>
-                    <MudText>Weight: @scale.Weight</MudText>
-                    <MudProgressLinear Color="Color.Dark" Rounded="true" Size="Size.Large" Value="0" />
-                }
-            </MudPaper>
-        </MudItem>
-    }
-</MudGrid>
+                <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" Href="@editLink" />
+            </CardHeaderActions>
+        </MudCardHeader>
+        @if (scale.Active && scale.Beer != null && !string.IsNullOrWhiteSpace(scale.Beer.ImagePath))
+        {
+            <MudCardMedia Image="@scale.Beer.ImagePath" Height="250" Alt="@scale.Beer.Name" />
+        }
+        <MudCardContent>
+            @if (scale.Active && scale.Beer != null)
+            {
+                <MudText Typo="Typo.h4" Class="pb-1">@scale.Beer.Name (@(scale.Beer.Type)) @(scale.Beer.ABV)%</MudText>
+                <MudText Class="pb-1">@scale.Beer.Description</MudText>
+                <MudProgressLinear Color="@scale.Color" Rounded="true" Size="Size.Large" @bind-Value="@scale.Percentage" />
+            }
+            else
+            {
+                <MudText Typo="Typo.h4" Class="pb-1">Scale @scale.Id - <span class="red-text">Inactive</span></MudText>
+                <MudProgressLinear Color="Color.Dark" Rounded="true" Size="Size.Large" Value="0" />
+            }
+        </MudCardContent>
+    </MudCard>
+}
+
 
 @inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
