@@ -55,7 +55,7 @@
 @inject ISnackbar Snackbar
 @inject IBeerCommandService CommandService
 @inject IBeerQueryService QueryService
-@inject IWebHostEnvironment Environment
+@inject IFileUploader FileUploader
 
 @code {
     [Parameter]
@@ -81,20 +81,7 @@
 
     protected async Task UploadFilesAsync(InputFileChangeEventArgs e)
     {
-        string relativePath = $"/uploads/{e.File.Name}";
-        string absolutePath = Path.Combine(Environment.WebRootPath, "uploads", e.File.Name);
-
-        Directory.CreateDirectory(Path.GetDirectoryName(absolutePath));
-
-        using (var inputStream = e.File.OpenReadStream())
-        {
-            using (var stream = new FileStream(absolutePath, FileMode.Create))
-            {
-                await inputStream.CopyToAsync(stream);
-            }
-        }
-
-        model.ImagePath = relativePath;
+        model.ImagePath = await FileUploader.UploadAsync(e.File);
         StateHasChanged();
     }
 }

@@ -34,6 +34,11 @@ builder.Services.AddResponseCompression(opts =>
 
 builder.Services.AddKegMonitorDataAccess(builder.Configuration);
 
+builder.Services.AddScoped<IFileUploader>(serviceProvider =>
+{
+    return new FileUploader(serviceProvider.GetRequiredService<IWebHostEnvironment>(), "uploads");
+});
+
 builder.Services.AddScoped<IBeerQueryService, BeerQueryService>();
 builder.Services.AddScoped<IBeerCommandService, BeerCommandService>();
 builder.Services.AddScoped<IScaleQueryService, ScaleQueryService>();
