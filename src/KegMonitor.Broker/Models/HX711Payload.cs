@@ -1,4 +1,4 @@
-﻿namespace KegMonitor.Server
+﻿namespace KegMonitor.Broker
 {
     internal class HX711Payload
     {

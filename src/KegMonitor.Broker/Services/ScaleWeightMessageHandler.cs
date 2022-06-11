@@ -1,6 +1,6 @@
 ﻿using KegMonitor.Core.Interfaces;
 
-namespace KegMonitor.Server
+namespace KegMonitor.Broker
 { 
     public class ScaleWeightMessageHandler : IScaleWeightHandler
     {

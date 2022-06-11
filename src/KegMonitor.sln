@@ -5,8 +5,6 @@ VisualStudioVersion = 17.2.32516.85
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KegMonitor.Client", "KegMonitor.Client\KegMonitor.Client.csproj", "{533A246A-91E3-4811-AFEA-69C002F0DCCA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KegMonitor.Server", "KegMonitor.Server\KegMonitor.Server.csproj", "{ED0C9D2B-4B8E-4DD5-ABE5-601178BFBD2C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KegMonitor.Core", "KegMonitor.Core\KegMonitor.Core.csproj", "{2C75E67F-1D13-48CC-AC5C-A1E2DA2FD932}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B4B70C5F-2903-417A-8825-0323D0C49AD7}"
@@ -16,7 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KegMonitor.Infrastructure.EntityFramework", "KegMonitor.Infrastructure.EntityFramework\KegMonitor.Infrastructure.EntityFramework.csproj", "{1CEA40B7-4188-464A-8C19-F73AE513EA05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KegMonitor.Web", "KegMonitor.Web\KegMonitor.Web.csproj", "{40103C82-D53B-4527-BC5F-36489BACCC1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KegMonitor.Web", "KegMonitor.Web\KegMonitor.Web.csproj", "{40103C82-D53B-4527-BC5F-36489BACCC1E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KegMonitor.Broker", "KegMonitor.Broker\KegMonitor.Broker.csproj", "{02C9B6BC-0C42-45A1-A93F-C3A75FB03403}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,10 +28,6 @@ Global
 		{533A246A-91E3-4811-AFEA-69C002F0DCCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{533A246A-91E3-4811-AFEA-69C002F0DCCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{533A246A-91E3-4811-AFEA-69C002F0DCCA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ED0C9D2B-4B8E-4DD5-ABE5-601178BFBD2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ED0C9D2B-4B8E-4DD5-ABE5-601178BFBD2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ED0C9D2B-4B8E-4DD5-ABE5-601178BFBD2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ED0C9D2B-4B8E-4DD5-ABE5-601178BFBD2C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2C75E67F-1D13-48CC-AC5C-A1E2DA2FD932}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2C75E67F-1D13-48CC-AC5C-A1E2DA2FD932}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C75E67F-1D13-48CC-AC5C-A1E2DA2FD932}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -44,6 +40,10 @@ Global
 		{40103C82-D53B-4527-BC5F-36489BACCC1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40103C82-D53B-4527-BC5F-36489BACCC1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40103C82-D53B-4527-BC5F-36489BACCC1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02C9B6BC-0C42-45A1-A93F-C3A75FB03403}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02C9B6BC-0C42-45A1-A93F-C3A75FB03403}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02C9B6BC-0C42-45A1-A93F-C3A75FB03403}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02C9B6BC-0C42-45A1-A93F-C3A75FB03403}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

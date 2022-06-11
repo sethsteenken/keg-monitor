@@ -3,7 +3,7 @@ using MQTTnet.Server;
 using System.Text;
 using System.Text.Json;
 
-namespace KegMonitor.Server
+namespace KegMonitor.Broker
 {
     internal class ApplicationMessageInterceptor : IMqttServerApplicationMessageInterceptor
     {

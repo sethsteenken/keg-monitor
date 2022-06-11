@@ -2,7 +2,7 @@
 using MQTTnet.Protocol;
 using MQTTnet.Server;
 
-namespace KegMonitor.Server
+namespace KegMonitor.Broker
 {
     internal class ConnectionValidator : IMqttServerConnectionValidator
     {

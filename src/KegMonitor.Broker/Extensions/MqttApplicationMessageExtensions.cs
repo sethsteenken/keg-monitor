@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KegMonitor.Server
+namespace KegMonitor.Broker
 {
     internal static class MqttApplicationMessageExtensions
     {
