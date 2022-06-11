@@ -38,7 +38,8 @@
                 @if (model.ImagePath != null)
                 {
                       <MudImage @bind-Src="model.ImagePath" 
-                          Width="250" Height="250" Alt="@model.Name" 
+                          Alt="@model.Name" ObjectFit="ObjectFit.Cover"
+                          Width="400" Height="400"
                           Elevation="25" Class="rounded-lg ma-2" />
                 }
             </MudPaper>
