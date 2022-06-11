@@ -60,29 +60,26 @@
             .WithUrl(NavigationManager.ToAbsoluteUri(ScaleHub.Endpoint))
             .Build();
 
-        hubConnection.On<int, int>("ReceiveWeight", (scaleId, weight) =>
+        hubConnection.On<int, int>(ScaleHub.ReceiveWeight, (scaleId, weight) =>
         {
             scales.Single(s => s.Id == scaleId).Weight = weight;
             InvokeAsync(StateHasChanged);
         });
 
-        hubConnection.On<int, decimal>("ReceiveWeightPercentage", (scaleId, percentage) =>
+        hubConnection.On<int, decimal>(ScaleHub.ReceiveWeightPercentage, (scaleId, percentage) =>
         {
             scales.Single(s => s.Id == scaleId).Percentage = (double)percentage;
             InvokeAsync(StateHasChanged);
         });
 
-        hubConnection.On<int>("ReceiveNewPour", (scaleId) =>
+        hubConnection.On<int, string>(ScaleHub.ReceiveNewPour, (scaleId, message) =>
         {
-            Snackbar.Add("Beer poured! Nice!.", Severity.Success);
+            Snackbar.Add(message, Severity.Success);
             InvokeAsync(StateHasChanged);
         });
 
         await hubConnection.StartAsync();
     }
-
-    public bool IsConnected =>
-        hubConnection?.State == HubConnectionState.Connected;
 
     public async ValueTask DisposeAsync()
     {

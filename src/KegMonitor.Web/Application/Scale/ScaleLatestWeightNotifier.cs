@@ -15,7 +15,7 @@ namespace KegMonitor.Web.Application
         public async Task NotifyAsync(int scaleId, int weight)
         {
             var connection = await GetHubConnectionAsync();
-            await connection.SendAsync("SendWeight", scaleId, weight);
+            await connection.SendAsync(nameof(ScaleHub.SendWeight), scaleId, weight);
         }
     }
 }

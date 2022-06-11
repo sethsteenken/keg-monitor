@@ -27,7 +27,7 @@ namespace KegMonitor.Web.Application
                 throw new InvalidOperationException("Scale not found.");
 
             var connection = await GetHubConnectionAsync();
-            await connection.SendAsync("SendWeightPercentage", scaleId, scale.Percentage);
+            await connection.SendAsync(nameof(ScaleHub.SendWeightPercentage), scaleId, scale.Percentage);
         }
     }
 }

@@ -1,7 +1,11 @@
 ﻿@page "/scale/edit/{Id:int}/"
 @using KegMonitor.Core.Entities
+@using KegMonitor.Web.Hubs
+@using Microsoft.AspNetCore.SignalR.Client
 
 <PageHeader>Edit Scale #@Id</PageHeader>
+
+<MudText Typo="Typo.h5">Weight: @weight</MudText>
 
 <EditForm Model="@model" OnValidSubmit="SubmitAsync">
     <DataAnnotationsValidator />
@@ -68,6 +72,7 @@
     </MudGrid>    
 </EditForm>
 
+@inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject IScaleQueryService QueryService
@@ -77,11 +82,34 @@
     [Parameter]
     public int Id { get; set; }
 
+    private HubConnection hubConnection;
+
+    int weight = 0;
+
     ScaleEditModel model = new ScaleEditModel();
 
     protected override async Task OnParametersSetAsync()
     {
         model = await QueryService.BuildEditModelAsync(Id);
+        weight = model.CurrentWeight;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri(ScaleHub.Endpoint))
+            .Build();
+
+        hubConnection.On<int, int>(ScaleHub.ReceiveWeight, (scaleId, newWeight) =>
+        {
+            if (scaleId == model.Id)
+            {
+                weight = newWeight;
+                InvokeAsync(StateHasChanged);
+            } 
+        });
+
+        await hubConnection.StartAsync();
     }
 
     protected async Task ConfirmDeactivateAsync()
