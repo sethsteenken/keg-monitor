@@ -14,6 +14,7 @@
     </MudAppBar>
     <MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <MudNavMenu>
+            <MudNavLink Href="/display/" Match="NavLinkMatch.All">Display</MudNavLink>
             <MudNavLink Href="/" Match="NavLinkMatch.All">Dashboard</MudNavLink>
             <MudNavGroup Title="Beer" Expanded="true">
                 <MudNavLink Href="/beer/" Match="NavLinkMatch.All">List</MudNavLink>

@@ -1,24 +1,12 @@
-﻿@page "/"
+﻿@page "/display/"
+@layout DisplayLayout
 @using KegMonitor.Web.Hubs
 @using Microsoft.AspNetCore.SignalR.Client
 @implements IAsyncDisposable
 
-<PageHeader>Keg Monitor Dashboard</PageHeader>
-
 @foreach (var scale in scales)
 {
     <MudCard Elevation="10" Class="my-6 mx-2">
-        <MudCardHeader>
-            <CardHeaderContent>
-                <MudText>Weight: @scale.Weight</MudText>
-            </CardHeaderContent>
-            <CardHeaderActions>
-                @{
-                    var editLink = $"/scale/edit/{scale.Id}/"; 
-                }
-                <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" Href="@editLink" />
-            </CardHeaderActions>
-        </MudCardHeader>
         @if (scale.Active && scale.Beer != null && !string.IsNullOrWhiteSpace(scale.Beer.ImagePath))
         {
             <MudCardMedia Image="@scale.Beer.ImagePath" Height="250" Alt="@scale.Beer.Name" />
@@ -33,13 +21,14 @@
             }
             else
             {
-                <MudText Typo="Typo.h4" Class="pb-1">Scale @scale.Id - <span class="red-text">Inactive</span></MudText>
+                <MudText Typo="Typo.h3" Class="pb-1">Scale @scale.Id - <span class="red-text">Inactive</span></MudText>
                 <MudProgressLinear Color="Color.Dark" Rounded="true" Size="Size.Large" Value="0" />
             }
         </MudCardContent>
     </MudCard>
 }
 
+@inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
 @inject IScaleDashboardQueryService QueryService
 
@@ -59,15 +48,15 @@
             .WithUrl(NavigationManager.ToAbsoluteUri(ScaleHub.Endpoint))
             .Build();
 
-        hubConnection.On<int, int>(ScaleHub.ReceiveWeight, (scaleId, weight) =>
-        {
-            scales.Single(s => s.Id == scaleId).Weight = weight;
-            InvokeAsync(StateHasChanged);
-        });
-
         hubConnection.On<int, decimal>(ScaleHub.ReceiveWeightPercentage, (scaleId, percentage) =>
         {
             scales.Single(s => s.Id == scaleId).Percentage = (double)percentage;
+            InvokeAsync(StateHasChanged);
+        });
+
+        hubConnection.On<int, string>(ScaleHub.ReceiveNewPour, (scaleId, message) =>
+        {
+            Snackbar.Add(message, Severity.Success);
             InvokeAsync(StateHasChanged);
         });
 

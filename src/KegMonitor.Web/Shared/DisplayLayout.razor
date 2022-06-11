@@ -1,0 +1,25 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="@theme" @bind-IsDarkMode="@isDarkMode" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudImage Src="/img/beer-tap.png" Alt="Beer tap" Class="rounded-lg" Fluid="true" ObjectFit="ObjectFit.Contain" Height="50" Width="50"></MudImage>
+        <MudText Typo="Typo.h5" Class="ml-3">Keg Monitor</MudText>
+        <MudSpacer />
+        <MudSwitch @bind-Checked="@isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Dark Mode" />
+    </MudAppBar>
+    <MudMainContent>
+        <MudContainer>
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    bool isDarkMode = false;
+
+    MudTheme theme = new MudTheme();
+}
