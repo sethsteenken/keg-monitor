@@ -1,7 +1,7 @@
 ﻿using KegMonitor.Core.Interfaces;
 
 namespace KegMonitor.Broker
-{ 
+{
     public class ScaleWeightMessageHandler : IScaleWeightHandler
     {
         private readonly string _domain;

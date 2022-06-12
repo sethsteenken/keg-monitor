@@ -31,12 +31,12 @@ namespace KegMonitor.Broker
             }
             else if (context.ApplicationMessage.IsSensorMessage() && context.ApplicationMessage.TryGetScaleNumber(out int scaleNumber))
             {
-                _logger.LogDebug($"Scale Number: {scaleNumber}");
+                _logger.LogInformation($"Scale Number: {scaleNumber}");
 
                 var payload = JsonSerializer.Deserialize<SensorPayload>(context.ApplicationMessage.Payload);
                 if (payload != null)
                 {
-                    _logger.LogDebug($"Payload: {payload.Time} - {payload.HX711.WeightRaw}");
+                    _logger.LogInformation($"Payload: {payload.Time} - {payload.HX711.WeightRaw}");
                     await _scaleWeightHandler.HandleAsync(scaleNumber, payload.HX711.WeightRaw);
                 }
             }

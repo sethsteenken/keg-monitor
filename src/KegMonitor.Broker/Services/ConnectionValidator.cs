@@ -7,33 +7,33 @@ namespace KegMonitor.Broker
     internal class ConnectionValidator : IMqttServerConnectionValidator
     {
         private readonly ILogger<ConnectionValidator> _logger;
-        private readonly AuthSettings _authSettings;
+        private readonly MqttServerSettings _settings;
 
         public ConnectionValidator(
             ILogger<ConnectionValidator> logger,
-            IOptions<AuthSettings> authSettings)
+            IOptions<MqttServerSettings> settings)
         {
             _logger = logger;
-            _authSettings = authSettings.Value;
+            _settings = settings.Value;
         }
 
         public Task ValidateConnectionAsync(MqttConnectionValidatorContext context)
         {
-            if (!_authSettings.Enabled)
+            if (!_settings.Enabled)
             {
                 context.ReasonCode = MqttConnectReasonCode.ServerUnavailable;
-                _logger.LogDebug($"Connection denied. Server not set to enable auth. ClientId = {context.ClientId}, Endpoint = {context.Endpoint}");
+                _logger.LogInformation($"Connection denied. Server not set to enable auth. ClientId = {context.ClientId}, Endpoint = {context.Endpoint}");
                 return Task.CompletedTask;
             }
 
-            if (!_authSettings.AllowedClientIds?.Contains(context.ClientId) ?? false)
+            if (!_settings.AllowedClientIds?.Contains(context.ClientId) ?? false)
             {
                 context.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
                 _logger.LogWarning($"FAILED connection. Client not allowed: ClientId = {context.ClientId}, Endpoint = {context.Endpoint}");
                 return Task.CompletedTask;
             }
 
-            _logger.LogDebug($"New valid connection: ClientId = {context.ClientId}, Endpoint = {context.Endpoint}");
+            _logger.LogInformation($"New valid connection: ClientId = {context.ClientId}, Endpoint = {context.Endpoint}");
 
             return Task.CompletedTask;
         }

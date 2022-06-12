@@ -9,7 +9,12 @@ using System.Text.Json;
 // Creates a new client
 MqttClientOptionsBuilder builder = new MqttClientOptionsBuilder()
                                         .WithClientId("Tester9")
+                                        //.WithTcpServer("http://localhost", 5093)
                                         .WithTcpServer("192.168.1.20", 707);
+                                        //.WithTcpServer("192.168.1.11", 707);
+                                        //.WithWebSocketServer("192.168.1.11:707")
+                                        //.WithProxy("http://localhost:5003")
+                                        //.WithCommunicationTimeout(TimeSpan.FromSeconds(10));
 
 // Create client options objects
 ManagedMqttClientOptions options = new ManagedMqttClientOptionsBuilder()
@@ -29,12 +34,15 @@ _mqttClient.ConnectingFailedHandler = new ConnectingFailedHandlerDelegate(contex
     Console.WriteLine(context.Exception.ToString());
 });
 
-Console.WriteLine("Client started.");
-Console.WriteLine("Starting client...");
-await _mqttClient.StartAsync(options);
-
 try
 {
+    Console.WriteLine("Press any button to start MQTT client...");
+    Console.ReadLine();
+
+    Console.WriteLine("Starting client...");
+    await _mqttClient.StartAsync(options);
+    Console.WriteLine("Client started.");
+
     await MenuAsync();
 }
 catch (Exception ex)

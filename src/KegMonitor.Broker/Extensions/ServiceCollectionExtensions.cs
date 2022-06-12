@@ -1,9 +1,7 @@
 ﻿using KegMonitor.Core.Interfaces;
+using Microsoft.Extensions.Options;
 using MQTTnet;
-using MQTTnet.Adapter;
-using MQTTnet.AspNetCore;
 using MQTTnet.Diagnostics.Logger;
-using MQTTnet.Implementations;
 using MQTTnet.Server;
 using System.Net;
 
@@ -13,7 +11,7 @@ namespace KegMonitor.Broker
     {
         public static IServiceCollection AddMqttServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<AuthSettings>(configuration.GetSection("Auth"));
+            services.Configure<MqttServerSettings>(configuration.GetSection("Mqtt"));
             services.AddSingleton<IScaleWeightHandler>(serviceProvider =>
             {
                 return new ScaleWeightMessageHandler(
@@ -23,7 +21,7 @@ namespace KegMonitor.Broker
 
             services.AddSingleton<IMqttServerConnectionValidator, ConnectionValidator>()
                     .AddSingleton<IMqttServerApplicationMessageInterceptor, ApplicationMessageInterceptor>()
-                    .AddSingleton<MqttWebSocketServerAdapter>()
+                    //.AddSingleton<MqttWebSocketServerAdapter>()
                     .AddSingleton<IMqttNetLogger, MqttLogger>()
                     .AddSingleton<IMqttFactory>(serviceProvider =>
                     {
@@ -31,26 +29,43 @@ namespace KegMonitor.Broker
                     })
                     .AddSingleton<MqttServerOptionsBuilder>(serviceProvider =>
                     {
-                        return new MqttServerOptionsBuilder()
-                            .WithDefaultEndpointBoundIPAddress(IPAddress.Parse(configuration["Host:IpAddress"]))
-                            .WithDefaultEndpointPort(int.Parse(configuration["Host:Port"]))
+                        var settings = serviceProvider.GetRequiredService<IOptions<MqttServerSettings>>().Value;
+
+                        var builder = new MqttServerOptionsBuilder()
+                            .WithDefaultEndpoint()
+                            .WithDefaultEndpointPort(settings.Port)
                             .WithConnectionValidator(serviceProvider.GetRequiredService<IMqttServerConnectionValidator>())
                             .WithApplicationMessageInterceptor(serviceProvider.GetRequiredService<IMqttServerApplicationMessageInterceptor>());
+
+                        if (!string.IsNullOrWhiteSpace(settings.IpAddress))
+                            builder.WithDefaultEndpointBoundIPAddress(IPAddress.Parse(settings.IpAddress));
+
+                        return builder;
                     })
                     .AddSingleton<IMqttServerOptions>(serviceProvider => serviceProvider.GetRequiredService<MqttServerOptionsBuilder>().Build())
-                    .AddSingleton<IMqttServer>(serviceProvider =>
-                    {
-                        var adapters = new List<IMqttServerAdapter>
-                        {
-                            new MqttTcpServerAdapter(serviceProvider.GetRequiredService<IMqttNetLogger>())
-                            {
-                                TreatSocketOpeningErrorAsWarning = true
-                            },
-                            serviceProvider.GetRequiredService<MqttWebSocketServerAdapter>()
-                        };
+                    .AddSingleton<IMqttServer>(serviceProvider => serviceProvider.GetRequiredService<IMqttFactory>().CreateMqttServer());
+            //.AddSingleton<IMqttServer>(serviceProvider =>
+            //{
+            //    var adapters = new List<IMqttServerAdapter>
+            //    {
+            //        new MqttTcpServerAdapter(serviceProvider.GetRequiredService<IMqttNetLogger>())
+            //        {
+            //            TreatSocketOpeningErrorAsWarning = true
+            //        },
+            //        serviceProvider.GetRequiredService<MqttWebSocketServerAdapter>()
+            //    };
 
-                        return serviceProvider.GetRequiredService<IMqttFactory>().CreateMqttServer(adapters);
-                    });
+            //    return serviceProvider.GetRequiredService<IMqttFactory>().CreateMqttServer(adapters);
+            //});
+
+            //services.AddSingleton<MqttConnectionHandler>();
+            //services.AddSingleton<IMqttServerAdapter>(s => s.GetRequiredService<MqttConnectionHandler>());
+
+            //services.AddSingleton<MqttHostedServer>();
+            //services.AddSingleton<IHostedService>(s => s.GetRequiredService<MqttHostedServer>());
+            //services.AddSingleton<MqttServer>(s => s.GetRequiredService<MqttHostedServer>());
+
+            services.AddSingleton<MqttHostedService>();
 
             return services;
         }
