@@ -10,8 +10,8 @@ using System.Text.Json;
 MqttClientOptionsBuilder builder = new MqttClientOptionsBuilder()
                                         .WithClientId("Tester9")
                                         //.WithTcpServer("http://localhost", 5093)
-                                        .WithTcpServer("192.168.1.20", 707);
-                                        //.WithTcpServer("192.168.1.11", 707);
+                                        //.WithTcpServer("192.168.1.20", 707);
+                                        .WithTcpServer("192.168.1.11", 707);
                                         //.WithWebSocketServer("192.168.1.11:707")
                                         //.WithProxy("http://localhost:5003")
                                         //.WithCommunicationTimeout(TimeSpan.FromSeconds(10));

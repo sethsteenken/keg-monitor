@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Host.UseSystemd();
+builder.Host.UseSystemd();
 
 builder.Logging.Services.AddSignalRLogging(builder.Configuration["Domain"]);
 builder.Services.AddSignalR();
