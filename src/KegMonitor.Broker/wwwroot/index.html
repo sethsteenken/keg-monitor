@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>KegMonitor MQTT Broker</title>
+</head>
+<body>
+    <h1>KegMonitor MQTT Broker</h1>
+    <h3>Log:</h3>
+    <ul id="log-list"></ul>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.5/signalr.min.js"
+            integrity="sha512-Wj6cUe+56vJ4FtfeF4QqPHy4VGO9gZ2iU8GFlLRjawhx1f4sW3BezJLU1ewaZl3bZV8iya0EJOmRY5SD9XTwvw=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+    <script>
+        let messageCount = 0,
+            threshold = 1000;
+
+        // Start the connection.
+        let connection = new signalR.HubConnectionBuilder()
+            .withUrl('/loghub')
+            .build();
+
+        // Create a function that the hub can call to broadcast messages.
+        connection.on('ReceiveMessage', function (logger, level, message) {
+            messageCount++;
+
+            if (messageCount === threshold) {
+                document.getElementsByTagName("h1")[0].textContent += " - THRESHOLD REACHED - RELOAD PAGE";
+            } else if (messageCount < threshold) {
+                let li = document.createElement("li");
+                li.textContent = new Date().toLocaleString() + " - " + level + " - " + message;
+
+                document.getElementById('log-list').appendChild(li);
+            }
+        });
+
+        // Transport fallback functionality is now built into start.
+        connection.start()
+            .then(function () {
+                console.log('connection started');
+            })
+            .catch(error => {
+                console.error(error.message);
+            });
+
+    </script>
+</body>
+</html>
