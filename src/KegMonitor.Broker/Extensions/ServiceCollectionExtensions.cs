@@ -21,7 +21,6 @@ namespace KegMonitor.Broker
 
             services.AddSingleton<IMqttServerConnectionValidator, ConnectionValidator>()
                     .AddSingleton<IMqttServerApplicationMessageInterceptor, ApplicationMessageInterceptor>()
-                    //.AddSingleton<MqttWebSocketServerAdapter>()
                     .AddSingleton<IMqttNetLogger, MqttLogger>()
                     .AddSingleton<IMqttFactory>(serviceProvider =>
                     {
@@ -44,26 +43,6 @@ namespace KegMonitor.Broker
                     })
                     .AddSingleton<IMqttServerOptions>(serviceProvider => serviceProvider.GetRequiredService<MqttServerOptionsBuilder>().Build())
                     .AddSingleton<IMqttServer>(serviceProvider => serviceProvider.GetRequiredService<IMqttFactory>().CreateMqttServer());
-            //.AddSingleton<IMqttServer>(serviceProvider =>
-            //{
-            //    var adapters = new List<IMqttServerAdapter>
-            //    {
-            //        new MqttTcpServerAdapter(serviceProvider.GetRequiredService<IMqttNetLogger>())
-            //        {
-            //            TreatSocketOpeningErrorAsWarning = true
-            //        },
-            //        serviceProvider.GetRequiredService<MqttWebSocketServerAdapter>()
-            //    };
-
-            //    return serviceProvider.GetRequiredService<IMqttFactory>().CreateMqttServer(adapters);
-            //});
-
-            //services.AddSingleton<MqttConnectionHandler>();
-            //services.AddSingleton<IMqttServerAdapter>(s => s.GetRequiredService<MqttConnectionHandler>());
-
-            //services.AddSingleton<MqttHostedServer>();
-            //services.AddSingleton<IHostedService>(s => s.GetRequiredService<MqttHostedServer>());
-            //services.AddSingleton<MqttServer>(s => s.GetRequiredService<MqttHostedServer>());
 
             services.AddSingleton<MqttHostedService>();
 

@@ -1,15 +1,19 @@
+using KegMonitor.Core;
 using KegMonitor.Core.Interfaces;
 using KegMonitor.Infrastructure.EntityFramework;
+using KegMonitor.SignalR;
 using KegMonitor.Web.Application;
 using KegMonitor.Web.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor;
 using MudBlazor.Services;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Logging.Services.AddSignalRLogging();
+
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices(config =>
@@ -45,7 +49,11 @@ builder.Services.AddScoped<IScaleQueryService, ScaleQueryService>();
 builder.Services.AddScoped<IScaleCommandService, ScaleCommandService>();
 builder.Services.AddScoped<IScaleDashboardQueryService, ScaleDashboardQueryService>();
 
-builder.Services.AddSingleton<HubUrlResolver>();
+builder.Services.AddScoped<HubConnectionFactory>(serviceProvider =>
+{
+    return new HubConnectionFactory(serviceProvider.GetRequiredService<IConfiguration>()["Domain"]);
+});
+
 builder.Services.AddSingleton<IScaleUpdater, ScaleWeightUpdater>();
 builder.Services.AddScoped<IScaleWeightChangeNotifier, ScaleNewWeightPercentageNotifier>();
 builder.Services.AddScoped<IScaleWeightChangeNotifier, ScaleLatestWeightNotifier>();
@@ -66,6 +74,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.MapBlazorHub();
 app.MapHub<ScaleHub>(ScaleHub.Endpoint);
+app.MapHub<LogHub>(LogHub.Endpoint);
 app.MapFallbackToPage("/_Host");
 
 app.MapPost("/scale/weight/", async delegate (HttpContext context)
@@ -83,6 +92,26 @@ app.MapPost("/scale/weight/", async delegate (HttpContext context)
     logger.LogDebug($" - ScaleId: {scaleId} | Weight: {weight}");
 
     await context.RequestServices.GetRequiredService<IScaleWeightHandler>().HandleAsync(scaleId, weight);
+});
+
+app.MapPost("/log/", async delegate (HttpContext context)
+{
+    if (!context.Request.HasJsonContentType())
+    {
+        context.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
+        return;
+    }
+
+    var logMessage = await context.Request.ReadFromJsonAsync<LogMessage>();
+
+    var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(logMessage.Logger);
+
+    if (!Enum.TryParse<LogLevel>(logMessage.Level, out LogLevel level))
+        level = LogLevel.Warning;
+
+    logger.Log(level, logMessage.Message);
+
+    context.Response.StatusCode = (int)HttpStatusCode.Accepted;
 });
 
 await using (var context = app.Services.GetRequiredService<IDbContextFactory<KegMonitorDbContext>>().CreateDbContext())

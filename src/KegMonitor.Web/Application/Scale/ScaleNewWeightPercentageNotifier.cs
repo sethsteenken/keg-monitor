@@ -1,20 +1,22 @@
 ﻿using KegMonitor.Core.Interfaces;
 using KegMonitor.Infrastructure.EntityFramework;
+using KegMonitor.SignalR;
 using KegMonitor.Web.Hubs;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore;
 
 namespace KegMonitor.Web.Application
 {
-    public class ScaleNewWeightPercentageNotifier : HubInteractor, IScaleWeightChangeNotifier
+    public class ScaleNewWeightPercentageNotifier : IScaleWeightChangeNotifier
     {
+        private readonly HubConnectionFactory _hubConnectionFactory;
         private readonly IDbContextFactory<KegMonitorDbContext> _dbContextFactory;
 
         public ScaleNewWeightPercentageNotifier(
-            HubUrlResolver urlResolver,
+            HubConnectionFactory hubConnectionFactory,
             IDbContextFactory<KegMonitorDbContext> dbContextFactory)
-            : base (urlResolver, ScaleHub.Endpoint)
         {
+            _hubConnectionFactory = hubConnectionFactory;
             _dbContextFactory = dbContextFactory;
         }
 
@@ -26,7 +28,7 @@ namespace KegMonitor.Web.Application
             if (scale == null)
                 throw new InvalidOperationException("Scale not found.");
 
-            var connection = await GetHubConnectionAsync();
+            var connection = await _hubConnectionFactory.GetConnectionAsync(ScaleHub.Endpoint);
             await connection.SendAsync(nameof(ScaleHub.SendWeightPercentage), scaleId, scale.Percentage);
         }
     }

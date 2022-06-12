@@ -10,7 +10,6 @@
 	</PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.4" />
     <PackageReference Include="MudBlazor" Version="6.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.4">
       <PrivateAssets>all</PrivateAssets>
@@ -20,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KegMonitor.Infrastructure.EntityFramework\KegMonitor.Infrastructure.EntityFramework.csproj" />
+    <ProjectReference Include="..\KegMonitor.SignalR\KegMonitor.SignalR.csproj" />
   </ItemGroup>
 
 	

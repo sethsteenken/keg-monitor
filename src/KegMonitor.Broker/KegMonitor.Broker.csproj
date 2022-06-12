@@ -1,9 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <Optimize>True</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KegMonitor.Core\KegMonitor.Core.csproj" />
-    <ProjectReference Include="..\KegMonitor.SignalR\KegMonitor.SignalR.csproj" />
   </ItemGroup>
 
 </Project>

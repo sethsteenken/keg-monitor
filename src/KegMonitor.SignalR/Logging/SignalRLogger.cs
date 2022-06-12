@@ -9,14 +9,6 @@ namespace KegMonitor.SignalR
     {
         private readonly string _name;
         private readonly IServiceProvider _serviceProvider;
-        //private readonly HubConnectionFactory _hubConnectionFactory;
-
-        //public SignalRLogger(string name, HubConnectionFactory hubConnectionFactory)
-        //{
-        //    _name = name;
-        //    _hubConnectionFactory = hubConnectionFactory;
-        //}
-
         public SignalRLogger(string name, IServiceProvider serviceProvider)
         {
             _name = name;

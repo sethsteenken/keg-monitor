@@ -5,14 +5,8 @@ namespace KegMonitor.SignalR
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddSignalRLogging(this IServiceCollection services, string domain)
+        public static IServiceCollection AddSignalRLogging(this IServiceCollection services)
         {
-            //services.AddSingleton(serviceProvider => new HubConnectionFactory(domain));
-            //services.AddSingleton<ILoggerProvider>(serviceProvider =>
-            //{
-            //    return new SignalRLoggerProvider(domain);
-            //});
-
             services.AddSingleton<ILoggerProvider>(serviceProvider => new SignalRLoggerProvider(serviceProvider));
 
             return services;
