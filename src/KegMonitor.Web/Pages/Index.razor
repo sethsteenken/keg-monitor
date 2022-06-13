@@ -1,5 +1,4 @@
 ﻿@page "/"
-@using KegMonitor.Core
 @using KegMonitor.SignalR
 @using KegMonitor.Web.Hubs
 @using Microsoft.AspNetCore.SignalR.Client
@@ -42,35 +41,13 @@
     </MudCard>
 }
 
-<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Notes" Color="Color.Secondary" 
-                OnClick="() => displayLog = !displayLog">Display Log</MudButton>
-
-@if (displayLog)
-{
-    <MudTable Items="@logMessages" Breakpoint="Breakpoint.Sm" Striped="true" Elevation="2">
-        <HeaderContent>
-            <MudTh>Logger</MudTh>
-            <MudTh>Level</MudTh>
-            <MudTh>Message</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="Logger">@context.Logger</MudTd>
-            <MudTd DataLabel="Level">@context.Level</MudTd>
-            <MudTd DataLabel="Message">@context.Message</MudTd>
-        </RowTemplate>
-    </MudTable>
-}
+<Logs></Logs>
 
 @inject NavigationManager NavigationManager
 @inject IScaleDashboardQueryService QueryService
 
 @code {
-    private HubConnection scaleHubConnection;
-    private HubConnection logHubConnection;
-
-    bool displayLog = false;
-
-    List<LogMessage> logMessages = new List<LogMessage>();
+    private HubConnection hubConnection;
     List<ScaleDisplayItem> scales = new List<ScaleDisplayItem>();
 
     protected override async Task OnParametersSetAsync()
@@ -80,52 +57,28 @@
 
     protected override async Task OnInitializedAsync()
     {
-        scaleHubConnection = new HubConnectionBuilder()
+        hubConnection = new HubConnectionBuilder()
             .WithUrl(NavigationManager.ToAbsoluteUri(ScaleHub.Endpoint))
             .Build();
 
-        scaleHubConnection.On<int, int>(ScaleHub.ReceiveWeight, (scaleId, weight) =>
+        hubConnection.On<int, int>(ScaleHub.ReceiveWeight, (scaleId, weight) =>
         {
             scales.Single(s => s.Id == scaleId).Weight = weight;
             InvokeAsync(StateHasChanged);
         });
 
-        scaleHubConnection.On<int, decimal>(ScaleHub.ReceiveWeightPercentage, (scaleId, percentage) =>
+        hubConnection.On<int, decimal>(ScaleHub.ReceiveWeightPercentage, (scaleId, percentage) =>
         {
             scales.Single(s => s.Id == scaleId).Percentage = (double)percentage;
             InvokeAsync(StateHasChanged);
         });
 
-        await scaleHubConnection.StartAsync();
-
-        logHubConnection = new HubConnectionBuilder()
-            .WithUrl(NavigationManager.ToAbsoluteUri(LogHub.Endpoint))
-            .Build();
-
-        logHubConnection.On<string, string, string>(LogHub.ReceiveMessage, (name, level, message) =>
-        {
-            if (logMessages.Count < 1000)
-            {
-                logMessages.Insert(0, new LogMessage()
-                {
-                    Logger = name,
-                    Level = level,
-                    Message = message
-                });
-
-                InvokeAsync(StateHasChanged);
-            }
-        });
-
-        await logHubConnection.StartAsync();
+        await hubConnection.StartAsync();
     }
 
     public async ValueTask DisposeAsync()
     {
-        if (scaleHubConnection is not null)
-            await scaleHubConnection.DisposeAsync();
-
-        if (logHubConnection is not null)
-            await logHubConnection.DisposeAsync();
+        if (hubConnection is not null)
+            await hubConnection.DisposeAsync();
     }
 }

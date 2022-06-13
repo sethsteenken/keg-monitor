@@ -17,7 +17,7 @@ namespace KegMonitor.Web.Application
         {
             await using var context = await _dbContextFactory.CreateDbContextAsync();
 
-            var scales = await context.Scales.Include(s => s.Beer).ToListAsync();
+            var scales = await context.Scales.OrderBy(s => s.Id).Include(s => s.Beer).ToListAsync();
 
             return scales.Select(s => new ScaleDisplayItem()
             {
