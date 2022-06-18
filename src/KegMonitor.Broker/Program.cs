@@ -2,6 +2,8 @@ using KegMonitor.Broker;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: false);
+
 builder.Host.UseSystemd();
 
 builder.Logging.Services.AddSingleton<ILoggerProvider>(serviceProvider =>

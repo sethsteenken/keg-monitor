@@ -12,6 +12,8 @@ using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: false);
+
 builder.Logging.Services.AddSignalRLogging();
 
 builder.Services.AddRazorPages();
