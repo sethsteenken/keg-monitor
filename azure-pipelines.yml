@@ -7,7 +7,7 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+    vmImage: ubuntu-latest
 
 variables:
   solution: '**/*.sln'
@@ -67,5 +67,4 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)/web'
     ArtifactName: 'web'
     publishLocation: 'Container'
-
 
