@@ -52,6 +52,7 @@ steps:
     publishWebProjects: false
     projects: 'src/KegMonitor.Web/KegMonitor.Web.csproj'
     arguments: '--runtime linux-x64 --no-self-contained --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/web'
+    zipAfterPublish: false
     modifyOutputPath: false
 
 - task: PublishBuildArtifacts@1
