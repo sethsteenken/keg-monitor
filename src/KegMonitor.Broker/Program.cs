@@ -6,7 +6,7 @@ builder.Host.UseSystemd();
 
 builder.Logging.Services.AddSingleton<ILoggerProvider>(serviceProvider =>
 {
-    string domain = serviceProvider.GetRequiredService<IConfiguration>()["UIDomain"];
+    string domain = serviceProvider.GetRequiredService<IConfiguration>()["WebDomain"];
     return new WebRequestLoggerProvider($"{domain.TrimEnd('/')}/log/");
 });
 

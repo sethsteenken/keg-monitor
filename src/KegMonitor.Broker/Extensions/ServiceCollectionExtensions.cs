@@ -15,7 +15,7 @@ namespace KegMonitor.Broker
             services.AddSingleton<IScaleWeightHandler>(serviceProvider =>
             {
                 return new ScaleWeightMessageHandler(
-                    serviceProvider.GetRequiredService<IConfiguration>()["UIDomain"],
+                    serviceProvider.GetRequiredService<IConfiguration>()["WebDomain"],
                     serviceProvider.GetRequiredService<ILogger<ScaleWeightMessageHandler>>());
             });
 

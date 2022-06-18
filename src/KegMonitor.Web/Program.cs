@@ -51,7 +51,7 @@ builder.Services.AddScoped<IScaleDashboardQueryService, ScaleDashboardQueryServi
 
 builder.Services.AddScoped<HubConnectionFactory>(serviceProvider =>
 {
-    return new HubConnectionFactory(serviceProvider.GetRequiredService<IConfiguration>()["Domain"]);
+    return new HubConnectionFactory(serviceProvider.GetRequiredService<IConfiguration>()["WebDomain"]);
 });
 
 builder.Services.AddSingleton<IScaleUpdater, ScaleWeightUpdater>();
