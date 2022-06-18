@@ -14,10 +14,38 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'restore'
+    projects: '$(solution)'
+    feedsToUse: 'select'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: 'src/KegMonitor.Broker/KegMonitor.Broker.csproj'
+    arguments: '--runtime linux-x64 --no-self-contain --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/broker'
+    modifyOutputPath: false
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: 'src/KegMonitor.Web/KegMonitor.Web.csproj'
+    arguments: '--runtime linux-x64 --no-self-contain --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/web'
+    modifyOutputPath: false
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/broker'
+    ArtifactName: 'broker'
+    publishLocation: 'Container'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/web'
+    ArtifactName: 'web'
+    publishLocation: 'Container'
+
+
