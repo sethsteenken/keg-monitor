@@ -43,11 +43,11 @@
 
         hubConnection.On<string, string, string>(LogHub.ReceiveMessage, (name, level, message) =>
         {
-            if (logMessages.Count < 1000)
+            if (Display && logMessages.Count < 1000)
             {
                 logMessages.Insert(0, new LogMessage()
                 {
-                    Logger = name,
+                    Logger = name?.Replace("KegMonitor.", ""),
                     Level = level,
                     Message = message,
                     Timestamp = DateTime.Now
