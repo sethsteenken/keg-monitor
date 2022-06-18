@@ -15,34 +15,39 @@ variables:
 
 steps:
 - task: DotNetCoreCLI@2
+  displayName: "dotnet clean"
   inputs:
     command: 'restore'
     projects: '$(solution)'
     feedsToUse: 'select'
 
 - task: DotNetCoreCLI@2
+  displayName: "dotnet publish - broker"
   inputs:
     command: 'publish'
     publishWebProjects: false
     projects: 'src/KegMonitor.Broker/KegMonitor.Broker.csproj'
-    arguments: '--runtime linux-x64 --no-self-contain --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/broker'
+    arguments: '--runtime linux-x64 --no-self-contained --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/broker'
     modifyOutputPath: false
 
 - task: DotNetCoreCLI@2
+  displayName: "dotnet publish - web"
   inputs:
     command: 'publish'
     publishWebProjects: false
     projects: 'src/KegMonitor.Web/KegMonitor.Web.csproj'
-    arguments: '--runtime linux-x64 --no-self-contain --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/web'
+    arguments: '--runtime linux-x64 --no-self-contained --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/web'
     modifyOutputPath: false
 
 - task: PublishBuildArtifacts@1
+  displayName: "artifact publish - broker"
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)/broker'
     ArtifactName: 'broker'
     publishLocation: 'Container'
 
 - task: PublishBuildArtifacts@1
+  displayName: "artifact publish -web"
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)/web'
     ArtifactName: 'web'
