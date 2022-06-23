@@ -20,7 +20,7 @@ namespace KegMonitor.Web.Application
         {
             var scale = await _dbContext.Scales.Include(s => s.Beer).FirstOrDefaultAsync(s => s.Id == id);
             if (scale == null)
-                throw new InvalidOperationException("Scale not found.");
+                return null;
 
             var beerOptions = await _beerQueryService.GetAllAsync();
 

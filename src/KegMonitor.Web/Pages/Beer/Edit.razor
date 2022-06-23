@@ -2,56 +2,63 @@
 
 <PageHeader>@Title</PageHeader>
 
-<EditForm Model="@model" OnValidSubmit="SubmitAsync">
-    <DataAnnotationsValidator />
+@if (model != null)
+{
+    <EditForm Model="@model" OnValidSubmit="SubmitAsync">
+        <DataAnnotationsValidator />
 
-    <MudGrid>
-        <MudItem xs="12">
-            <MudPaper Class="pa-5">
-                <MudTextField Label="Name" HelperText="Unique name. Should probably include a cat."
-                          @bind-Value="model.Name" For="@(() => model.Name)"
-                          Class="pb-2"/>
-                <MudTextField Label="Type" HelperText="Beer type (IPA, Porter, etc.)"
-                              @bind-Value="model.Type" For="@(() => model.Type)"
-                              Class="pb-2" />
-                <MudNumericField Label="ABV" HelperText="Alcohol by Volume"
-                                 @bind-Value="model.ABV" For="@(() => model.ABV)"
-                                 Variant="Variant.Text" Step=".1M"
-                                 Class="pb-2"/>
-                <MudTextField Label="Description" HelperText="Describe beer type, hops, etc." Variant="Variant.Text" 
-                              @bind-Value="model.Description" For="@(() => model.Description)" Lines="5" />
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12">
-            <MudPaper Class="pa-5">
-                <InputFile id="fileInput" OnChange="UploadFilesAsync" hidden />
-                <MudButton HtmlTag="label"
-                           Variant="Variant.Filled"
-                           Color="Color.Tertiary"
-                           StartIcon="@Icons.Filled.Image"
-                           for="fileInput">
-                    Upload Image
-                </MudButton>
-                <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Secondary" OnClick="() => model.ImagePath = null"></MudIconButton>
-            </MudPaper>
-            <MudPaper Class="pa-5">
-                @if (model.ImagePath != null)
-                {
-                      <MudImage @bind-Src="model.ImagePath" 
-                          Alt="@model.Name" ObjectFit="ObjectFit.Cover"
-                          Width="400" Height="400"
-                          Elevation="25" Class="rounded-lg ma-2" />
-                }
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12">
-            <MudPaper Class="pa-2" Outlined="false" Elevation="0">
-                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
-                       Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save">Save</MudButton>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-</EditForm>
+        <MudGrid>
+            <MudItem xs="12">
+                <MudPaper Class="pa-5">
+                    <MudTextField Label="Name" HelperText="Unique name. Should probably include a cat."
+                              @bind-Value="model.Name" For="@(() => model.Name)"
+                              Class="pb-2"/>
+                    <MudTextField Label="Type" HelperText="Beer type (IPA, Porter, etc.)"
+                                  @bind-Value="model.Type" For="@(() => model.Type)"
+                                  Class="pb-2" />
+                    <MudNumericField Label="ABV" HelperText="Alcohol by Volume"
+                                     @bind-Value="model.ABV" For="@(() => model.ABV)"
+                                     Variant="Variant.Text" Step=".1M"
+                                     Class="pb-2"/>
+                    <MudTextField Label="Description" HelperText="Describe beer type, hops, etc." Variant="Variant.Text" 
+                                  @bind-Value="model.Description" For="@(() => model.Description)" Lines="5" />
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12">
+                <MudPaper Class="pa-5">
+                    <InputFile id="fileInput" OnChange="UploadFilesAsync" hidden />
+                    <MudButton HtmlTag="label"
+                               Variant="Variant.Filled"
+                               Color="Color.Tertiary"
+                               StartIcon="@Icons.Filled.Image"
+                               for="fileInput">
+                        Upload Image
+                    </MudButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Secondary" OnClick="() => model.ImagePath = null"></MudIconButton>
+                </MudPaper>
+                <MudPaper Class="pa-5">
+                    @if (model.ImagePath != null)
+                    {
+                          <MudImage @bind-Src="model.ImagePath" 
+                              Alt="@model.Name" ObjectFit="ObjectFit.Cover"
+                              Width="400" Height="400"
+                              Elevation="25" Class="rounded-lg ma-2" />
+                    }
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12">
+                <MudPaper Class="pa-2" Outlined="false" Elevation="0">
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
+                           Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save">Save</MudButton>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+}
+else
+{
+    <MudText>Beer not found.</MudText>
+}
 
 @inject ISnackbar Snackbar
 @inject IBeerCommandService CommandService
@@ -64,7 +71,7 @@
 
     protected string Title { get; private set; }
 
-    BeerEditModel model = new BeerEditModel();
+    BeerEditModel model;
 
     protected override async Task OnParametersSetAsync()
     {

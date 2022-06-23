@@ -20,7 +20,7 @@ namespace KegMonitor.Web.Application
 
             var beer = await _dbContext.Beers.FirstOrDefaultAsync(b => b.Id == id.Value);
             if (beer == null)
-                throw new InvalidOperationException("Beer not found.");
+                return null;
 
             return new BeerEditModel()
             {
