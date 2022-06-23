@@ -13,6 +13,12 @@ namespace KegMonitor.Web.Application
             _dbContextFactory = dbContextFactory;
         }
 
+        public async Task<List<int>> GetScaleIdsAsync()
+        {
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            return await context.Scales.OrderBy(s => s.Id).Select(s => s.Id).ToListAsync();
+        }
+
         public async Task<List<ScaleDisplayItem>> GetScalesAsync()
         {
             await using var context = await _dbContextFactory.CreateDbContextAsync();

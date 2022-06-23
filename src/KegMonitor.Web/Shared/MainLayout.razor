@@ -20,10 +20,16 @@
                 <MudNavLink Href="/beer/" Match="NavLinkMatch.All">List</MudNavLink>
                 <MudNavLink Href="/beer/edit/" Match="NavLinkMatch.Prefix">Add New</MudNavLink>
             </MudNavGroup>
-            <MudNavGroup Title="Scales" Expanded="true">
-                <MudNavLink Href="/scale/edit/1/" Match="NavLinkMatch.All">Scale #1</MudNavLink>
-                <MudNavLink Href="/scale/edit/2/" Match="NavLinkMatch.All">Scale #2</MudNavLink>
-            </MudNavGroup>
+            @if (scaleIds.Any())
+            {
+                <MudNavGroup Title="Scales" Expanded="true">
+                    @foreach (var id in scaleIds)
+                    {
+                        var href = $"/scale/edit/{id}/";
+                        <MudNavLink Href="@href" Match="NavLinkMatch.All">Scale #@id</MudNavLink>
+                    }
+                </MudNavGroup>
+            }
         </MudNavMenu>
     </MudDrawer>
     <MudMainContent>
@@ -33,14 +39,22 @@
     </MudMainContent>
 </MudLayout>
 
+@inject IScaleDashboardQueryService QueryService
+
 @code {
     bool drawerOpen = true;
-    bool isDarkMode = false;
+    bool isDarkMode = true;
+
+    MudTheme theme = new MudTheme();
+    IEnumerable<int> scaleIds = new List<int>();
 
     void DrawerToggle()
     {
         drawerOpen = !drawerOpen;
     }
 
-    MudTheme theme = new MudTheme();
+    protected override async Task OnInitializedAsync()
+    {
+        scaleIds = await QueryService.GetScaleIdsAsync();
+    }
 }

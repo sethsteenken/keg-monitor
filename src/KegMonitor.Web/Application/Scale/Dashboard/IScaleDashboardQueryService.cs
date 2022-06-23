@@ -3,5 +3,6 @@
     public interface IScaleDashboardQueryService
     {
         Task<List<ScaleDisplayItem>> GetScalesAsync();
+        Task<List<int>> GetScaleIdsAsync();
     }
 }
