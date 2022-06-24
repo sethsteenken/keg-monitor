@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 
 <MudThemeProvider Theme="@theme" @bind-IsDarkMode="@isDarkMode" />
 <MudDialogProvider />
@@ -10,7 +11,7 @@
         <MudImage Src="/img/beer-tap.png" Alt="Beer tap" Class="rounded-lg" Fluid="true" ObjectFit="ObjectFit.Contain" Height="50" Width="50"></MudImage>
         <MudText Typo="Typo.h5" Class="ml-3">Keg Monitor</MudText>
         <MudSpacer />
-        <MudSwitch @bind-Checked="@isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Dark Mode" />
+        <MudSwitch CheckedChanged="ToggleDarkMode" Checked="@isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Dark Mode" />
     </MudAppBar>
     <MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <MudNavMenu>
@@ -39,6 +40,7 @@
     </MudMainContent>
 </MudLayout>
 
+@inject ProtectedSessionStorage ProtectedLocalStore
 @inject IScaleDashboardQueryService QueryService
 
 @code {
@@ -51,6 +53,17 @@
     void DrawerToggle()
     {
         drawerOpen = !drawerOpen;
+    }
+
+    protected async Task ToggleDarkMode()
+    {
+        isDarkMode = !isDarkMode;
+        await ProtectedLocalStore.SetDarkThemeAsync(isDarkMode);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        isDarkMode = await ProtectedLocalStore.GetOrSetDarkThemeAsync(isDarkMode);
     }
 
     protected override async Task OnInitializedAsync()
