@@ -13,9 +13,7 @@ namespace KegMonitor.Web.Application
         public int FullWeight { get; set; }
         public int EmptyWeight { get; set; }
 
-        public int RecordingDifferenceThreshold { get; set; }
         public int PourDifferenceThreshold { get; set; }
-        public int MaxThreshold { get; set; }
 
         public IEnumerable<Beer> BeerOptions { get; set; } = new List<Beer>();
     }

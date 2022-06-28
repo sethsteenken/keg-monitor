@@ -8,30 +8,40 @@
         public int FullWeight { get; set; }
         public int EmptyWeight { get; set; }
 
-        public int RecordingDifferenceThreshold { get; set; }
         public int PourDifferenceThreshold { get; set; }
-        public int MaxThreshold { get; set; }
 
         public bool Active { get; set; }
 
         public decimal Percentage => (decimal)Math.Round((decimal)(CurrentWeight - EmptyWeight) / (decimal)(FullWeight - EmptyWeight) * 100);
 
-        public int Difference(int weight) => Math.Abs(CurrentWeight - weight);
-
         public Beer? Beer { get; set; }
         public IEnumerable<ScaleWeightChange> WeightChanges { get; private set; } = new List<ScaleWeightChange>();
         public DateTime LastUpdatedDate { get; set; }
 
-        public void UpdateWeight(int weight)
+        public ScaleUpdateResult UpdateWeight(int weight, bool recordChangeEvent = true, bool checkForPour = true)
         {
             if (CurrentWeight == weight)
-                return;
+                return new ScaleUpdateResult();
 
-            CurrentWeight = weight;
-            LastUpdatedDate = DateTime.UtcNow;
+            var timeStamp = DateTime.UtcNow;
+            var difference = Math.Abs(CurrentWeight - weight);
 
-            if (Beer != null)
-                (WeightChanges as List<ScaleWeightChange>).Add(new ScaleWeightChange(this, Beer, weight, timestamp: LastUpdatedDate));
+            bool isPourEvent = checkForPour && Active 
+                && Beer != null && difference > PourDifferenceThreshold;
+
+            if (Active)
+            {
+                CurrentWeight = weight;
+                LastUpdatedDate = timeStamp;
+            }
+
+            if (recordChangeEvent)
+            {
+                (WeightChanges as List<ScaleWeightChange>).Add(
+                    new ScaleWeightChange(this, weight, timestamp: timeStamp, beer: Beer, isPourEvent: isPourEvent));
+            }
+
+            return new ScaleUpdateResult(Recorded: true, PourOccurred: isPourEvent);
         }
     }
 }

@@ -30,33 +30,10 @@ namespace KegMonitor.Web.Application
                     return new ScaleUpdateResult();
                 }
 
-                if (!scale.Active || scale.Beer is null)
-                {
-                    _logger.LogInformation($"Scale {scaleId} currently inactive. Weight change recordings disabled.");
-                    return new ScaleUpdateResult();
-                }
+                var result = scale.UpdateWeight(weight);
+                await context.SaveChangesAsync();
 
-                var difference = scale.Difference(weight);
-
-                if (difference > scale.MaxThreshold)
-                {
-                    _logger.LogWarning($"Scale {scaleId} weight difference of {difference} exceeds maximum threshold of {scale.MaxThreshold}.");
-                    return new ScaleUpdateResult();
-                }
-
-                if (difference > scale.RecordingDifferenceThreshold)
-                {
-                    scale.UpdateWeight(weight);
-                    await context.SaveChangesAsync();
-
-                    return new ScaleUpdateResult(
-                        Recorded: true, 
-                        PourOccurred: difference > scale.PourDifferenceThreshold);
-                }
-                else
-                    _logger.LogDebug($"Weight difference {difference} less than Scale's ({scaleId}) threshold {scale.RecordingDifferenceThreshold}.");
-
-                return new ScaleUpdateResult();
+                return result;
             }
         }
     }

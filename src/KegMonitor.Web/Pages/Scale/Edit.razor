@@ -43,26 +43,16 @@
                     </MudSelect>
                 </MudPaper>
             </MudItem>
-            <MudItem xs="6">
+            <MudItem xs="12">
                 <MudPaper Class="mud-width-full pa-5">
-                    <MudText Typo="Typo.h5">Keg Weights</MudText>
                     <MudNumericField Label="Current Weight" HelperText="Current Weight in grams provided by sensor. Deactivate this Scale to manually change."
                                      @bind-Value="model.CurrentWeight" For="@(() => model.CurrentWeight)" Disabled="model.Active" Class="pb-2" />
                     <MudNumericField Label="Empty Weight" HelperText="Weight in grams provided by sensor when keg is empty. Deactivate this Scale to manually change."
                                      @bind-Value="model.EmptyWeight" For="@(() => model.EmptyWeight)" Disabled="model.Active" Class="pb-2" />
                     <MudNumericField Label="Full Weight" HelperText="Weight in grams provided by sensor when keg is full. Deactivate this Scale to manually change."
                                      @bind-Value="model.FullWeight" For="@(() => model.FullWeight)" Disabled="model.Active" />
-                </MudPaper>
-            </MudItem>
-            <MudItem xs="6">
-                <MudPaper Class="mud-width-full pa-5">
-                    <MudText Typo="Typo.h5">Thresholds</MudText>
-                    <MudNumericField Label="Recording Threshold" HelperText="Weight in grams that passes threshold on recording a weight change. Deactivate this Scale to manually change."
-                                     @bind-Value="model.RecordingDifferenceThreshold" For="@(() => model.RecordingDifferenceThreshold)" Disabled="model.Active" Class="pb-2" />
                     <MudNumericField Label="Pour Threshold" HelperText="Weight in grams that passes threshold for triggering a pour event. Deactivate this Scale to manually change."
                                      @bind-Value="model.PourDifferenceThreshold" For="@(() => model.PourDifferenceThreshold)" Disabled="model.Active" Class="pb-2" />
-                    <MudNumericField Label="Max Threshold" HelperText="Weight in grams that exceeds too great a weight change to record anything (likely in error). Deactivate this Scale to manually change."
-                                     @bind-Value="model.MaxThreshold" For="@(() => model.MaxThreshold)" Disabled="model.Active" />
                 </MudPaper>
             </MudItem>
             <MudItem xs="12">

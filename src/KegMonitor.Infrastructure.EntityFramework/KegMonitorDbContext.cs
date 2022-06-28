@@ -35,6 +35,7 @@ namespace KegMonitor.Infrastructure.EntityFramework
 
             modelBuilder.Entity<Scale>().Property(s => s.Id).ValueGeneratedNever();
             modelBuilder.Entity<Scale>().HasOne(s => s.Beer).WithMany();
+
             modelBuilder.Entity<ScaleWeightChange>().HasOne(swc => swc.Scale).WithMany(s => s.WeightChanges);
             modelBuilder.Entity<ScaleWeightChange>().HasOne(swc => swc.Beer).WithMany().OnDelete(DeleteBehavior.Restrict);
         }
