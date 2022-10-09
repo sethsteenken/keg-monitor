@@ -22,7 +22,7 @@ namespace KegMonitor.Web.Hubs
         
         public async Task SendNewPour(int scaleId)
         {
-            await Clients.All.SendAsync(ReceiveNewPour, scaleId, "Beer poured! Nice!.");
+            await Clients.All.SendAsync(ReceiveNewPour, scaleId, "Beer poured! Nice!");
         }
     }
 }

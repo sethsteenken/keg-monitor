@@ -6,7 +6,24 @@
 
 <PageHeader>Keg Monitor Dashboard</PageHeader>
 
-@foreach (var scale in scales)
+@if (!model.Scales.Any())
+{
+     <MudText Typo="Typo.body1" Class="pb-1">Add Scales to the database to get started.</MudText>
+}
+
+@if (model.ChartSeries.Any())
+{
+    foreach (var chartSeries in model.ChartSeries)
+    {
+        <MudChart ChartType="ChartType.Bar" 
+                  ChartSeries="new List<ChartSeries>() { chartSeries }" 
+                  XAxisLabels="@model.ChartXLabels" 
+                  Width="100%" 
+                  Height="350px"></MudChart>    
+    }
+}
+
+@foreach (var scale in model.Scales)
 {
     <MudCard Elevation="10" Class="my-6 mx-2">
         <MudCardHeader>
@@ -20,10 +37,6 @@
                 <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" Href="@editLink" />
             </CardHeaderActions>
         </MudCardHeader>
-        @if (scale.Beer != null && !string.IsNullOrWhiteSpace(scale.Beer.ImagePath))
-        {
-            <MudCardMedia Image="@scale.Beer.ImagePath" Height="250" Alt="@scale.Beer.Name" />
-        }
         <MudCardContent>
             <MudText Typo="Typo.h4" Class="pb-1">Scale #@scale.Id</MudText>
 
@@ -54,11 +67,11 @@
 
 @code {
     private HubConnection hubConnection;
-    List<ScaleDisplayItem> scales = new List<ScaleDisplayItem>();
+    ScaleDashboardModel model = new ScaleDashboardModel();
 
     protected override async Task OnParametersSetAsync()
     {
-        scales = await QueryService.GetScalesAsync();
+        model = await QueryService.BuildModelAsync();
     }
 
     protected override async Task OnInitializedAsync()
@@ -69,13 +82,13 @@
 
         hubConnection.On<int, int>(ScaleHub.ReceiveWeight, (scaleId, weight) =>
         {
-            scales.Single(s => s.Id == scaleId).Weight = weight;
+            model.Scales.Single(s => s.Id == scaleId).Weight = weight;
             InvokeAsync(StateHasChanged);
         });
 
         hubConnection.On<int, decimal>(ScaleHub.ReceiveWeightPercentage, (scaleId, percentage) =>
         {
-            scales.Single(s => s.Id == scaleId).Percentage = (double)percentage;
+            model.Scales.Single(s => s.Id == scaleId).Percentage = (double)percentage;
             InvokeAsync(StateHasChanged);
         });
 

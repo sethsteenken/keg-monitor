@@ -12,11 +12,13 @@
 
         public bool Active { get; set; }
 
-        public decimal Percentage => (decimal)Math.Round((decimal)(CurrentWeight - EmptyWeight) / (decimal)(FullWeight - EmptyWeight) * 100);
+        public decimal Percentage => CalculatePercentage(CurrentWeight);
 
         public Beer? Beer { get; set; }
         public IEnumerable<ScaleWeightChange> WeightChanges { get; private set; } = new List<ScaleWeightChange>();
         public DateTime LastUpdatedDate { get; set; }
+
+        public decimal CalculatePercentage(int weight) => (decimal)Math.Round((decimal)(weight - EmptyWeight) / (decimal)(FullWeight - EmptyWeight) * 100, 2);
 
         public ScaleUpdateResult UpdateWeight(int weight, bool recordChangeEvent = true, bool checkForPour = true)
         {

@@ -4,5 +4,6 @@
     {
         Task<List<ScaleDisplayItem>> GetScalesAsync();
         Task<List<int>> GetScaleIdsAsync();
+        Task<ScaleDashboardModel> BuildModelAsync();
     }
 }

@@ -49,6 +49,7 @@ builder.Services.AddScoped<IBeerQueryService, BeerQueryService>();
 builder.Services.AddScoped<IBeerCommandService, BeerCommandService>();
 builder.Services.AddScoped<IScaleQueryService, ScaleQueryService>();
 builder.Services.AddScoped<IScaleCommandService, ScaleCommandService>();
+builder.Services.AddScoped<IScaleDisplayQueryService, ScaleDisplayQueryService>();
 builder.Services.AddScoped<IScaleDashboardQueryService, ScaleDashboardQueryService>();
 
 builder.Services.AddScoped<HubConnectionFactory>(serviceProvider =>
@@ -116,9 +117,12 @@ app.MapPost("/log/", async delegate (HttpContext context)
     context.Response.StatusCode = (int)HttpStatusCode.Accepted;
 });
 
-await using (var context = app.Services.GetRequiredService<IDbContextFactory<KegMonitorDbContext>>().CreateDbContext())
+if (bool.TryParse(app.Configuration["MigrateDatabaseToLatest"], out bool migrate) && migrate)
 {
-    await context.Database.MigrateAsync();
+    await using (var context = app.Services.GetRequiredService<IDbContextFactory<KegMonitorDbContext>>().CreateDbContext())
+    {
+        await context.Database.MigrateAsync();
+    }
 }
 
 await app.RunAsync();
