@@ -11,54 +11,62 @@
      <MudText Typo="Typo.body1" Class="pb-1">Add Scales to the database to get started.</MudText>
 }
 
-@if (model.ChartSeries.Any())
-{
-    foreach (var chartSeries in model.ChartSeries)
+<MudGrid Spacing="1" Justify="Justify.Center">
+    @foreach (var scale in model.Scales)
     {
-        <MudChart ChartType="ChartType.Bar" 
-                  ChartSeries="new List<ChartSeries>() { chartSeries }" 
-                  XAxisLabels="@model.ChartXLabels" 
-                  Width="100%" 
-                  Height="350px"></MudChart>    
+        <MudItem xs="6">
+            <MudCard Elevation="10" Class="my-6 mx-2">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText>Weight: @scale.Weight / @scale.Percentage%</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        @{
+                            var editLink = $"/scale/edit/{scale.Id}/";
+                        }
+                        <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" Href="@editLink" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="Typo.h4" Class="pb-1">Scale #@scale.Id</MudText>
+
+                    @if (scale.Beer != null)
+                    {
+                        <MudText Typo="Typo.h3" Class="pb-1">@scale.Beer.Name</MudText>
+                        <MudText Typo="Typo.h5" Class="pb-1">@scale.Beer.Type @(scale.Beer.ABV)%</MudText>
+                        <MudText Class="pb-1">@scale.Beer.Description</MudText>
+                    }
+
+                    @if (scale.Active)
+                    {
+                        <MudProgressLinear Color="@scale.Color" Rounded="true" Size="Size.Large" @bind-Value="@scale.Percentage" />
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.h4" Class="pb-1 red-text">Inactive</MudText>
+                        <MudProgressLinear Color="Color.Dark" Rounded="true" Size="Size.Large" Value="0" />
+                    }
+
+                    @if (scale.Chart != null)
+                    {
+                        <MudChart ChartType="ChartType.Line"
+                            ChartSeries="new List<ChartSeries>() { scale.Chart.Data }"
+                            ChartOptions="@scale.Chart.Options"
+                          XAxisLabels="@scale.Chart.XLabels"
+                            Width="100%"
+                            Height="350px"></MudChart>
+
+                        <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined" Class="d-flex justify-center flex-grow-1">
+                            <MudButton OnClick="() => UpdateChartAmountAsync(scale.Id, 20)">20</MudButton>
+                            <MudButton OnClick="() => UpdateChartAmountAsync(scale.Id, 100)">100</MudButton>
+                            <MudButton OnClick="() => UpdateChartAmountAsync(scale.Id, 500)">500</MudButton>
+                        </MudButtonGroup>
+                    }
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
     }
-}
-
-@foreach (var scale in model.Scales)
-{
-    <MudCard Elevation="10" Class="my-6 mx-2">
-        <MudCardHeader>
-            <CardHeaderContent>
-                <MudText>Weight: @scale.Weight</MudText>
-            </CardHeaderContent>
-            <CardHeaderActions>
-                @{
-                    var editLink = $"/scale/edit/{scale.Id}/"; 
-                }
-                <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" Href="@editLink" />
-            </CardHeaderActions>
-        </MudCardHeader>
-        <MudCardContent>
-            <MudText Typo="Typo.h4" Class="pb-1">Scale #@scale.Id</MudText>
-
-            @if (scale.Beer != null)
-            {
-                <MudText Typo="Typo.h3" Class="pb-1">@scale.Beer.Name</MudText>
-                <MudText Typo="Typo.h5" Class="pb-1">@scale.Beer.Type @(scale.Beer.ABV)%</MudText>
-                <MudText Class="pb-1">@scale.Beer.Description</MudText>
-            }
-
-            @if (scale.Active)
-            {
-                <MudProgressLinear Color="@scale.Color" Rounded="true" Size="Size.Large" @bind-Value="@scale.Percentage" />
-            }
-            else
-            {
-                <MudText Typo="Typo.h4" Class="pb-1 red-text">Inactive</MudText>
-                <MudProgressLinear Color="Color.Dark" Rounded="true" Size="Size.Large" Value="0" />
-            }
-        </MudCardContent>
-    </MudCard>
-}
+</MudGrid>
 
 <Logs></Logs>
 
@@ -71,7 +79,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        model = await QueryService.BuildModelAsync();
+        model = await QueryService.BuildModelAsync(20);
     }
 
     protected override async Task OnInitializedAsync()
@@ -93,6 +101,12 @@
         });
 
         await hubConnection.StartAsync();
+    }
+
+    protected async Task UpdateChartAmountAsync(int scaleId, int numOfWeightChanges)
+    {
+        model.Scales.Single(s => s.Id == scaleId).Chart = await QueryService.GetScaleChartAsync(scaleId, numOfWeightChanges);
+        await InvokeAsync(StateHasChanged);
     }
 
     public async ValueTask DisposeAsync()
