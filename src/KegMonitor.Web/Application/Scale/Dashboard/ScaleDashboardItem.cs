@@ -2,6 +2,6 @@
 {
     public class ScaleDashboardItem : ScaleDisplayItem
     {
-        public ScaleChart Chart { get; set; }
+        public ScaleWeightMetricsData WeightMetricsData { get; set; }
     }
 }

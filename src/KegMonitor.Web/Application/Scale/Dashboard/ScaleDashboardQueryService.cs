@@ -1,4 +1,5 @@
-﻿using KegMonitor.Infrastructure.EntityFramework;
+﻿using KegMonitor.Core;
+using KegMonitor.Infrastructure.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor;
 
@@ -6,6 +7,7 @@ namespace KegMonitor.Web.Application
 {
     public class ScaleDashboardQueryService : IScaleDashboardQueryService
     {
+        private const int _defaultNumWeightChanges = 20;
         private readonly IDbContextFactory<KegMonitorDbContext> _dbContextFactory;
 
         public ScaleDashboardQueryService(
@@ -14,11 +16,8 @@ namespace KegMonitor.Web.Application
             _dbContextFactory = dbContextFactory;
         }
 
-        public async Task<ScaleDashboardModel> BuildModelAsync(int numOfWeightChanges)
+        public async Task<ScaleDashboardModel> BuildModelAsync()
         {
-            if (numOfWeightChanges <= 0)
-                throw new ArgumentOutOfRangeException(nameof(numOfWeightChanges));
-
             await using var context = await _dbContextFactory.CreateDbContextAsync();
 
             var scales = await context.Scales.OrderBy(s => s.Id).Include(s => s.Beer).ToListAsync();
@@ -44,25 +43,28 @@ namespace KegMonitor.Web.Application
 
             foreach (var scale in model.Scales)
             {
-                scale.Chart = await GetScaleChartInternalAsync(context, scale.Id, numOfWeightChanges);
+                scale.WeightMetricsData = await GetWeightMetricsInternalAsync(context, scale.Id, numOfWeightChanges: _defaultNumWeightChanges);
             }
 
             return model;
         }
 
-        public async Task<ScaleChart> GetScaleChartAsync(int scaleId, int numOfWeightChanges)
+        public async Task<ScaleWeightMetricsData> GetWeightMetricsAsync(int scaleId, int numOfWeightChanges)
         {
             await using var context = await _dbContextFactory.CreateDbContextAsync();
-            return await GetScaleChartInternalAsync(context, scaleId, numOfWeightChanges);
+            return await GetWeightMetricsInternalAsync(context, scaleId, numOfWeightChanges);
         }
 
-        private async Task<ScaleChart> GetScaleChartInternalAsync(KegMonitorDbContext context, int scaleId, int numOfWeightChanges)
+        private async Task<ScaleWeightMetricsData> GetWeightMetricsInternalAsync(
+            KegMonitorDbContext context, 
+            int scaleId, 
+            int numOfWeightChanges)
         {
             var scaleWeightChanges = await context.ScaleWeightChanges.Include(s => s.Scale)
-                                                                    .Where(swc => swc.Scale.Id == scaleId)
-                                                                    .OrderByDescending(swc => swc.TimeStamp)
-                                                                    .Take(numOfWeightChanges)
-                                                                    .ToListAsync();
+                                                                  .Where(swc => swc.Scale.Id == scaleId)
+                                                                  .OrderByDescending(swc => swc.TimeStamp)
+                                                                  .Take(numOfWeightChanges)
+                                                                  .ToListAsync();
             var chartSeries = new ChartSeries()
             {
                 Name = $"Scale {scaleId}",
@@ -70,6 +72,7 @@ namespace KegMonitor.Web.Application
             };
 
             var percentages = new List<double>();
+            
 
             for (int i = 0; i < numOfWeightChanges; i++)
             {
@@ -104,7 +107,10 @@ namespace KegMonitor.Web.Application
                 chart.XLabels[i] = string.Empty;
             }
 
-            return chart;
+            return new ScaleWeightMetricsData(
+                scaleWeightChanges.Select(swc => new WeightChangeEvent(swc.Weight, swc.TimeStamp, swc.IsPourEvent)), 
+                chart, 
+                numOfWeightChanges);
         }
 
         public async Task<List<int>> GetScaleIdsAsync()
