@@ -38,7 +38,7 @@ namespace KegMonitor.Web
 
                     var payload = JsonSerializer.Deserialize<SensorPayload>(msg.ApplicationMessage.Payload);
 
-                    using (var scope = serviceProvider.CreateScope())
+                    await using (var scope = serviceProvider.CreateAsyncScope())
                     {
                         await scope.ServiceProvider.GetRequiredService<IScaleWeightHandler>()
                                     .HandleAsync(scaleNumber, payload.HX711.WeightRaw);
