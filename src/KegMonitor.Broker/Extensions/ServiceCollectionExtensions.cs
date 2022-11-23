@@ -12,12 +12,6 @@ namespace KegMonitor.Broker
         public static IServiceCollection AddMqttServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<MqttServerSettings>(configuration.GetSection("Mqtt"));
-            services.AddSingleton<IScaleWeightHandler>(serviceProvider =>
-            {
-                return new ScaleWeightMessageHandler(
-                    serviceProvider.GetRequiredService<IConfiguration>()["WebDomain"],
-                    serviceProvider.GetRequiredService<ILogger<ScaleWeightMessageHandler>>());
-            });
 
             services.AddSingleton<IMqttServerConnectionValidator, ConnectionValidator>()
                     .AddSingleton<IMqttServerApplicationMessageInterceptor, ApplicationMessageInterceptor>()

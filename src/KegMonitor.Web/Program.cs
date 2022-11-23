@@ -2,10 +2,13 @@ using KegMonitor.Core;
 using KegMonitor.Core.Interfaces;
 using KegMonitor.Infrastructure.EntityFramework;
 using KegMonitor.SignalR;
+using KegMonitor.Web;
 using KegMonitor.Web.Application;
 using KegMonitor.Web.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using MQTTnet.Extensions.ManagedClient;
+using MQTTnet.Packets;
 using MudBlazor;
 using MudBlazor.Services;
 using System.Net;
@@ -63,6 +66,8 @@ builder.Services.AddScoped<IScaleWeightChangeNotifier, ScaleLatestWeightNotifier
 builder.Services.AddScoped<IPourNotifier, ScaleWebPourNotifier>();
 builder.Services.AddScoped<IScaleWeightHandler, ScaleWeightHandler>();
 
+builder.Services.AddMqttClientServices(builder.Configuration);
+
 var app = builder.Build();
 
 app.UseResponseCompression();
@@ -79,23 +84,6 @@ app.MapBlazorHub();
 app.MapHub<ScaleHub>(ScaleHub.Endpoint);
 app.MapHub<LogHub>(LogHub.Endpoint);
 app.MapFallbackToPage("/_Host");
-
-app.MapPost("/scale/weight/", async delegate (HttpContext context)
-{
-    var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("ScaleWeightEndpointLogger");
-
-    logger.LogDebug($"* New Request * - '/scale/weight/'");
-
-    if (!int.TryParse(context.Request.Query["id"], out int scaleId))
-        return;
-
-    if (!int.TryParse(context.Request.Query["w"], out int weight))
-        return;
-
-    logger.LogDebug($" - ScaleId: {scaleId} | Weight: {weight}");
-
-    await context.RequestServices.GetRequiredService<IScaleWeightHandler>().HandleAsync(scaleId, weight);
-});
 
 app.MapPost("/log/", async delegate (HttpContext context)
 {
@@ -124,5 +112,16 @@ if (bool.TryParse(app.Configuration["MigrateDatabaseToLatest"], out bool migrate
         await context.Database.MigrateAsync();
     }
 }
+
+// subscribe to mqtt broker
+var mqttClientOptions = app.Services.GetRequiredService<ManagedMqttClientOptions>();
+var mqttClient = app.Services.GetRequiredService<IManagedMqttClient>();
+await mqttClient.StartAsync(mqttClientOptions);
+
+await mqttClient.SubscribeAsync(new List<MqttTopicFilter>()
+{
+    new MqttTopicFilter() { Topic = "tele/scale1/SENSOR" },
+    new MqttTopicFilter() { Topic = "tele/scale2/SENSOR" },
+});
 
 await app.RunAsync();
