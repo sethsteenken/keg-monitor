@@ -18,6 +18,7 @@ steps:
 - task: Docker@2
   inputs:
     containerRegistry: 'Internal Docker Registry'
+    repository: '$(ContainerRepository)'
     command: 'buildAndPush'
     Dockerfile: 'src/KegMonitor.Web/Dockerfile'
     buildContext: '/'
