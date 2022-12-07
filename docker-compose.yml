@@ -4,9 +4,13 @@ version: '3.4'
 
 services:
   kegmonitorweb:
-    image: kegmonitorweb
+    image: kegmonitor
     build:
       context: .
       dockerfile: src/KegMonitor.Web/Dockerfile
     ports:
-      - 708:708
+      - 7101:80
+    healthcheck:
+      test: curl --fail http://localhost || exit 1
+      interval: 60s
+      retries: 5
