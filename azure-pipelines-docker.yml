@@ -6,7 +6,7 @@
 trigger:
 - containerizing
 
-pool: Default
+pool: "Local Server Pool"
 
 steps:
 - task: FileTransform@1
