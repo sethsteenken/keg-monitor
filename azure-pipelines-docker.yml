@@ -6,8 +6,7 @@
 trigger:
 - containerizing
 
-pool:
-  vmImage: ubuntu-latest
+pool: Default
 
 steps:
 - task: FileTransform@1
