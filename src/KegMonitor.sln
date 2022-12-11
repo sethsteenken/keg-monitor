@@ -10,6 +10,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B4B70C5F-2903-417A-8825-0323D0C49AD7}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		..\azure-pipelines-docker.yml = ..\azure-pipelines-docker.yml
+		..\azure-pipelines.yml = ..\azure-pipelines.yml
+		..\docker-compose.debug.yml = ..\docker-compose.debug.yml
+		..\docker-compose.yml = ..\docker-compose.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KegMonitor.Infrastructure.EntityFramework", "KegMonitor.Infrastructure.EntityFramework\KegMonitor.Infrastructure.EntityFramework.csproj", "{1CEA40B7-4188-464A-8C19-F73AE513EA05}"
@@ -20,7 +24,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KegMonitor.Broker", "KegMon
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KegMonitor.SignalR", "KegMonitor.SignalR\KegMonitor.SignalR.csproj", "{E6133EDD-4C29-4C2C-B632-F64B30A03832}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KegMonitor.Client.Subscriber", "KegMonitor.Client.Subscriber\KegMonitor.Client.Subscriber.csproj", "{5B0AA483-9605-4709-80AA-CF6B3F418738}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KegMonitor.Client.Subscriber", "KegMonitor.Client.Subscriber\KegMonitor.Client.Subscriber.csproj", "{5B0AA483-9605-4709-80AA-CF6B3F418738}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -8,23 +8,5 @@ trigger:
 
 pool: "Local Server Pool"
 
-steps:
-- task: FileTransform@1
-  inputs:
-    folderPath: '$(System.DefaultWorkingDirectory)/src/KegMonitor.Web'
-    fileType: 'json'
-    targetFiles: 'appsettings.json'
-
-- task: Docker@2
-  inputs:
-    containerRegistry: 'Internal Docker Registry'
-    repository: '$(ContainerRepository)'
-    command: 'buildAndPush'
-    Dockerfile: 'src/KegMonitor.Web/Dockerfile'
-    buildContext: '/'
-    tags: |
-      $(Build.BuildId)
-      $(UPDATE_TIMESTAMP)
-      latest
 
 
