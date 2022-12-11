@@ -15,7 +15,7 @@ steps:
     repository: 'kegmonitor'
     command: 'buildAndPush'
     Dockerfile: 'src/KegMonitor.Web/Dockerfile'
-    buildContext: '/'
+    buildContext: './'
     tags: |
       $(Build.BuildId)
       latest
