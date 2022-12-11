@@ -6,15 +6,15 @@
 trigger:
 - containerizing
 
-pool: "Local Server Pool"
+pool: "Azure Pipelines"
 
 steps:
-- task: DockerCompose@0
+- task: Docker@2
   inputs:
-    containerregistrytype: 'Container Registry'
-    dockerRegistryEndpoint: 'Internal Docker Registry'
-    dockerComposeFile: '**/docker-compose.yml'
-    action: 'Run a Docker Compose command'
-    dockerComposeCommand: 'up'
-    arguments: '-d'
-
+    containerRegistry: 'Docker Hub - thedinklage'
+    repository: 'kegmonitor'
+    command: 'buildAndPush'
+    Dockerfile: 'src/KegMonitor.Web/Dockerfile'
+    tags: |
+      $(Build.BuildId)
+      latest
