@@ -8,5 +8,12 @@ trigger:
 
 pool: "Local Server Pool"
 
-
-
+steps:
+- task: DockerCompose@0
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryEndpoint: 'Internal Docker Registry'
+    dockerComposeFile: '**/docker-compose.yml'
+    action: 'Run a Docker Compose command'
+    dockerComposeCommand: 'up'
+    arguments: '-d'
