@@ -6,66 +6,16 @@
 trigger:
 - main
 
-pool:
-    vmImage: ubuntu-latest
-
-variables:
-  solution: '**/*.sln'
-  buildConfiguration: 'Release'
+pool: "Azure Pipelines"
 
 steps:
-- task: DotNetCoreCLI@2
-  displayName: "dotnet restore"
+- task: Docker@2
   inputs:
-    command: 'restore'
-    projects: '$(solution)'
-    feedsToUse: 'select'
-
-- task: FileTransform@1
-  displayName: "broker - transform appsettings.json"
-  inputs:
-    folderPath: '$(System.DefaultWorkingDirectory)/src/KegMonitor.Broker'
-    fileType: 'json'
-    targetFiles: 'appsettings.json'
-
-- task: DotNetCoreCLI@2
-  displayName: "broker - dotnet publish"
-  inputs:
-    command: 'publish'
-    publishWebProjects: false
-    projects: 'src/KegMonitor.Broker/KegMonitor.Broker.csproj'
-    arguments: '--runtime linux-x64 --no-self-contained --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/broker'
-    zipAfterPublish: false
-    modifyOutputPath: false
-
-- task: FileTransform@1
-  displayName: "web - transform appsettings.json"
-  inputs:
-    folderPath: '$(System.DefaultWorkingDirectory)/src/KegMonitor.Web'
-    fileType: 'json'
-    targetFiles: 'appsettings.json'
-
-- task: DotNetCoreCLI@2
-  displayName: "web - dotnet publish"
-  inputs:
-    command: 'publish'
-    publishWebProjects: false
-    projects: 'src/KegMonitor.Web/KegMonitor.Web.csproj'
-    arguments: '--runtime linux-x64 --no-self-contained --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/web'
-    zipAfterPublish: false
-    modifyOutputPath: false
-
-- task: PublishBuildArtifacts@1
-  displayName: "broker - artifact publish"
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/broker'
-    ArtifactName: 'broker'
-    publishLocation: 'Container'
-
-- task: PublishBuildArtifacts@1
-  displayName: "web - artifact publish"
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/web'
-    ArtifactName: 'web'
-    publishLocation: 'Container'
-
+    containerRegistry: 'Docker Hub - thedinklage'
+    repository: 'thedinklage/kegmonitor'
+    command: 'buildAndPush'
+    Dockerfile: 'src/KegMonitor.Web/Dockerfile'
+    buildContext: 
+    tags: |
+      $(Build.BuildId)
+      latest
