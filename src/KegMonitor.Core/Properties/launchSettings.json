@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "KegMonitor.Core": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:65147;http://localhost:65151"
+    }
+  }
+}
