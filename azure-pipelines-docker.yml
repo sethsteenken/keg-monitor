@@ -12,10 +12,10 @@ steps:
 - task: Docker@2
   inputs:
     containerRegistry: 'Docker Hub - thedinklage'
-    repository: 'kegmonitor'
+    repository: 'thedinklage/kegmonitor'
     command: 'buildAndPush'
     Dockerfile: 'src/KegMonitor.Web/Dockerfile'
-    buildContext: ''
+    buildContext: 
     tags: |
       $(Build.BuildId)
       latest
