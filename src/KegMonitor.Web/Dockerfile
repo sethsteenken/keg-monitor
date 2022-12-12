@@ -1,5 +1,9 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y curl
+
 EXPOSE 80
 
 ENV ASPNETCORE_URLS=http://+:80
