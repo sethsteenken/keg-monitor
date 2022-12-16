@@ -43,6 +43,8 @@ services:
       - "Mqtt__ClientId=${MQTT_CLIENT_ID}"
       - "Mqtt__IpAddress=${MQTT_IPADDRESS}"
       - "Mqtt__Port=${MQTT_PORT}"
+      - "Mqtt__Username=${MQTT_USERNAME}"
+      - "Mqtt__Password=${MQTT_PASSWORD}"
     volumes:
       - "keg_monitor_app_data:/app/wwwroot/uploads"
     working_dir: "/app"

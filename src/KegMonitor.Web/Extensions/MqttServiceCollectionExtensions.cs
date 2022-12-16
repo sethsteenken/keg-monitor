@@ -19,6 +19,7 @@ namespace KegMonitor.Web
                 var options = new MqttClientOptionsBuilder()
                                 .WithClientId(settings.ClientId)
                                 .WithTcpServer(settings.IpAddress, settings.Port)
+                                .WithCredentials(settings.Username, settings.Password)
                                 .WithCleanSession()
                                 .WithWillQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
                                 .Build();
