@@ -129,7 +129,7 @@ app.MapGet("/health/", async delegate (HttpContext context)
     catch (Exception ex)
     {
         logger?.LogError(ex, $"Failed Health Check - {ex.Message}");
-        context.Response.StatusCode = (int)HttpStatusCode.ServiceUnavailable;
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
     }
 });
 
