@@ -7,6 +7,7 @@ using KegMonitor.Web.Application;
 using KegMonitor.Web.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Packets;
 using MudBlazor;
@@ -103,6 +104,33 @@ app.MapPost("/log/", async delegate (HttpContext context)
     logger.Log(level, logMessage.Message);
 
     context.Response.StatusCode = (int)HttpStatusCode.Accepted;
+});
+
+app.MapGet("/health/", async delegate (HttpContext context)
+{
+    ILogger logger = null;
+
+    try
+    {
+        logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("HealthCheck");
+
+        logger.LogInformation("Health check request - pinging MQTT broker...");
+
+        var mqttClient = context.RequestServices.GetRequiredService<IManagedMqttClient>();
+        await mqttClient.PingAsync(context.RequestAborted);
+
+        logger.LogInformation("Health check request - testing database connection...");
+        await using var dbContext = app.Services.GetRequiredService<IDbContextFactory<KegMonitorDbContext>>().CreateDbContext();
+        await dbContext.Database.ExecuteSqlRawAsync("SELECT 1");
+
+        logger.LogInformation("Health check request successful.");
+        context.Response.StatusCode = (int)HttpStatusCode.Accepted;
+    }
+    catch (Exception ex)
+    {
+        logger?.LogError(ex, $"Failed Health Check - {ex.Message}");
+        context.Response.StatusCode = (int)HttpStatusCode.ServiceUnavailable;
+    }
 });
 
 if (bool.TryParse(app.Configuration["MigrateDatabaseToLatest"], out bool migrate) && migrate)
