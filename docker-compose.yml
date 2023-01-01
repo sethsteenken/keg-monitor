@@ -1,5 +1,4 @@
 version: "3.6"
-
 services:
   kegmonitor:
     cap_drop:
@@ -33,6 +32,9 @@ services:
     ports:
       - "${PORT}:80/tcp"
     network_mode: "bridge"
+    networks:
+      server_net:
+        ipv4_address: ${IP_ADDRESS}
     ipc: "private"
     environment:
       - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
@@ -52,8 +54,11 @@ services:
     healthcheck:
       test: "curl --fail http://localhost/health || exit 1"
       interval: 60s
-      retries: 5
+      retries: 2
       start_period: 20s
 volumes:
   keg_monitor_app_data:
+    external: true
+networks:
+  server_net:
     external: true
