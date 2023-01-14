@@ -96,6 +96,8 @@ app.MapPost("/log/", async delegate (HttpContext context)
 
     var logMessage = await context.Request.ReadFromJsonAsync<LogMessage>();
 
+    // TODO - refactor to extension
+
     var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(logMessage.Logger);
 
     if (!Enum.TryParse<LogLevel>(logMessage.Level, out LogLevel level))
@@ -112,6 +114,8 @@ app.MapGet("/health/", async delegate (HttpContext context)
 
     try
     {
+        // TODO - create health check service
+
         logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("HealthCheck");
 
         logger.LogInformation("Health check request - pinging MQTT broker...");
@@ -141,15 +145,20 @@ if (bool.TryParse(app.Configuration["MigrateDatabaseToLatest"], out bool migrate
     }
 }
 
-// subscribe to mqtt broker
-var mqttClientOptions = app.Services.GetRequiredService<ManagedMqttClientOptions>();
-var mqttClient = app.Services.GetRequiredService<IManagedMqttClient>();
-await mqttClient.StartAsync(mqttClientOptions);
-
-await mqttClient.SubscribeAsync(new List<MqttTopicFilter>()
+if (bool.TryParse(app.Configuration["Mqtt:Subscribe"], out bool subscribe) && subscribe)
 {
-    new MqttTopicFilter() { Topic = "tele/scale1/SENSOR" },
-    new MqttTopicFilter() { Topic = "tele/scale2/SENSOR" },
-});
+    // subscribe to mqtt broker
+    var mqttClientOptions = app.Services.GetRequiredService<ManagedMqttClientOptions>();
+    var mqttClient = app.Services.GetRequiredService<IManagedMqttClient>();
+    await mqttClient.StartAsync(mqttClientOptions);
+
+    // TODO - use configuration to establish filter connections
+
+    await mqttClient.SubscribeAsync(new List<MqttTopicFilter>()
+    {
+        new MqttTopicFilter() { Topic = "tele/scale1/SENSOR" },
+        new MqttTopicFilter() { Topic = "tele/scale2/SENSOR" },
+    });
+}
 
 await app.RunAsync();
