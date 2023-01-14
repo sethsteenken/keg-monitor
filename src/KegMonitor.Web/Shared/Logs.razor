@@ -4,12 +4,14 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @implements IAsyncDisposable
 
-<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Notes" Color="Color.Secondary" 
-                OnClick="() => Display = !Display">Display Log</MudButton>
+<div class="d-flex justify-center pb-6">
+    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Notes" Color="Color.Secondary"
+               OnClick="() => Display = !Display">Display Log</MudButton>
+</div>
 
 @if (Display)
 {
-    <MudTable Items="@logMessages" Breakpoint="Breakpoint.Sm" Striped="true" Elevation="2">
+    <MudTable Items="@logMessages" Breakpoint="Breakpoint.Xs" Striped="true" Elevation="2">
         <HeaderContent>
             <MudTh>Timestamp</MudTh>
             <MudTh>Logger</MudTh>

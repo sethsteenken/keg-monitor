@@ -9,14 +9,14 @@
     <MudCard Elevation="10" Class="my-6 mx-2">
         @if (scale.Active && scale.Beer != null && !string.IsNullOrWhiteSpace(scale.Beer.ImagePath))
         {
-            <MudCardMedia Image="@scale.Beer.ImagePath" Height="250" Alt="@scale.Beer.Name" />
+            <MudCardMedia Image="@scale.Beer.ImagePath" Height="180" Alt="@scale.Beer.Name" />
         }
         <MudCardContent>
             @if (scale.Beer != null)
             {
-                <MudText Typo="Typo.h3" Class="pb-1">@scale.Beer.Name</MudText>
-                <MudText Typo="Typo.h5" Class="pb-1">@scale.Beer.Type @(scale.Beer.ABV)%</MudText>
-                <MudText Class="pb-1">@scale.Beer.Description</MudText>
+                <MudText Typo="Typo.h4" Class="pb-1">@scale.Beer.Name</MudText>
+                <MudText Typo="Typo.h6" Class="pb-1">@scale.Beer.Type @(scale.Beer.ABV)% ABV</MudText>
+                <MudText Class="pb-1" Typo="Typo.body2">@scale.Beer.Description</MudText>
             }
 
             @if (scale.Active)
