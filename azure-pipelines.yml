@@ -11,8 +11,8 @@ pool: "Azure Pipelines"
 steps:
 - task: Docker@2
   inputs:
-    containerRegistry: 'Docker Hub - thedinklage'
-    repository: 'thedinklage/kegmonitor'
+    containerRegistry: '$(ContainerRegistry)'
+    repository: '$(ContainerRepository)'
     command: 'buildAndPush'
     Dockerfile: 'src/KegMonitor.Web/Dockerfile'
     buildContext: 
