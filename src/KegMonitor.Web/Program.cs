@@ -96,14 +96,9 @@ app.MapPost("/log/", async delegate (HttpContext context)
 
     var logMessage = await context.Request.ReadFromJsonAsync<LogMessage>();
 
-    // TODO - refactor to extension
-
-    var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(logMessage.Logger);
-
-    if (!Enum.TryParse<LogLevel>(logMessage.Level, out LogLevel level))
-        level = LogLevel.Warning;
-
-    logger.Log(level, logMessage.Message);
+    context.RequestServices.GetRequiredService<ILoggerFactory>()
+                           .CreateLogger(logMessage.Logger)
+                           .Log(logMessage);
 
     context.Response.StatusCode = (int)HttpStatusCode.Accepted;
 });
