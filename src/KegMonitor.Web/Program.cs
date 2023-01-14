@@ -66,6 +66,7 @@ builder.Services.AddScoped<IScaleWeightChangeNotifier, ScaleNewWeightPercentageN
 builder.Services.AddScoped<IScaleWeightChangeNotifier, ScaleLatestWeightNotifier>();
 builder.Services.AddScoped<IPourNotifier, ScaleWebPourNotifier>();
 builder.Services.AddScoped<IScaleWeightHandler, ScaleWeightHandler>();
+builder.Services.AddSingleton<IHealthChecker, HealthChecker>();
 
 builder.Services.AddMqttClientServices(builder.Configuration);
 
@@ -105,31 +106,8 @@ app.MapPost("/log/", async delegate (HttpContext context)
 
 app.MapGet("/health/", async delegate (HttpContext context)
 {
-    ILogger logger = null;
-
-    try
-    {
-        // TODO - create health check service
-
-        logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("HealthCheck");
-
-        logger.LogInformation("Health check request - pinging MQTT broker...");
-
-        var mqttClient = context.RequestServices.GetRequiredService<IManagedMqttClient>();
-        await mqttClient.PingAsync(context.RequestAborted);
-
-        logger.LogInformation("Health check request - testing database connection...");
-        await using var dbContext = app.Services.GetRequiredService<IDbContextFactory<KegMonitorDbContext>>().CreateDbContext();
-        await dbContext.Database.ExecuteSqlRawAsync("SELECT 1");
-
-        logger.LogInformation("Health check request successful.");
-        context.Response.StatusCode = (int)HttpStatusCode.Accepted;
-    }
-    catch (Exception ex)
-    {
-        logger?.LogError(ex, $"Failed Health Check - {ex.Message}");
-        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-    }
+    var healthy = await context.RequestServices.GetRequiredService<IHealthChecker>().CheckAsync(context.RequestAborted);
+    context.Response.StatusCode = healthy ? (int)HttpStatusCode.Accepted : (int)HttpStatusCode.InternalServerError;
 });
 
 if (bool.TryParse(app.Configuration["MigrateDatabaseToLatest"], out bool migrate) && migrate)

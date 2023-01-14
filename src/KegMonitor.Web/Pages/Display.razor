@@ -41,13 +41,10 @@
 
     List<ScaleDisplayItem> scales = new List<ScaleDisplayItem>();
 
-    protected override async Task OnParametersSetAsync()
-    {
-        scales = await QueryService.GetScalesAsync();
-    }
-
     protected override async Task OnInitializedAsync()
     {
+        scales = await QueryService.GetScalesAsync();
+
         hubConnection = new HubConnectionBuilder()
             .WithUrl(NavigationManager.ToAbsoluteUri(ScaleHub.Endpoint))
             .Build();

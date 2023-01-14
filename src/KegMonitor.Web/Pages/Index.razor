@@ -107,13 +107,10 @@
     private HubConnection hubConnection;
     ScaleDashboardModel model = new ScaleDashboardModel();
 
-    protected override async Task OnParametersSetAsync()
-    {
-        model = await QueryService.BuildModelAsync();
-    }
-
     protected override async Task OnInitializedAsync()
     {
+        model = await QueryService.BuildModelAsync();
+
         hubConnection = new HubConnectionBuilder()
             .WithUrl(NavigationManager.ToAbsoluteUri(ScaleHub.Endpoint))
             .Build();
