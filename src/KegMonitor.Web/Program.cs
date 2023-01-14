@@ -7,7 +7,6 @@ using KegMonitor.Web.Application;
 using KegMonitor.Web.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Packets;
 using MudBlazor;
