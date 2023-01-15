@@ -7,6 +7,7 @@ using KegMonitor.Web.Application;
 using KegMonitor.Web.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Packets;
 using MudBlazor;
@@ -124,13 +125,12 @@ if (bool.TryParse(app.Configuration["Mqtt:Subscribe"], out bool subscribe) && su
     var mqttClient = app.Services.GetRequiredService<IManagedMqttClient>();
     await mqttClient.StartAsync(mqttClientOptions);
 
-    // TODO - use configuration to establish filter connections
+    var settings = app.Services.GetRequiredService<IOptions<MqttBrokerSettings>>().Value;
+    if (!settings.Topics.Any())
+        throw new InvalidOperationException("No MQTT subscription topics set in configuration.");
 
-    await mqttClient.SubscribeAsync(new List<MqttTopicFilter>()
-    {
-        new MqttTopicFilter() { Topic = "tele/scale1/SENSOR" },
-        new MqttTopicFilter() { Topic = "tele/scale2/SENSOR" },
-    });
+    var filters = settings.Topics.Select(t => new MqttTopicFilter() { Topic = t }).ToList();
+    await mqttClient.SubscribeAsync(filters);
 }
 
 await app.RunAsync();
