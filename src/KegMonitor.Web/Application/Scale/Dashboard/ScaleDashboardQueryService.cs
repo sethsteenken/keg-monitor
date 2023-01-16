@@ -108,7 +108,7 @@ namespace KegMonitor.Web.Application
             }
 
             return new ScaleWeightMetricsData(
-                scaleWeightChanges.Select(swc => new WeightChangeEvent(swc.Weight, swc.TimeStamp, swc.IsPourEvent)), 
+                scaleWeightChanges.Select(swc => new WeightChangeEvent(swc.Weight, swc.TimeStamp.ToLocalTime(), swc.IsPourEvent)), 
                 chart, 
                 numOfWeightChanges);
         }
