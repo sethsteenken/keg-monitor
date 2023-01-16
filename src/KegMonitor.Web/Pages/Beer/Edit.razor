@@ -25,32 +25,24 @@
                 </MudPaper>
             </MudItem>
             <MudItem xs="12">
-                <MudPaper Class="pa-5">
-                    <InputFile id="fileInput" OnChange="UploadFilesAsync" hidden />
-                    <MudButton HtmlTag="label"
-                               Variant="Variant.Filled"
-                               Color="Color.Tertiary"
-                               StartIcon="@Icons.Filled.Image"
-                               for="fileInput">
-                        Upload Image
-                    </MudButton>
-                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Secondary" OnClick="() => model.ImagePath = null"></MudIconButton>
-                </MudPaper>
-                <MudPaper Class="pa-5">
+                <MudText Typo="Typo.h5">Image</MudText>
+                <InputFile id="fileInput" OnChange="UploadFilesAsync" hidden />
+                <MudCard Elevation="10" Class="my-6 mx-2">
                     @if (model.ImagePath != null)
                     {
-                          <MudImage @bind-Src="model.ImagePath" 
-                              Alt="@model.Name" ObjectFit="ObjectFit.Cover"
-                              Width="400" Height="400"
-                              Elevation="25" Class="rounded-lg ma-2" />
+                        <MudCardMedia Image="@model.ImagePath" Height="180" Alt="@model.ImagePath" />
                     }
-                </MudPaper>
+                    <MudCardActions>
+                        <MudButton HtmlTag="label" Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Filled.Image" for="fileInput">Upload</MudButton>
+                        <MudButton Variant="Variant.Text" Color="Color.Secondary" StartIcon="@Icons.Filled.Image" OnClick="() => model.ImagePath = null">Delete</MudButton>
+                    </MudCardActions>
+                </MudCard>
             </MudItem>
             <MudItem xs="12">
-                <MudPaper Class="pa-2" Outlined="false" Elevation="0">
+                <div class="d-flex justify-center pb-6">
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
                            Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save">Save</MudButton>
-                </MudPaper>
+                </div>
             </MudItem>
         </MudGrid>
     </EditForm>

@@ -6,7 +6,7 @@
 
 @foreach (var scale in scales)
 {
-    <MudCard Elevation="10" Class="my-6 mx-2">
+    <MudCard Elevation="10" Class="my-4 mx-2">
         @if (scale.Active && scale.Beer != null && !string.IsNullOrWhiteSpace(scale.Beer.ImagePath))
         {
             <MudCardMedia Image="@scale.Beer.ImagePath" Height="180" Alt="@scale.Beer.Name" />

@@ -3,18 +3,22 @@
 
 <PageHeader>Manage Beer List</PageHeader>
 
-<MudTable Items="@Beers" Hover="true" Breakpoint="Breakpoint.Sm" Striped="true"
+<MudTable Items="@Beers" Hover="true" Breakpoint="Breakpoint.None" Striped="true"
     Loading="@loading" LoadingProgressColor="Color.Info" Elevation="2">
     <HeaderContent>
         <MudTh>Name</MudTh>
         <MudTh>Type</MudTh>
         <MudTh>ABV</MudTh>
+        <MudTh>Image</MudTh>
         <MudTh>Manage</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Type">@context.Type</MudTd>
         <MudTd DataLabel="ABV">@(context.ABV)%</MudTd>
+        <MudTd DataLabel="Image">
+            <MudImage Width="200" Height="60" Alt="@context.Name" Src="@context.ImagePath" Elevation="15" Class="rounded-lg" ObjectFit="ObjectFit.Cover"></MudImage>
+        </MudTd>
         <MudTd DataLabel="Manage">
             @{
                 var editLink = $"/beer/edit/{context.Id}/"; 
@@ -25,7 +29,7 @@
 </MudTable>
 
 <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" 
-    Href="/beer/edit/" Size="Size.Large"  />
+    Href="/beer/edit/" Size="Size.Large" Class="mt-4"  />
 @inject IBeerQueryService QueryService
 
 @code {
