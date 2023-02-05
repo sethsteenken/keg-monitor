@@ -1,8 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using MQTTnet;
-using MQTTnet.Client.Connecting;
-using MQTTnet.Client.Disconnecting;
-using MQTTnet.Client.Options;
+using MQTTnet.Client;
 using MQTTnet.Extensions.ManagedClient;
 using System.Text.Json;
 
@@ -26,13 +24,24 @@ ManagedMqttClientOptions options = new ManagedMqttClientOptionsBuilder()
 IManagedMqttClient _mqttClient = new MqttFactory().CreateManagedMqttClient();
 
 // Set up handlers
-_mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(context => Console.WriteLine("Successfully connected."));
-_mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(context => Console.WriteLine("Successfully disconnected."));
-_mqttClient.ConnectingFailedHandler = new ConnectingFailedHandlerDelegate(context =>
+_mqttClient.ConnectedAsync += (context) =>
+{
+    Console.WriteLine("Successfully connected.");
+    return Task.CompletedTask;
+};
+
+_mqttClient.DisconnectedAsync += (context) =>
+{
+    Console.WriteLine("Successfully disconnected.");
+    return Task.CompletedTask;
+};
+
+_mqttClient.ConnectingFailedAsync += (context) =>
 {
     Console.WriteLine("Failed to connect.");
     Console.WriteLine(context.Exception.ToString());
-});
+    return Task.CompletedTask;
+};
 
 try
 {
@@ -82,7 +91,7 @@ async Task MenuAsync()
     string json = JsonSerializer.Serialize(new { Time = DateTimeOffset.UtcNow, HX711 = new { WeightRaw = weight } });
 
     Console.WriteLine($"Publishing message to {topic}...");
-    await _mqttClient.PublishAsync(topic, json);
+    await _mqttClient.EnqueueAsync(topic, json);
     Console.WriteLine("Publish complete.");
 
     Console.WriteLine("Continue? [y/n]");

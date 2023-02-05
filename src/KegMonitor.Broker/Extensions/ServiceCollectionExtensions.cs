@@ -1,6 +1,7 @@
 ﻿using KegMonitor.Core.Interfaces;
 using Microsoft.Extensions.Options;
 using MQTTnet;
+using MQTTnet.Diagnostics;
 using MQTTnet.Diagnostics.Logger;
 using MQTTnet.Server;
 using System.Net;
