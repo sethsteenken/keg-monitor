@@ -11,7 +11,8 @@
 
 @if (Display)
 {
-    <MudTable Items="@logMessages" Breakpoint="Breakpoint.Xs" Striped="true" Elevation="2">
+    <MudTable Items="@logMessages" Breakpoint="Breakpoint.Xs" Elevation="2" 
+        Dense="true" Bordered="true" Hover="true">
         <HeaderContent>
             <MudTh>Timestamp</MudTh>
             <MudTh>Logger</MudTh>

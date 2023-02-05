@@ -62,8 +62,8 @@
                         <MudPaper Class="pa-2">Max:  @scale.WeightMetricsData.Max</MudPaper>
                     </MudStack>
 
-                    <MudTable Items="@scale.WeightMetricsData.WeightChangesForDisplay" Breakpoint="Breakpoint.None" Striped="true"
-                      FixedHeader="true" Height="400px">
+                    <MudTable Items="@scale.WeightMetricsData.WeightChangesForDisplay" Breakpoint="Breakpoint.None"
+                      FixedHeader="true" Height="400px" Bordered="true" Dense="true" Hover="true">
                         <HeaderContent>
                             <MudTh>Timestamp</MudTh>
                             <MudTh>Weight</MudTh>
@@ -75,7 +75,7 @@
                             <MudTd DataLabel="Pour">
                                 @if (context.IsPourEvent)
                                 {
-                                    <MudIcon Icon="@Icons.Sharp.CheckCircle" Color="Color.Success" />
+                                    <MudIcon Icon="@Icons.Material.Sharp.CheckCircle" Color="Color.Success" />
                                 }
                             </MudTd>
                         </RowTemplate>
