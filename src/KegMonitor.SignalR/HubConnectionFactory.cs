@@ -21,7 +21,7 @@ namespace KegMonitor.SignalR
                 return connection;
 
             connection = new HubConnectionBuilder()
-                                .WithUrl($"{_domain.TrimEnd('/')}/{endpoint.TrimStart('/')}")
+                                .WithUrl(FormatUrl(endpoint))
                                 .Build();
 
             await connection.StartAsync();
@@ -40,6 +40,11 @@ namespace KegMonitor.SignalR
             }
 
             _connections.Clear();
+        }
+
+        public string FormatUrl(string endpoint)
+        {
+            return $"{_domain.TrimEnd('/')}/{endpoint?.TrimStart('/')}";
         }
     }
 }

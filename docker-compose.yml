@@ -40,7 +40,7 @@ services:
       - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
       - "ASPNETCORE_ENVIRONMENT=Production"
       - "ConnectionStrings__DefaultConnection=${CONNECTION_STRING}"
-      - "WebDomain=${DOMAIN}:${PORT}"
+      - "WebDomain=${DOMAIN}"
       - "MigrateDatabaseToLatest=true"
       - "Mqtt__ClientId=${MQTT_CLIENT_ID}"
       - "Mqtt__IpAddress=${MQTT_IPADDRESS}"

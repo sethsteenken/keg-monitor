@@ -28,7 +28,7 @@
     </MudTable>
 }
 
-@inject NavigationManager NavigationManager
+@inject HubConnectionFactory HubConnectionFactory
 
 @code {
     private HubConnection hubConnection;
@@ -41,7 +41,7 @@
     protected override async Task OnInitializedAsync()
     {
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(NavigationManager.ToAbsoluteUri(LogHub.Endpoint))
+            .WithUrl(HubConnectionFactory.FormatUrl(LogHub.Endpoint))
             .Build();
 
         hubConnection.On<string, string, string>(LogHub.ReceiveMessage, (name, level, message) =>

@@ -71,7 +71,7 @@ else
     <MudText>Scale not found.</MudText>
 }
 
-@inject NavigationManager NavigationManager
+@inject HubConnectionFactory HubConnectionFactory
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject IScaleQueryService QueryService
@@ -97,7 +97,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(NavigationManager.ToAbsoluteUri(ScaleHub.Endpoint))
+            .WithUrl(HubConnectionFactory.FormatUrl(ScaleHub.Endpoint))
             .Build();
 
         hubConnection.On<int, int>(ScaleHub.ReceiveWeight, (scaleId, newWeight) =>

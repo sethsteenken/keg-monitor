@@ -104,7 +104,7 @@
     <Logs></Logs>
 }
 
-@inject NavigationManager NavigationManager
+@inject HubConnectionFactory HubConnectionFactory
 @inject IScaleDashboardQueryService QueryService
 
 @code {
@@ -118,7 +118,7 @@
         model = await QueryService.BuildModelAsync();
 
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(NavigationManager.ToAbsoluteUri(ScaleHub.Endpoint))
+            .WithUrl(HubConnectionFactory.FormatUrl(ScaleHub.Endpoint))
             .Build();
 
         hubConnection.On<int, int>(ScaleHub.ReceiveWeight, async (scaleId, weight) =>

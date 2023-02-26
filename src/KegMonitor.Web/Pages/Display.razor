@@ -33,7 +33,7 @@
 }
 
 @inject ISnackbar Snackbar
-@inject NavigationManager NavigationManager
+@inject HubConnectionFactory HubConnectionFactory
 @inject IScaleDisplayQueryService QueryService
 
 @code {
@@ -46,7 +46,7 @@
         scales = await QueryService.GetScalesAsync();
 
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(NavigationManager.ToAbsoluteUri(ScaleHub.Endpoint))
+            .WithUrl(HubConnectionFactory.FormatUrl(ScaleHub.Endpoint))
             .Build();
 
         hubConnection.On<int, decimal>(ScaleHub.ReceiveWeightPercentage, (scaleId, percentage) =>
