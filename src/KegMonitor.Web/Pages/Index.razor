@@ -123,15 +123,23 @@
 
         hubConnection.On<int, int>(ScaleHub.ReceiveWeight, async (scaleId, weight) =>
         {
-            model.Scales.Single(s => s.Id == scaleId).Weight = weight;
-            await InvokeAsync(StateHasChanged);
-            await UpdateWeightMetricsAsync(scaleId, model.Scales.Single(s => s.Id == scaleId).WeightMetricsData.NumWeightChanges);
+            var scale = model.Scales.SingleOrDefault(s => s.Id == scaleId);
+            if (scale != null)
+            {
+                scale.Weight = weight;
+                await InvokeAsync(StateHasChanged);
+                await UpdateWeightMetricsAsync(scaleId, scale.WeightMetricsData.NumWeightChanges);
+            }
         });
 
-        hubConnection.On<int, decimal>(ScaleHub.ReceiveWeightPercentage, (scaleId, percentage) =>
+        hubConnection.On<int, decimal>(ScaleHub.ReceiveWeightPercentage, async (scaleId, percentage) =>
         {
-            model.Scales.Single(s => s.Id == scaleId).Percentage = (double)percentage;
-            InvokeAsync(StateHasChanged);
+            var scale = model.Scales.SingleOrDefault(s => s.Id == scaleId);
+            if (scale != null)
+            {
+                scale.Percentage = (double)percentage;
+                await InvokeAsync(StateHasChanged);
+            }
         });
 
         await hubConnection.StartAsync();
@@ -140,8 +148,12 @@
 
     protected async Task UpdateWeightMetricsAsync(int scaleId, int numOfWeightChanges)
     {
-        model.Scales.Single(s => s.Id == scaleId).WeightMetricsData = await QueryService.GetWeightMetricsAsync(scaleId, numOfWeightChanges);
-        await InvokeAsync(StateHasChanged);
+        var scale = model.Scales.SingleOrDefault(s => s.Id == scaleId);
+        if (scale != null)
+        {
+            scale.WeightMetricsData = await QueryService.GetWeightMetricsAsync(scaleId, numOfWeightChanges);
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     public async ValueTask DisposeAsync()

@@ -2,6 +2,6 @@
 {
     public interface IScaleDisplayQueryService
     {
-        Task<List<ScaleDisplayItem>> GetScalesAsync();
+        Task<List<ScaleDisplayItem>> GetScalesAsync(bool activeOnly = false);
     }
 }

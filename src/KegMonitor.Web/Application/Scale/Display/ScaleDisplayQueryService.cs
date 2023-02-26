@@ -1,4 +1,5 @@
-﻿using KegMonitor.Infrastructure.EntityFramework;
+﻿using KegMonitor.Core.Entities;
+using KegMonitor.Infrastructure.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 
 namespace KegMonitor.Web.Application
@@ -13,11 +14,16 @@ namespace KegMonitor.Web.Application
             _dbContextFactory = dbContextFactory;
         }
 
-        public async Task<List<ScaleDisplayItem>> GetScalesAsync()
+        public async Task<List<ScaleDisplayItem>> GetScalesAsync(bool activeOnly = false)
         {
             await using var context = await _dbContextFactory.CreateDbContextAsync();
 
-            var scales = await context.Scales.OrderBy(s => s.Id).Include(s => s.Beer).ToListAsync();
+            IQueryable<Scale> query = context.Scales.OrderBy(s => s.Id).Include(s => s.Beer);
+
+            if (activeOnly)
+                query = query.Where(s => s.Active);
+
+            var scales = await query.ToListAsync();
 
             return scales.Select(s => new ScaleDisplayItem()
             {

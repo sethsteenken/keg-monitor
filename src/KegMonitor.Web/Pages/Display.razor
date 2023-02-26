@@ -43,22 +43,26 @@
 
     protected override async Task OnInitializedAsync()
     {
-        scales = await QueryService.GetScalesAsync();
+        scales = await QueryService.GetScalesAsync(activeOnly: true);
 
         hubConnection = new HubConnectionBuilder()
             .WithUrl(HubConnectionFactory.FormatUrl(ScaleHub.Endpoint))
             .Build();
 
-        hubConnection.On<int, decimal>(ScaleHub.ReceiveWeightPercentage, (scaleId, percentage) =>
+        hubConnection.On<int, decimal>(ScaleHub.ReceiveWeightPercentage, async (scaleId, percentage) =>
         {
-            scales.Single(s => s.Id == scaleId).Percentage = (double)percentage;
-            InvokeAsync(StateHasChanged);
+            var scale = scales.SingleOrDefault(s => s.Id == scaleId);
+            if (scale != null)
+            {
+                scale.Percentage = (double)percentage;
+                await InvokeAsync(StateHasChanged);
+            }
         });
 
-        hubConnection.On<int, string>(ScaleHub.ReceiveNewPour, (scaleId, message) =>
+        hubConnection.On<int, string>(ScaleHub.ReceiveNewPour, async (scaleId, message) =>
         {
             Snackbar.Add(message, Severity.Success);
-            InvokeAsync(StateHasChanged);
+            await InvokeAsync(StateHasChanged);
         });
 
         await hubConnection.StartAsync();
