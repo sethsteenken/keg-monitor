@@ -1,15 +1,22 @@
 ﻿using KegMonitor.Infrastructure.EntityFramework;
+using KegMonitor.Web.Extensions;
 using Microsoft.EntityFrameworkCore;
+using MQTTnet.Client;
+using MQTTnet.Extensions.ManagedClient;
 
 namespace KegMonitor.Web.Application
 {
     public class ScaleCommandService : IScaleCommandService
     {
         private readonly KegMonitorDbContext _dbContext;
+        private readonly IManagedMqttClient _mqttClient;
 
-        public ScaleCommandService(KegMonitorDbContext dbContext)
+        public ScaleCommandService(
+            KegMonitorDbContext dbContext,
+            IManagedMqttClient mqttClient)
         {
             _dbContext = dbContext;
+            _mqttClient = mqttClient;
         }
         
         public async Task UpdateActiveStateAsync(int scaleId, bool active)
@@ -47,6 +54,16 @@ namespace KegMonitor.Web.Application
             scale.EmptyWeight = model.EmptyWeight;
             scale.FullWeight = model.FullWeight;
             scale.PourDifferenceThreshold = model.PourDifferenceThreshold;
+            scale.Endpoint = model.Endpoint;
+
+            if (scale.Topic != model.Topic)
+            {
+                string oldTopic = scale.Topic;
+                scale.Topic = model.Topic;
+
+                await _mqttClient.RefreshTopicSubscriptionAsync(oldTopic, scale.Topic);
+            }
+            
             scale.LastUpdatedDate = DateTime.UtcNow;
 
             scale.ForceSetCurrentWeight(model.CurrentWeight);

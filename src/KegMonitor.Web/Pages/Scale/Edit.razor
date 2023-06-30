@@ -53,6 +53,10 @@
                                      @bind-Value="model.FullWeight" For="@(() => model.FullWeight)" Disabled="model.Active" />
                     <MudNumericField Label="Pour Threshold" HelperText="Weight in grams that passes threshold for triggering a pour event. Deactivate this Scale to manually change."
                                      @bind-Value="model.PourDifferenceThreshold" For="@(() => model.PourDifferenceThreshold)" Disabled="model.Active" Class="pb-2" />
+                    <MudTextField Label="MQTT Topic" HelperText="Topic for MQTT published communications specific for this scale."
+                                    @bind-Value="model.Topic" For="@(() => model.Topic)" Disabled="model.Active" Class="pb-2"></MudTextField>
+                    <MudTextField Label="Device Endpoint" HelperText="IP address or domain name for the scale device."
+                                    @bind-Value="model.Endpoint" For="@(() => model.Endpoint)" Disabled="model.Active" Class="pb-2"></MudTextField>
                 </MudPaper>
             </MudItem>
             <MudItem xs="12">

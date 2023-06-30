@@ -15,6 +15,9 @@ namespace KegMonitor.Web.Application
 
         public int PourDifferenceThreshold { get; set; }
 
+        public string Topic { get; set; }
+        public string Endpoint { get; set; }
+
         public IEnumerable<Beer> BeerOptions { get; set; } = new List<Beer>();
     }
 }

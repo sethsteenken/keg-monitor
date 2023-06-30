@@ -66,6 +66,5 @@ if (bool.TryParse(app.Configuration["MigrateDatabaseToLatest"], out bool migrate
     }
 }
 
-// subscribe to mqtt broker
-await app.Services.GetRequiredService<IMqttStartup>().SubscribeAsync();
+await app.Services.GetRequiredService<IMqttStartup>().InitializeAsync();
 await app.RunAsync();

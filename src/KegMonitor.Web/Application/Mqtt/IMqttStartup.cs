@@ -2,6 +2,6 @@
 {
     public interface IMqttStartup
     {
-        Task SubscribeAsync();
+        Task InitializeAsync();
     }
 }
