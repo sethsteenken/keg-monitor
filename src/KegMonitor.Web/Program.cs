@@ -1,5 +1,3 @@
-using KegMonitor.Core;
-using KegMonitor.Core.Interfaces;
 using KegMonitor.Infrastructure.EntityFramework;
 using KegMonitor.SignalR;
 using KegMonitor.Web;
@@ -7,12 +5,8 @@ using KegMonitor.Web.Application;
 using KegMonitor.Web.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using MQTTnet.Extensions.ManagedClient;
-using MQTTnet.Packets;
 using MudBlazor;
 using MudBlazor.Services;
-using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,33 +36,9 @@ builder.Services.AddResponseCompression(opts =>
         new[] { "application/octet-stream" });
 });
 
-builder.Services.AddKegMonitorDataAccess(builder.Configuration);
-
-builder.Services.AddScoped<IFileUploader>(serviceProvider =>
-{
-    return new FileUploader(serviceProvider.GetRequiredService<IWebHostEnvironment>(), "uploads");
-});
-
-builder.Services.AddScoped<IBeerQueryService, BeerQueryService>();
-builder.Services.AddScoped<IBeerCommandService, BeerCommandService>();
-builder.Services.AddScoped<IScaleQueryService, ScaleQueryService>();
-builder.Services.AddScoped<IScaleCommandService, ScaleCommandService>();
-builder.Services.AddScoped<IScaleDisplayQueryService, ScaleDisplayQueryService>();
-builder.Services.AddScoped<IScaleDashboardQueryService, ScaleDashboardQueryService>();
-
-builder.Services.AddScoped<HubConnectionFactory>(serviceProvider =>
-{
-    return new HubConnectionFactory(serviceProvider.GetRequiredService<IConfiguration>()["WebDomain"]);
-});
-
-builder.Services.AddSingleton<IScaleUpdater, ScaleWeightUpdater>();
-builder.Services.AddScoped<IScaleWeightChangeNotifier, ScaleNewWeightPercentageNotifier>();
-builder.Services.AddScoped<IScaleWeightChangeNotifier, ScaleLatestWeightNotifier>();
-builder.Services.AddScoped<IPourNotifier, ScaleWebPourNotifier>();
-builder.Services.AddScoped<IScaleWeightHandler, ScaleWeightHandler>();
-builder.Services.AddSingleton<IHealthChecker, HealthChecker>();
-
-builder.Services.AddMqttClientServices(builder.Configuration);
+builder.Services.AddKegMonitorDataAccess(builder.Configuration)
+                .AddApplicationServices()
+                .AddMqttClientServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -83,32 +53,10 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 app.UseRouting();
 app.MapBlazorHub();
+app.MapDefaultControllerRoute();
 app.MapHub<ScaleHub>(ScaleHub.Endpoint);
 app.MapHub<LogHub>(LogHub.Endpoint);
 app.MapFallbackToPage("/_Host");
-
-app.MapPost("/log/", async delegate (HttpContext context)
-{
-    if (!context.Request.HasJsonContentType())
-    {
-        context.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
-        return;
-    }
-
-    var logMessage = await context.Request.ReadFromJsonAsync<LogMessage>();
-
-    context.RequestServices.GetRequiredService<ILoggerFactory>()
-                           .CreateLogger(logMessage.Logger)
-                           .Log(logMessage);
-
-    context.Response.StatusCode = (int)HttpStatusCode.Accepted;
-});
-
-app.MapGet("/health/", async delegate (HttpContext context)
-{
-    var healthy = await context.RequestServices.GetRequiredService<IHealthChecker>().CheckAsync(context.RequestAborted);
-    context.Response.StatusCode = healthy ? (int)HttpStatusCode.Accepted : (int)HttpStatusCode.InternalServerError;
-});
 
 if (bool.TryParse(app.Configuration["MigrateDatabaseToLatest"], out bool migrate) && migrate)
 {
@@ -118,19 +66,6 @@ if (bool.TryParse(app.Configuration["MigrateDatabaseToLatest"], out bool migrate
     }
 }
 
-if (bool.TryParse(app.Configuration["Mqtt:Subscribe"], out bool subscribe) && subscribe)
-{
-    // subscribe to mqtt broker
-    var mqttClientOptions = app.Services.GetRequiredService<ManagedMqttClientOptions>();
-    var mqttClient = app.Services.GetRequiredService<IManagedMqttClient>();
-    await mqttClient.StartAsync(mqttClientOptions);
-
-    var settings = app.Services.GetRequiredService<IOptions<MqttBrokerSettings>>().Value;
-    if (!settings.Topics.Any())
-        throw new InvalidOperationException("No MQTT subscription topics set in configuration.");
-
-    var filters = settings.Topics.Select(t => new MqttTopicFilter() { Topic = t }).ToList();
-    await mqttClient.SubscribeAsync(filters);
-}
-
+// subscribe to mqtt broker
+await app.Services.GetRequiredService<IMqttStartup>().SubscribeAsync();
 await app.RunAsync();

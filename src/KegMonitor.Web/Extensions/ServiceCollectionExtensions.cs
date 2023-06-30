@@ -1,4 +1,6 @@
 ﻿using KegMonitor.Core.Interfaces;
+using KegMonitor.SignalR;
+using KegMonitor.Web.Application;
 using Microsoft.Extensions.Options;
 using MQTTnet;
 using MQTTnet.Client;
@@ -8,7 +10,7 @@ using System.Text.Json;
 
 namespace KegMonitor.Web
 {
-    internal static class MqttServiceCollectionExtensions
+    internal static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddMqttClientServices(this IServiceCollection services, IConfiguration configuration)
         {
@@ -48,6 +50,37 @@ namespace KegMonitor.Web
 
                 return client;
             });
+
+            services.AddSingleton<IMqttStartup, MqttStartup>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+        {
+            services.AddScoped<IFileUploader>(serviceProvider =>
+            {
+                return new FileUploader(serviceProvider.GetRequiredService<IWebHostEnvironment>(), "uploads");
+            });
+
+            services.AddScoped<IBeerQueryService, BeerQueryService>();
+            services.AddScoped<IBeerCommandService, BeerCommandService>();
+            services.AddScoped<IScaleQueryService, ScaleQueryService>();
+            services.AddScoped<IScaleCommandService, ScaleCommandService>();
+            services.AddScoped<IScaleDisplayQueryService, ScaleDisplayQueryService>();
+            services.AddScoped<IScaleDashboardQueryService, ScaleDashboardQueryService>();
+
+            services.AddScoped<HubConnectionFactory>(serviceProvider =>
+            {
+                return new HubConnectionFactory(serviceProvider.GetRequiredService<IConfiguration>()["WebDomain"]);
+            });
+
+            services.AddSingleton<IScaleUpdater, ScaleWeightUpdater>();
+            services.AddScoped<IScaleWeightChangeNotifier, ScaleNewWeightPercentageNotifier>();
+            services.AddScoped<IScaleWeightChangeNotifier, ScaleLatestWeightNotifier>();
+            services.AddScoped<IPourNotifier, ScaleWebPourNotifier>();
+            services.AddScoped<IScaleWeightHandler, ScaleWeightHandler>();
+            services.AddSingleton<IHealthChecker, HealthChecker>();
 
             return services;
         }
