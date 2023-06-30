@@ -22,5 +22,12 @@
         public string SelectionName => $"{Name} ({Type}) {ABV}%";
 
         public DateTime LastUpdatedDate { get; set; }
+
+        public IEnumerable<BeerPour> Pours { get; private set; } = new List<BeerPour>();
+
+        public void AddPour(Scale scale, DateTime timeStamp)
+        {
+            (Pours as List<BeerPour>).Add(new BeerPour(this, scale, timeStamp));
+        }
     }
 }

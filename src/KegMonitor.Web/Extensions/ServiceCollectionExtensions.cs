@@ -37,14 +37,12 @@ namespace KegMonitor.Web
 
                 client.ApplicationMessageReceivedAsync += async msg =>
                 {
-                    msg.ApplicationMessage.TryGetScaleNumber(out int scaleNumber);
-
                     var payload = JsonSerializer.Deserialize<SensorPayload>(msg.ApplicationMessage.Payload);
 
                     await using (var scope = serviceProvider.CreateAsyncScope())
                     {
                         await scope.ServiceProvider.GetRequiredService<IScaleWeightHandler>()
-                                    .HandleAsync(scaleNumber, payload.HX711.WeightRaw);
+                                    .HandleAsync(msg.ApplicationMessage.Topic, payload.HX711.WeightRaw);
                     }    
                 };
 
@@ -75,7 +73,6 @@ namespace KegMonitor.Web
                 return new HubConnectionFactory(serviceProvider.GetRequiredService<IConfiguration>()["WebDomain"]);
             });
 
-            services.AddSingleton<IScaleUpdater, ScaleWeightUpdater>();
             services.AddScoped<IScaleWeightChangeNotifier, ScaleNewWeightPercentageNotifier>();
             services.AddScoped<IScaleWeightChangeNotifier, ScaleLatestWeightNotifier>();
             services.AddScoped<IPourNotifier, ScaleWebPourNotifier>();

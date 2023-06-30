@@ -1,4 +1,5 @@
-﻿using KegMonitor.Core.Interfaces;
+﻿using KegMonitor.Core.Entities;
+using KegMonitor.Core.Interfaces;
 using KegMonitor.Infrastructure.EntityFramework;
 using KegMonitor.SignalR;
 using KegMonitor.Web.Hubs;
@@ -20,16 +21,13 @@ namespace KegMonitor.Web.Application
             _dbContextFactory = dbContextFactory;
         }
 
-        public async Task NotifyAsync(int scaleId, int weight)
+        public async Task NotifyAsync(Scale scale, int weight)
         {
-            await using var context = await _dbContextFactory.CreateDbContextAsync();
-
-            var scale = await context.Scales.FirstOrDefaultAsync(s => s.Id == scaleId);
             if (scale == null)
-                throw new InvalidOperationException("Scale not found.");
-
+                throw new ArgumentNullException(nameof(scale));
+            
             var connection = await _hubConnectionFactory.GetConnectionAsync(ScaleHub.Endpoint);
-            await connection.SendAsync(nameof(ScaleHub.SendWeightPercentage), scaleId, scale.Percentage);
+            await connection.SendAsync(nameof(ScaleHub.SendWeightPercentage), scale.Id, scale.Percentage);
         }
     }
 }
