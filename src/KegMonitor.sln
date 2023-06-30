@@ -22,6 +22,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KegMonitor.SignalR", "KegMo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KegMonitor.Client.Subscriber", "KegMonitor.Client.Subscriber\KegMonitor.Client.Subscriber.csproj", "{5B0AA483-9605-4709-80AA-CF6B3F418738}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mqtt Test Apps", "Mqtt Test Apps", "{057A2EBB-262B-4E9E-B6CE-818BCD186E5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{533A246A-91E3-4811-AFEA-69C002F0DCCA} = {057A2EBB-262B-4E9E-B6CE-818BCD186E5A}
+		{5B0AA483-9605-4709-80AA-CF6B3F418738} = {057A2EBB-262B-4E9E-B6CE-818BCD186E5A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B4C3CBA7-77B3-42B2-8936-BF2B66F9F549}
