@@ -113,7 +113,7 @@ else
 
         hubConnection.On<int, int>(ScaleHub.ReceiveWeight, (scaleId, newWeight) =>
         {
-            if (scaleId == model.Id)
+            if (scaleId == model?.Id)
             {
                 weight = newWeight;
                 InvokeAsync(StateHasChanged);
@@ -175,7 +175,7 @@ else
         if (result == true)
         {
             await CommandService.DeleteAsync(Id);
-            NavManager.NavigateTo("/");
+            NavManager.NavigateTo("/", forceLoad: true);
         }
     }
 }

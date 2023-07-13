@@ -21,16 +21,14 @@
                 <MudNavLink Href="/beer/" Match="NavLinkMatch.All">List</MudNavLink>
                 <MudNavLink Href="/beer/edit/" Match="NavLinkMatch.Prefix">Add New</MudNavLink>
             </MudNavGroup>
-            @if (scaleIds.Any())
-            {
-                <MudNavGroup Title="Scales" Expanded="true">
-                    @foreach (var id in scaleIds)
-                    {
-                        var href = $"/scale/edit/{id}/";
-                        <MudNavLink Href="@href" Match="NavLinkMatch.All">Scale #@id</MudNavLink>
-                    }
-                </MudNavGroup>
-            }
+            <MudNavGroup Title="Scales" Expanded="true">
+                @foreach (var id in scaleIds)
+                {
+                    var href = $"/scale/edit/{id}/";
+                    <MudNavLink Href="@href" Match="NavLinkMatch.All">Scale #@id</MudNavLink>
+                }
+                <MudNavLink Href="/scale/add/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Add">Add New</MudNavLink>
+            </MudNavGroup>
         </MudNavMenu>
     </MudDrawer>
     <MudMainContent>

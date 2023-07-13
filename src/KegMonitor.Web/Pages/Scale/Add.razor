@@ -1,0 +1,47 @@
+﻿@page "/scale/add/"
+@using KegMonitor.Core.Entities
+
+<PageHeader>Add New Scale</PageHeader>
+
+<EditForm Model="@model" OnValidSubmit="SubmitAsync">
+    <DataAnnotationsValidator />
+
+    <MudGrid>
+        <MudItem xs="12">
+            <MudPaper Class="mud-width-full pa-5">
+                <MudNumericField Label="Scale Id" HelperText="Numeric identifier for this Scale (ex. 1-9)."
+                    @bind-Value="model.Id" For="@(() => model.Id)" Class="pb-2"></MudNumericField>
+                <MudTextField Label="Device Endpoint" HelperText="IP address or domain name for the scale device."
+                    @bind-Value="model.Endpoint" For="@(() => model.Endpoint)" Class="pb-2"></MudTextField>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12">
+            <div class="d-flex justify-center pb-6">
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary"
+                            StartIcon="@Icons.Material.Filled.Save">Save</MudButton>
+            </div>
+        </MudItem>
+    </MudGrid>    
+</EditForm>
+
+@inject NavigationManager NavManager
+@inject IScaleCommandService CommandService
+@inject ISnackbar Snackbar
+
+@code {
+    ScaleAddModel model;
+
+    protected override Task OnParametersSetAsync()
+    {
+        model = new ScaleAddModel();
+        return Task.CompletedTask;
+    }
+
+    protected async Task SubmitAsync(EditContext context)
+    {
+        var scaleId = await CommandService.AddAsync(model);
+        NavManager.NavigateTo($"/scale/edit/{scaleId}/", forceLoad: true);
+    }
+
+}
+

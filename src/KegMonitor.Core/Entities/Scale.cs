@@ -6,6 +6,18 @@
         private Scale() { }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
+        public Scale(int id, string endpoint)
+        {
+            Id = id;
+            Endpoint = endpoint;
+            
+            // default topic to Tasmoto naming based on Id
+            Topic = $"tele/scale{id}/SENSOR";
+
+            Active = false;
+            LastUpdatedDate = DateTime.UtcNow;
+        }
+
         public int CurrentWeight { get; private set; }
         public int FullWeight { get; set; }
         public int EmptyWeight { get; set; }
@@ -23,7 +35,14 @@
         public IEnumerable<ScaleWeightChange> WeightChanges { get; private set; } = new List<ScaleWeightChange>();
         public DateTime LastUpdatedDate { get; set; }
 
-        public decimal CalculatePercentage(int weight) => (decimal)Math.Round((decimal)(weight - EmptyWeight) / (decimal)(FullWeight - EmptyWeight) * 100, 2);
+        public decimal CalculatePercentage(int weight)
+        {
+            var weightDiff = FullWeight - EmptyWeight;
+            if (weightDiff == 0)
+                return 0;
+
+            return (decimal)Math.Round((decimal)(weight - EmptyWeight) / (decimal)weightDiff * 100, 2);
+        }
 
         public bool IsPour(int weight)
         {

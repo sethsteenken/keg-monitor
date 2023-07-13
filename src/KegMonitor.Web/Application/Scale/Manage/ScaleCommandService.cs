@@ -1,4 +1,5 @@
-﻿using KegMonitor.Infrastructure.EntityFramework;
+﻿using KegMonitor.Core.Entities;
+using KegMonitor.Infrastructure.EntityFramework;
 using KegMonitor.Web.Extensions;
 using Microsoft.EntityFrameworkCore;
 using MQTTnet.Client;
@@ -18,7 +19,24 @@ namespace KegMonitor.Web.Application
             _dbContext = dbContext;
             _mqttClient = mqttClient;
         }
-        
+
+        public async Task<int> AddAsync(ScaleAddModel model)
+        {
+            if (model == null)
+                throw new ArgumentNullException(nameof(model));
+
+            var scale = new Scale(model.Id, model.Endpoint);
+
+            scale.LastUpdatedDate = DateTime.UtcNow;
+
+            await _mqttClient.SubscribeAsync(scale.Topic);
+
+            await _dbContext.Scales.AddAsync(scale);
+            await _dbContext.SaveChangesAsync();
+
+            return scale.Id;
+        }
+
         public async Task UpdateActiveStateAsync(int scaleId, bool active)
         {
             var scale = await _dbContext.Scales.FirstOrDefaultAsync(s => s.Id == scaleId);
