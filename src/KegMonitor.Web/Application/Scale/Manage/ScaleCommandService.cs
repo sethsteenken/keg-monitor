@@ -100,6 +100,9 @@ namespace KegMonitor.Web.Application
             await _dbContext.ScaleWeightChanges.Where(swc => swc.Scale.Id == id)
                                                .ExecuteDeleteAsync();
 
+            await _dbContext.BeerPours.Where(swc => swc.Scale.Id == id)
+                                      .ExecuteDeleteAsync();
+
             _dbContext.Scales.Remove(scale);
             await _dbContext.SaveChangesAsync();
         }

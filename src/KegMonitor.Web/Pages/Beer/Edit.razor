@@ -48,8 +48,13 @@
             </MudItem>
             <MudItem xs="12">
                 <div class="d-flex justify-center pb-6">
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
-                           Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save">Save</MudButton>
+                    <MudButtonGroup OverrideStyles="false">
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Save">Save</MudButton>
+                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled"
+                                   Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"
+                                   OnClick="DeleteAsync">Delete</MudButton>
+                    </MudButtonGroup>
                 </div>
             </MudItem>
         </MudGrid>
@@ -64,6 +69,8 @@ else
 @inject IBeerCommandService CommandService
 @inject IBeerQueryService QueryService
 @inject IFileUploader FileUploader
+@inject IDialogService DialogService
+@inject NavigationManager NavManager
 
 @code {
     [Parameter]
@@ -91,5 +98,22 @@ else
     {
         model.ImagePath = await FileUploader.UploadAsync(e.File);
         StateHasChanged();
+    }
+
+    protected async Task DeleteAsync()
+    {
+        if (model.Id == null)
+            return;
+
+        bool? result = await DialogService.ShowMessageBox(
+           "Deletion Warning",
+           "Deleting this Beer is a permanent action. Any previous weight changes and pour metrics will be deleted.",
+           yesText: "Delete", cancelText: "Cancel");
+
+        if (result == true)
+        {
+            await CommandService.DeleteAsync(model.Id.Value);
+            NavManager.NavigateTo("/beer/", forceLoad: true);
+        }
     }
 }
