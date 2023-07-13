@@ -61,8 +61,14 @@
             </MudItem>
             <MudItem xs="12">
                 <div class="d-flex justify-center pb-6">
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
-                        Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save" Disabled="model.Active">Save</MudButton>
+                    <MudButtonGroup OverrideStyles="false">
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Save" Disabled="model.Active">Save</MudButton>
+                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled"
+                                   Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" Disabled="model.Active"
+                                   OnClick="DeleteAsync">Delete</MudButton>
+                    </MudButtonGroup>
+                    
                 </div>
             </MudItem>
         </MudGrid>    
@@ -76,6 +82,7 @@ else
 }
 
 @inject HubConnectionFactory HubConnectionFactory
+@inject NavigationManager NavManager
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject IScaleQueryService QueryService
@@ -146,7 +153,7 @@ else
             model.Active = true;
             Snackbar.Add($"Scale #{model.Id} activated.", Severity.Success);
         }
-        
+
         StateHasChanged();
     }
 
@@ -156,6 +163,20 @@ else
         model.Id = Id;
         Snackbar.Add($"Scale #{model.Id} saved successfully.", Severity.Success, config => config.CloseAfterNavigation = true);
         StateHasChanged();
+    }
+
+    protected async Task DeleteAsync()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+           "Deletion Warning",
+           "Deleting this Scale is a permanent action. Any previous weight recordings will be deleted. Any pour recordings under this Scale will have the Scale assignment removed from that pour.",
+           yesText: "Delete", cancelText: "Cancel");
+
+        if (result == true)
+        {
+            await CommandService.DeleteAsync(Id);
+            NavManager.NavigateTo("/");
+        }
     }
 }
 

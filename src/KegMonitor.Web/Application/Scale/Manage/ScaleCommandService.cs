@@ -72,5 +72,18 @@ namespace KegMonitor.Web.Application
 
             return scale.Id;
         }
+
+        public async Task DeleteAsync(int id)
+        {
+            var scale = await _dbContext.Scales.FirstOrDefaultAsync(s => s.Id == id);
+            if (scale == null)
+                throw new InvalidOperationException("Scale not found.");
+
+            await _dbContext.ScaleWeightChanges.Where(swc => swc.Scale.Id == id)
+                                               .ExecuteDeleteAsync();
+
+            _dbContext.Scales.Remove(scale);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }
