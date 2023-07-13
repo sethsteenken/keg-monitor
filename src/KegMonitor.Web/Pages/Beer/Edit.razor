@@ -20,6 +20,14 @@
                                      @bind-Value="model.ABV" For="@(() => model.ABV)"
                                      Variant="Variant.Text" Step=".1M"
                                      Class="pb-2"/>
+                    <MudNumericField Label="OG" HelperText="Original Gravity"
+                                     @bind-Value="model.OG" For="@(() => model.OG)"
+                                     Variant="Variant.Text" Step=".001M"
+                                     Class="pb-2" />
+                    <MudNumericField Label="FG" HelperText="Final Gravity"
+                                     @bind-Value="model.FG" For="@(() => model.FG)"
+                                     Variant="Variant.Text" Step=".001M"
+                                     Class="pb-2" />
                     <MudTextField Label="Description" HelperText="Describe beer type, hops, etc." Variant="Variant.Text" 
                                   @bind-Value="model.Description" For="@(() => model.Description)" Lines="5" />
                 </MudPaper>
