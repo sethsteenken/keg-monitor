@@ -1,17 +1,42 @@
-﻿using KegMonitor.Infrastructure.EntityFramework;
+﻿using KegMonitor.Core.Entities;
+using KegMonitor.Infrastructure.EntityFramework;
+using KegMonitor.Web.Extensions;
 using Microsoft.EntityFrameworkCore;
+using MQTTnet.Client;
+using MQTTnet.Extensions.ManagedClient;
 
 namespace KegMonitor.Web.Application
 {
     public class ScaleCommandService : IScaleCommandService
     {
         private readonly KegMonitorDbContext _dbContext;
+        private readonly IManagedMqttClient _mqttClient;
 
-        public ScaleCommandService(KegMonitorDbContext dbContext)
+        public ScaleCommandService(
+            KegMonitorDbContext dbContext,
+            IManagedMqttClient mqttClient)
         {
             _dbContext = dbContext;
+            _mqttClient = mqttClient;
         }
-        
+
+        public async Task<int> AddAsync(ScaleAddModel model)
+        {
+            if (model == null)
+                throw new ArgumentNullException(nameof(model));
+
+            var scale = new Scale(model.Id, model.Endpoint);
+
+            scale.LastUpdatedDate = DateTime.UtcNow;
+
+            await _mqttClient.SubscribeAsync(scale.Topic);
+
+            await _dbContext.Scales.AddAsync(scale);
+            await _dbContext.SaveChangesAsync();
+
+            return scale.Id;
+        }
+
         public async Task UpdateActiveStateAsync(int scaleId, bool active)
         {
             var scale = await _dbContext.Scales.FirstOrDefaultAsync(s => s.Id == scaleId);
@@ -46,19 +71,37 @@ namespace KegMonitor.Web.Application
 
             scale.EmptyWeight = model.EmptyWeight;
             scale.FullWeight = model.FullWeight;
-
             scale.PourDifferenceThreshold = model.PourDifferenceThreshold;
+            scale.Endpoint = model.Endpoint;
 
-            scale.UpdateWeight(
-                model.CurrentWeight, 
-                recordChangeEvent: false, 
-                checkForPour: false);
+            if (scale.Topic != model.Topic)
+            {
+                string oldTopic = scale.Topic;
+                scale.Topic = model.Topic;
 
+                await _mqttClient.RefreshTopicSubscriptionAsync(oldTopic, scale.Topic);
+            }
+            
             scale.LastUpdatedDate = DateTime.UtcNow;
+
+            scale.ForceSetCurrentWeight(model.CurrentWeight);
 
             await _dbContext.SaveChangesAsync();
 
             return scale.Id;
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var scale = await _dbContext.Scales.FirstOrDefaultAsync(s => s.Id == id);
+            if (scale == null)
+                throw new InvalidOperationException("Scale not found.");
+
+            await _dbContext.ScaleWeightChanges.Where(swc => swc.Scale.Id == id)
+                                               .ExecuteDeleteAsync();
+
+            _dbContext.Scales.Remove(scale);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

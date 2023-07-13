@@ -4,6 +4,6 @@ namespace KegMonitor.Core.Interfaces
 {
     public interface IPourNotifier
     {
-        Task NotifyAsync(int scaleId);
+        Task NotifyAsync(Scale scale);
     }
 }

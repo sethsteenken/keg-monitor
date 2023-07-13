@@ -16,11 +16,20 @@
         public string Type { get; set; }
         public string? Description { get; set; }
         public decimal ABV { get; set; }
+        public decimal OG { get; set; }
+        public decimal FG { get; set; }
         public string? ImagePath { get; set; }
         public DateTime? TapDate { get; set; }
 
         public string SelectionName => $"{Name} ({Type}) {ABV}%";
 
         public DateTime LastUpdatedDate { get; set; }
+
+        public IEnumerable<BeerPour> Pours { get; private set; } = new List<BeerPour>();
+
+        public void AddPour(Scale scale, DateTime timeStamp)
+        {
+            (Pours as List<BeerPour>).Add(new BeerPour(this, scale, timeStamp));
+        }
     }
 }

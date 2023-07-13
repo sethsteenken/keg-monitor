@@ -1,4 +1,5 @@
-﻿using KegMonitor.Core.Interfaces;
+﻿using KegMonitor.Core.Entities;
+using KegMonitor.Core.Interfaces;
 using KegMonitor.SignalR;
 using KegMonitor.Web.Hubs;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -14,10 +15,13 @@ namespace KegMonitor.Web.Application
             _hubConnectionFactory = hubConnectionFactory;
         }
 
-        public async Task NotifyAsync(int scaleId)
+        public async Task NotifyAsync(Scale scale)
         {
+            if (scale == null)
+                throw new ArgumentNullException(nameof(scale));
+
             var connection = await _hubConnectionFactory.GetConnectionAsync(ScaleHub.Endpoint);
-            await connection.SendAsync(nameof(ScaleHub.SendNewPour), scaleId);
+            await connection.SendAsync(nameof(ScaleHub.SendNewPour), scale.Id);
         }
     }
 }

@@ -5,19 +5,6 @@ namespace KegMonitor.Infrastructure.EntityFramework
 {
     public class KegMonitorDbContext : DbContext
     {
-//#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-//        public KegMonitorDbContext()
-//#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-//        {
-
-//        }
-
-//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//        {
-//            optionsBuilder.UseNpgsql("Host=192.168.1.11;Database=keg-monitor;Username=keg-monitor-user;Password=beer1!");
-//        }
-
-
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public KegMonitorDbContext(DbContextOptions options)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -38,10 +25,14 @@ namespace KegMonitor.Infrastructure.EntityFramework
 
             modelBuilder.Entity<ScaleWeightChange>().HasOne(swc => swc.Scale).WithMany(s => s.WeightChanges);
             modelBuilder.Entity<ScaleWeightChange>().HasOne(swc => swc.Beer).WithMany().OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<BeerPour>().HasOne(bp => bp.Scale).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<BeerPour>().HasOne(bp => bp.Beer).WithMany(b => b.Pours);
         }
 
         public DbSet<Scale> Scales { get; set; }
         public DbSet<Beer> Beers { get; set; }
         public DbSet<ScaleWeightChange> ScaleWeightChanges { get; set; }
+        public DbSet<BeerPour> BeerPours { get; set; }
     }
 }

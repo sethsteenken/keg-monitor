@@ -1,7 +1,9 @@
-﻿namespace KegMonitor.Core.Interfaces
+﻿using KegMonitor.Core.Entities;
+
+namespace KegMonitor.Core.Interfaces
 {
     public interface IScaleWeightChangeNotifier
     {
-        Task NotifyAsync(int scaleId, int weight);
+        Task NotifyAsync(Scale scale, int weight);
     }
 }
