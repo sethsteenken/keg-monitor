@@ -41,10 +41,10 @@ namespace KegMonitor.Web.Application
                 {
                     var latestTimeStamp = WeightChangesForDisplay.Select(w => w.TimeStamp).First();
 
-                    if (latestTimeStamp >= DateTime.Now.AddSeconds(-15))
+                    if (latestTimeStamp >= DateTime.Now.AddSeconds(-10))
                         return SensorStatusOption.Online;
 
-                    if (latestTimeStamp < DateTime.Now.AddSeconds(-30))
+                    if (latestTimeStamp < DateTime.Now.AddSeconds(-20))
                         return SensorStatusOption.Offline;
                 }
 

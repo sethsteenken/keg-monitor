@@ -46,6 +46,9 @@
 
         public bool IsPour(int weight)
         {
+            if (CurrentWeight == weight)
+                return false;
+
             var difference = Math.Abs(CurrentWeight - weight);
             return Active && Beer != null && difference > PourDifferenceThreshold;
         }
@@ -60,9 +63,6 @@
 
         public ScaleUpdateResult UpdateWeight(int weight)
         {
-            if (CurrentWeight == weight)
-                return new ScaleUpdateResult();
-
             var timeStamp = DateTime.UtcNow;
             bool isPourEvent = IsPour(weight);
 

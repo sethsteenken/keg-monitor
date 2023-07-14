@@ -33,8 +33,8 @@
 
         public Task ResetMonitoringTimerAsync()
         {
-            const int dueTime = 15000;
-            const int period = 15000;
+            const int dueTime = 12000;
+            const int period = 12000;
 
             if (Timer != null)
             {
