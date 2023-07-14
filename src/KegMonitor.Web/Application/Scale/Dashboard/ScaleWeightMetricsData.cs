@@ -16,6 +16,7 @@ namespace KegMonitor.Web.Application
             WeightChangesForDisplay = _weightChanges.OrderByDescending(swc => swc.TimeStamp)
                                                     .Take(20);
 
+            Count = _weightChanges.Count();
             Min = _weightChanges.Any() ? _weightChanges.Select(wc => wc.Weight).Min() : 0;
             Max = _weightChanges.Any() ? _weightChanges.Select(wc => wc.Weight).Max() : 0;
             Average = _weightChanges.Any() ? (decimal)Math.Round(_weightChanges.Average(wc => (decimal)wc.Weight), 0) : 0;
@@ -26,6 +27,7 @@ namespace KegMonitor.Web.Application
 
         public int NumWeightChanges { get; }
         public int CurrentWeight => WeightChangesForDisplay.Select(wc => wc.Weight).FirstOrDefault();
+        public int Count { get; private set; }
         public int Min { get; private set; }
         public int Max { get; private set; }
         public decimal Average { get; private set; }
