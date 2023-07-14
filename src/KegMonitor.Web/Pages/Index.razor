@@ -23,23 +23,24 @@
         <MudCard Elevation="10" Class="mb-6">
             <MudCardHeader Class="pb-0">
                 <CardHeaderContent>
-                    <MudText>Weight: <MudText Color="Color.Primary" Inline=true>@scale.Weight</MudText> / <MudText Color="Color.Secondary" Inline=true>@scale.Percentage%</MudText></MudText>
+                    <MudText Typo="Typo.h4" Class="pb-1">Scale #@scale.Id</MudText>
                 </CardHeaderContent>
                 <CardHeaderActions>
                     @{
                         var editLink = $"/scale/edit/{scale.Id}/";
                     }
                     <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" Href="@editLink" />
+                    <MudIconButton Icon="@Icons.Material.Filled.MonitorHeart" Color="@scale.Sensor.StatusColor" Title="@scale.Sensor.StatusText" />
                 </CardHeaderActions>
             </MudCardHeader>
             <MudCardContent>
-                <MudText Typo="Typo.h4" Class="pb-1">Scale #@scale.Id</MudText>
+                <MudText>Weight: <MudText Color="Color.Primary" Inline=true>@scale.Weight</MudText> / <MudText Color="Color.Secondary" Inline=true>@scale.Percentage%</MudText></MudText>
 
                 @if (scale.Beer != null)
                 {
                     <MudText Typo="Typo.h3" Class="pb-1">@scale.Beer.Name</MudText>
                     <MudText Typo="Typo.h5" Class="pb-1">@scale.Beer.Type @(scale.Beer.ABV)%</MudText>
-                    <MudText Typo="Typo.h5" Class="pb-1">@scale.Beer.OG - @scale.Beer.FG</MudText>
+                    <MudText Typo="Typo.h5" Class="pb-1">Gravity: @scale.Beer.OG - @scale.Beer.FG</MudText>
                     <MudText Class="pb-1">@scale.Beer.Description</MudText>
                 }
 
@@ -118,6 +119,11 @@
         loading = true;
         model = await QueryService.BuildModelAsync();
 
+        foreach (var scale in model.Scales)
+        {
+            await scale.InitializeSensorAsync();
+        }
+
         hubConnection = new HubConnectionBuilder()
             .WithUrl(HubConnectionFactory.FormatUrl(ScaleHub.Endpoint))
             .Build();
@@ -127,6 +133,7 @@
             var scale = model.Scales.SingleOrDefault(s => s.Id == scaleId);
             if (scale != null)
             {
+                await scale.Sensor.BringOnlineAsync();
                 scale.Weight = weight;
                 await InvokeAsync(StateHasChanged);
                 await UpdateWeightMetricsAsync(scaleId, scale.WeightMetricsData.NumWeightChanges);
@@ -161,5 +168,14 @@
     {
         if (hubConnection is not null)
             await hubConnection.DisposeAsync();
+
+        if (model != null && model.Scales != null)
+        {
+            foreach (var scale in model.Scales)
+            {
+                if (scale.Sensor != null)
+                    await scale.Sensor.DisposeAsync();
+            }
+        }
     }
 }
