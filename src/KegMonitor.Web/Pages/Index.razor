@@ -13,9 +13,9 @@
 
 @if (!loading)
 {
-    @if (!model.Scales.Any())
+    @if (model.Scales.Any())
     {
-        <MudText Typo="Typo.body1" Class="pb-1">Add Scales to the database to get started.</MudText>
+        <MudText Typo="Typo.body1" Class="pb-1">No Scales found. Click <MudLink Href="/scale/add/" Underline="Underline.Always">here</MudLink> to add a Scale.</MudText>
     }
 
     @foreach (var scale in model.Scales)
