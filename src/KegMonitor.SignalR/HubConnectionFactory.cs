@@ -5,8 +5,8 @@ namespace KegMonitor.SignalR
 {
     public class HubConnectionFactory : IAsyncDisposable
     {
-        private ConcurrentDictionary<string, HubConnection> _connections 
-            = new ConcurrentDictionary<string, HubConnection>();
+        private ConcurrentBag<HubConnection> _connections 
+            = new ConcurrentBag<HubConnection>();
 
         private readonly string _domain;
 
@@ -17,23 +17,20 @@ namespace KegMonitor.SignalR
 
         public async Task<HubConnection> GetConnectionAsync(string endpoint)
         {
-            if (_connections.TryGetValue(endpoint, out HubConnection? connection))
-                return connection;
-
-            connection = new HubConnectionBuilder()
+            var connection = new HubConnectionBuilder()
                                 .WithUrl(FormatUrl(endpoint))
                                 .Build();
 
             await connection.StartAsync();
 
-            _connections.TryAdd(endpoint, connection);
+            _connections.Add(connection);
 
             return connection;
         }
 
         public virtual async ValueTask DisposeAsync()
         {
-            foreach (var connection in _connections.Values)
+            foreach (var connection in _connections)
             {
                 if (connection is not null)
                     await connection.DisposeAsync();

@@ -19,7 +19,7 @@
             <MudNavLink Href="/" Match="NavLinkMatch.All">Dashboard</MudNavLink>
             <MudNavGroup Title="Beer" Expanded="true">
                 <MudNavLink Href="/beer/" Match="NavLinkMatch.All">List</MudNavLink>
-                <MudNavLink Href="/beer/edit/" Match="NavLinkMatch.Prefix">Add New</MudNavLink>
+                <MudNavLink Href="/beer/edit/" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Add New</MudNavLink>
             </MudNavGroup>
             <MudNavGroup Title="Scales" Expanded="true">
                 @foreach (var id in scaleIds)

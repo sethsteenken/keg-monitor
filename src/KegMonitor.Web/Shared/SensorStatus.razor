@@ -1,0 +1,133 @@
+﻿@using KegMonitor.Core
+@using KegMonitor.SignalR
+@using KegMonitor.Web.Hubs
+@using Microsoft.AspNetCore.SignalR.Client
+@implements IAsyncDisposable
+
+<MudIconButton Icon="@Icons.Material.Filled.MonitorHeart" 
+               Color="@Sensor.Status.Color" 
+               Title="@Sensor.Status.Text"
+               Style="@(DisableManualToggle ? "cursor:default" : "")"
+               OnClick="ClickAsync"/>
+
+@inject HubConnectionFactory HubConnectionFactory
+@inject ISensorManager SensorManager
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+@code {
+    private HubConnection hubConnection;
+
+    [Parameter]
+    public int ScaleId { get; set; }
+
+    [Parameter]
+    public SensorStatusOption InitialStatus { get; set; }
+
+    [Parameter]
+    public bool DisableManualToggle { get; set; } = false;
+
+    protected ScaleSensor Sensor { get; set; } = new ScaleSensor();
+
+    protected SensorStatusOption Status => Sensor.Status.Status;
+
+    protected bool WasManuallySet { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Sensor = new ScaleSensor(new Application.SensorStatus(InitialStatus));
+        Sensor.OnChange += async (obj, args) => await InvokeAsync(StateHasChanged);
+
+        await Sensor.InitializeAsync();
+
+        hubConnection = new HubConnectionBuilder()
+           .WithUrl(HubConnectionFactory.FormatUrl(ScaleHub.Endpoint))
+           .Build();
+
+        hubConnection.On<int, int>(ScaleHub.ReceiveWeight, async (scaleId, weight) =>
+        {
+            if (scaleId == ScaleId)
+            {
+                if (WasManuallySet && Status != SensorStatusOption.Online)
+                {
+                    WasManuallySet = false;
+                    return;
+                }
+
+                await Sensor.SetAsOnlineAsync();
+            }
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    public async Task ClickAsync()
+    {
+        if (DisableManualToggle)
+            return;
+
+        switch (Status)
+        {
+            case SensorStatusOption.Unknown:
+                Snackbar.Add("Waiting on connection to sensor...", Severity.Info);
+                break;
+            case SensorStatusOption.Online:
+                await DisableSensorAsync();
+                break;
+            case SensorStatusOption.Offline:
+                await EnableSensorAsync();
+                break;
+        };
+    }
+
+    protected async Task DisableSensorAsync()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+          "Sensor Warning",
+          "Take sensor offline? This will prevent periodic sensor weight changes from being pushed to the application.",
+          yesText: "Take Offline", cancelText: "Cancel");
+
+        if (result == true)
+        {
+            if (Status == SensorStatusOption.Offline)
+            {
+                Snackbar.Add("Sensor already offline.", Severity.Info);
+                return;
+            }
+
+            var updateResult = await SensorManager.TakeOfflineAsync(ScaleId);
+
+            if (updateResult.Success)
+                await Sensor.SetAsOfflineAsync();
+
+            Snackbar.Add(updateResult.Message, updateResult.Success ? Severity.Info : Severity.Error);
+            WasManuallySet = true;
+        }
+    }
+
+    protected async Task EnableSensorAsync()
+    {
+        if (Status == SensorStatusOption.Online)
+        {
+            Snackbar.Add("Sensor already online.", Severity.Info);
+            return;
+        }
+
+        var updateResult = await SensorManager.BringOnlineAsync(ScaleId);
+
+        if (updateResult.Success)
+            await Sensor.SetAsOnlineAsync();
+
+        Snackbar.Add(updateResult.Message, updateResult.Success ? Severity.Success : Severity.Error);
+        WasManuallySet = true;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+            await hubConnection.DisposeAsync();
+
+        if (Sensor is not null)
+            await Sensor.DisposeAsync();
+    }
+}

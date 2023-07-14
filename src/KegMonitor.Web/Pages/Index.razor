@@ -15,7 +15,7 @@
 {
     @if (!model.Scales.Any())
     {
-        <MudText Typo="Typo.body1" Class="pb-1">Add Scales to the database to get started.</MudText>
+        <MudText Typo="Typo.body1" Class="pb-1">No Scales found. Click <MudLink Href="/scale/add/" Underline="Underline.Always">here</MudLink> to add a Scale.</MudText>
     }
 
     @foreach (var scale in model.Scales)
@@ -23,23 +23,24 @@
         <MudCard Elevation="10" Class="mb-6">
             <MudCardHeader Class="pb-0">
                 <CardHeaderContent>
-                    <MudText>Weight: <MudText Color="Color.Primary" Inline=true>@scale.Weight</MudText> / <MudText Color="Color.Secondary" Inline=true>@scale.Percentage%</MudText></MudText>
+                    <MudText Typo="Typo.h4" Class="pb-1">Scale #@scale.Id</MudText>
                 </CardHeaderContent>
                 <CardHeaderActions>
                     @{
                         var editLink = $"/scale/edit/{scale.Id}/";
                     }
                     <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" Href="@editLink" />
+                    <SensorStatus ScaleId="@scale.Id" InitialStatus="@scale.WeightMetricsData.SensorStatus"></SensorStatus>
                 </CardHeaderActions>
             </MudCardHeader>
             <MudCardContent>
-                <MudText Typo="Typo.h4" Class="pb-1">Scale #@scale.Id</MudText>
+                <MudText>Weight: <MudText Color="Color.Primary" Inline=true>@scale.Weight</MudText> / <MudText Color="Color.Secondary" Inline=true>@scale.Percentage%</MudText></MudText>
 
                 @if (scale.Beer != null)
                 {
                     <MudText Typo="Typo.h3" Class="pb-1">@scale.Beer.Name</MudText>
                     <MudText Typo="Typo.h5" Class="pb-1">@scale.Beer.Type @(scale.Beer.ABV)%</MudText>
-                    <MudText Typo="Typo.h5" Class="pb-1">@scale.Beer.OG - @scale.Beer.FG</MudText>
+                    <MudText Typo="Typo.h5" Class="pb-1">Gravity: @scale.Beer.OG - @scale.Beer.FG</MudText>
                     <MudText Class="pb-1">@scale.Beer.Description</MudText>
                 }
 
@@ -57,7 +58,7 @@
                 {
                     <MudStack Row="true" Class="my-2">
                         <MudPaper Class="pa-2">Weight: @scale.WeightMetricsData.CurrentWeight</MudPaper>
-                        <MudPaper Class="pa-2">Count: @scale.WeightMetricsData.NumWeightChanges</MudPaper>
+                        <MudPaper Class="pa-2">Count: @scale.WeightMetricsData.Count</MudPaper>
                         <MudPaper Class="pa-2">Average:  @scale.WeightMetricsData.Average</MudPaper>
                         <MudPaper Class="pa-2">Min:  @scale.WeightMetricsData.Min</MudPaper>
                         <MudPaper Class="pa-2">Max:  @scale.WeightMetricsData.Max</MudPaper>
@@ -103,15 +104,25 @@
     }
 
     <Logs></Logs>
+
+    <div class="d-flex justify-center pb-6">
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.DeleteForever" Color="Color.Error"
+                   OnClick="PurgeWeightMetricsAsync">Purge Weight Metrics</MudButton>
+    </div>
 }
 
 @inject HubConnectionFactory HubConnectionFactory
 @inject IScaleDashboardQueryService QueryService
+@inject IScaleCommandService CommandService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 @code {
     private HubConnection hubConnection;
     ScaleDashboardModel model = new ScaleDashboardModel();
     bool loading = false;
+
+    private IDictionary<int, SensorStatusOption> _initialStatuses = new Dictionary<int, SensorStatusOption>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -124,6 +135,9 @@
 
         hubConnection.On<int, int>(ScaleHub.ReceiveWeight, async (scaleId, weight) =>
         {
+            if (loading)
+                return;
+
             var scale = model.Scales.SingleOrDefault(s => s.Id == scaleId);
             if (scale != null)
             {
@@ -135,6 +149,9 @@
 
         hubConnection.On<int, decimal>(ScaleHub.ReceiveWeightPercentage, async (scaleId, percentage) =>
         {
+            if (loading)
+                return;
+
             var scale = model.Scales.SingleOrDefault(s => s.Id == scaleId);
             if (scale != null)
             {
@@ -154,6 +171,34 @@
         {
             scale.WeightMetricsData = await QueryService.GetWeightMetricsAsync(scaleId, numOfWeightChanges);
             await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    protected async Task PurgeWeightMetricsAsync()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+           "Purge Warning",
+           "This will purge all weight change data recorded for all Scales. This action cannot be undone.",
+           yesText: "Purge", cancelText: "Cancel");
+
+        if (result == true)
+        {
+            try
+            {
+                loading = true;
+
+                await CommandService.PurgeAllWeightMetricsAsync();
+
+                model = await QueryService.BuildModelAsync();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error Purging Data - {ex.Message}", Severity.Error);
+            }
+            finally
+            {
+                loading = false;
+            }
         }
     }
 
