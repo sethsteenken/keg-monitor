@@ -7,6 +7,7 @@
 <MudIconButton Icon="@Icons.Material.Filled.MonitorHeart" 
                Color="@Sensor.Status.Color" 
                Title="@Sensor.Status.Text"
+               Style="@(DisableManualToggle ? "cursor:default" : "")"
                OnClick="ClickAsync"/>
 
 @inject HubConnectionFactory HubConnectionFactory
@@ -22,6 +23,9 @@
 
     [Parameter]
     public SensorStatusOption InitialStatus { get; set; }
+
+    [Parameter]
+    public bool DisableManualToggle { get; set; } = false;
 
     protected ScaleSensor Sensor { get; set; } = new ScaleSensor();
 
@@ -49,7 +53,7 @@
                     WasManuallySet = false;
                     return;
                 }
-                    
+
                 await Sensor.SetAsOnlineAsync();
             }
         });
@@ -59,6 +63,9 @@
 
     public async Task ClickAsync()
     {
+        if (DisableManualToggle)
+            return;
+
         switch (Status)
         {
             case SensorStatusOption.Unknown:
