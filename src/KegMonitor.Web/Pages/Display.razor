@@ -9,7 +9,7 @@
 @foreach (var scale in scales)
 {
     <MudCard Elevation="10" Class="my-4 mx-2">
-        @if (scale.Active && scale.Beer != null && !string.IsNullOrWhiteSpace(scale.Beer.ImagePath))
+        @if (scale.Beer != null && !string.IsNullOrWhiteSpace(scale.Beer.ImagePath))
         {
             <MudCardMedia Image="@scale.Beer.ImagePath" Height="180" Alt="@scale.Beer.Name" />
         }
@@ -20,16 +20,7 @@
                 <MudText Typo="Typo.h6" Class="pb-1">@scale.Beer.Type @(scale.Beer.ABV)% ABV</MudText>
                 <MudText Class="pb-1" Typo="Typo.body2">@scale.Beer.Description</MudText>
             }
-
-            @if (scale.Active)
-            {
-                <MudProgressLinear Color="@scale.Color" Rounded="true" Size="Size.Large" @bind-Value="@scale.Percentage" />
-            }
-            else
-            {
-                <MudText Typo="Typo.h3" Class="pb-1"><span class="red-text">Inactive</span></MudText>
-                <MudProgressLinear Color="Color.Dark" Rounded="true" Size="Size.Large" Value="0" />
-            }
+            <MudProgressLinear Color="@scale.Color" Rounded="true" Size="Size.Large" @bind-Value="@scale.Percentage" />
         </MudCardContent>
     </MudCard>
 }
