@@ -6,5 +6,6 @@
         Task UpdateActiveStateAsync(int scaleId, bool active);
         Task<int> SaveAsync(ScaleEditModel model);
         Task DeleteAsync(int id);
+        Task PurgeAllWeightMetricsAsync();
     }
 }

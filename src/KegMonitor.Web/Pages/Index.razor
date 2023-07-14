@@ -104,10 +104,18 @@
     }
 
     <Logs></Logs>
+
+    <div class="d-flex justify-center pb-6">
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.DeleteForever" Color="Color.Error"
+                   OnClick="PurgeWeightMetricsAsync">Purge Weight Metrics</MudButton>
+    </div>
 }
 
 @inject HubConnectionFactory HubConnectionFactory
 @inject IScaleDashboardQueryService QueryService
+@inject IScaleCommandService CommandService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 @code {
     private HubConnection hubConnection;
@@ -125,6 +133,9 @@
 
         hubConnection.On<int, int>(ScaleHub.ReceiveWeight, async (scaleId, weight) =>
         {
+            if (loading)
+                return;
+
             var scale = model.Scales.SingleOrDefault(s => s.Id == scaleId);
             if (scale != null)
             {
@@ -136,6 +147,9 @@
 
         hubConnection.On<int, decimal>(ScaleHub.ReceiveWeightPercentage, async (scaleId, percentage) =>
         {
+            if (loading)
+                return;
+
             var scale = model.Scales.SingleOrDefault(s => s.Id == scaleId);
             if (scale != null)
             {
@@ -155,6 +169,34 @@
         {
             scale.WeightMetricsData = await QueryService.GetWeightMetricsAsync(scaleId, numOfWeightChanges);
             await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    protected async Task PurgeWeightMetricsAsync()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+           "Purge Warning",
+           "This will purge all weight change data recorded for all Scales. This action cannot be undone.",
+           yesText: "Purge", cancelText: "Cancel");
+
+        if (result == true)
+        {
+            try
+            {
+                loading = true;
+
+                await CommandService.PurgeAllWeightMetricsAsync();
+
+                model = await QueryService.BuildModelAsync();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error Purging Data - {ex.Message}", Severity.Error);
+            }
+            finally
+            {
+                loading = false;
+            }
         }
     }
 

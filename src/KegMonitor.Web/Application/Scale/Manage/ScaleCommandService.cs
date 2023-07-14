@@ -106,5 +106,10 @@ namespace KegMonitor.Web.Application
             _dbContext.Scales.Remove(scale);
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task PurgeAllWeightMetricsAsync()
+        {
+            await _dbContext.Database.ExecuteSqlRawAsync("TRUNCATE scale_weight_changes RESTART IDENTITY;");
+        }
     }
 }
