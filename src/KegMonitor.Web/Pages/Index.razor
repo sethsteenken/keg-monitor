@@ -30,7 +30,7 @@
                         var editLink = $"/scale/edit/{scale.Id}/";
                     }
                     <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" Href="@editLink" />
-                    <MudIconButton Icon="@Icons.Material.Filled.MonitorHeart" Color="@scale.Sensor.StatusColor" Title="@scale.Sensor.StatusText" />
+                    <SensorStatus Sensor="@scale.Sensor" ScaleId="@scale.Id" Online="@scale.WeightMetricsData.HasRecentTimestamp"></SensorStatus>
                 </CardHeaderActions>
             </MudCardHeader>
             <MudCardContent>
@@ -119,11 +119,6 @@
         loading = true;
         model = await QueryService.BuildModelAsync();
 
-        foreach (var scale in model.Scales)
-        {
-            await scale.InitializeSensorAsync();
-        }
-
         hubConnection = new HubConnectionBuilder()
             .WithUrl(HubConnectionFactory.FormatUrl(ScaleHub.Endpoint))
             .Build();
@@ -133,7 +128,6 @@
             var scale = model.Scales.SingleOrDefault(s => s.Id == scaleId);
             if (scale != null)
             {
-                await scale.Sensor.BringOnlineAsync();
                 scale.Weight = weight;
                 await InvokeAsync(StateHasChanged);
                 await UpdateWeightMetricsAsync(scaleId, scale.WeightMetricsData.NumWeightChanges);
@@ -168,14 +162,5 @@
     {
         if (hubConnection is not null)
             await hubConnection.DisposeAsync();
-
-        if (model != null && model.Scales != null)
-        {
-            foreach (var scale in model.Scales)
-            {
-                if (scale.Sensor != null)
-                    await scale.Sensor.DisposeAsync();
-            }
-        }
     }
 }

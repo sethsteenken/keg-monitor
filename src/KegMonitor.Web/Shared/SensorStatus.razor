@@ -1,0 +1,56 @@
+﻿@using KegMonitor.Core
+@using KegMonitor.SignalR
+@using KegMonitor.Web.Hubs
+@using Microsoft.AspNetCore.SignalR.Client
+@implements IAsyncDisposable
+
+<MudIconButton Icon="@Icons.Material.Filled.MonitorHeart" 
+               Color="@Sensor.StatusColor" 
+               Title="@Sensor.StatusText" />
+
+@inject HubConnectionFactory HubConnectionFactory
+
+@code {
+    private HubConnection hubConnection;
+
+    [Parameter]
+    public int ScaleId { get; set; }
+
+    [Parameter]
+    public bool Online { get; set; }
+
+    [Parameter]
+    public ScaleSensor Sensor { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Online)
+            await Sensor.BringOnlineAsync();
+        else
+            await Sensor.ResetMonitoringTimerAsync();
+
+        hubConnection = new HubConnectionBuilder()
+           .WithUrl(HubConnectionFactory.FormatUrl(ScaleHub.Endpoint))
+           .Build();
+
+        hubConnection.On<int, int>(ScaleHub.ReceiveWeight, async (scaleId, weight) =>
+        {
+            if (scaleId == ScaleId)
+            {
+                await Sensor.BringOnlineAsync();
+                await InvokeAsync(StateHasChanged);
+            }
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+            await hubConnection.DisposeAsync();
+
+        if (Sensor is not null)
+            await Sensor.DisposeAsync();
+    }
+}

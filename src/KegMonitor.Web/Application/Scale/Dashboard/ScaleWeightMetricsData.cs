@@ -29,5 +29,17 @@ namespace KegMonitor.Web.Application
         public int Min { get; private set; }
         public int Max { get; private set; }
         public decimal Average { get; private set; }
+
+        public bool HasRecentTimestamp
+        {
+            get
+            {
+                if (WeightChangesForDisplay == null)
+                    return false;
+
+                return WeightChangesForDisplay.Any()
+                    && WeightChangesForDisplay.Select(w => w.TimeStamp).First() >= DateTime.Now.AddSeconds(-15);
+            }
+        }
     }
 }
