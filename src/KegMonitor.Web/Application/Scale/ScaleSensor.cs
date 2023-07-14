@@ -1,19 +1,35 @@
-﻿using MudBlazor;
-
-namespace KegMonitor.Web.Application
+﻿namespace KegMonitor.Web.Application
 {
     public class ScaleSensor : IAsyncDisposable
     {
-        public ScaleSensor()
+        public ScaleSensor(SensorStatus status = null)
         {
-            StatusColor = Color.Default;
-            StatusText = "Checking sensor...";
+            Status = status ?? new SensorStatus(SensorStatusOption.Unknown);
         }
 
-        public bool Online { get; private set; }
-        public Color StatusColor { get; private set; }
-        public string StatusText { get; private set; }
+        public SensorStatus Status { get; private set; }
         public Timer Timer { get; private set; }
+        protected bool ManuallySetStatus { get; private set; }
+
+        public event EventHandler OnChange;
+
+        public async Task InitializeAsync()
+        {
+            switch (Status.Status)
+            {
+                case SensorStatusOption.Unknown:
+                    await ResetMonitoringTimerAsync();
+                    break;
+                case SensorStatusOption.Online:
+                    await SetAsOnlineAsync();
+                    break;
+                case SensorStatusOption.Offline:
+                    await SetAsOfflineAsync();
+                    break;
+            };
+
+            InvokeChange();
+        }
 
         public Task ResetMonitoringTimerAsync()
         {
@@ -29,28 +45,33 @@ namespace KegMonitor.Web.Application
             {
                 Timer = new Timer(async (state) =>
                 {
-                    await TakeOfflineAsync();
+                    await SetAsOfflineAsync();
                 }, null, dueTime, period);
             }
 
             return Task.CompletedTask;
         }
 
-        public async Task BringOnlineAsync()
+        public async Task SetAsOnlineAsync()
         {
-            Online = true;
-            StatusColor = Color.Success;
-            StatusText = "Sensor online.";
+            Status = new SensorStatus(SensorStatusOption.Online);
             await ResetMonitoringTimerAsync();
+
+            InvokeChange();
         }
 
-        public Task TakeOfflineAsync()
+        public Task SetAsOfflineAsync()
         {
-            Online = false;
-            StatusColor = Color.Error;
-            StatusText = "Sensor offline.";
+            Status = new SensorStatus(SensorStatusOption.Offline);
+            InvokeChange();
 
             return Task.CompletedTask;
+        }
+
+        protected void InvokeChange()
+        {
+            OnChange?.Invoke(this, new EventArgs());
+
         }
 
         public async ValueTask DisposeAsync()

@@ -5,10 +5,14 @@
 @implements IAsyncDisposable
 
 <MudIconButton Icon="@Icons.Material.Filled.MonitorHeart" 
-               Color="@Sensor.StatusColor" 
-               Title="@Sensor.StatusText" />
+               Color="@Sensor.Status.Color" 
+               Title="@Sensor.Status.Text"
+               OnClick="ClickAsync"/>
 
 @inject HubConnectionFactory HubConnectionFactory
+@inject ISensorManager SensorManager
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 @code {
     private HubConnection hubConnection;
@@ -17,25 +21,20 @@
     public int ScaleId { get; set; }
 
     [Parameter]
-    public Application.SensorStatus Status { get; set; } = Application.SensorStatus.Unknown;
+    public SensorStatusOption InitialStatus { get; set; }
 
-    [Parameter]
-    public ScaleSensor Sensor { get; set; }
+    protected ScaleSensor Sensor { get; set; } = new ScaleSensor();
+
+    protected SensorStatusOption Status => Sensor.Status.Status;
+
+    protected bool WasManuallySet { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        switch (Status)
-        {
-            case Application.SensorStatus.Unknown:
-                await Sensor.ResetMonitoringTimerAsync();
-                break;
-            case Application.SensorStatus.Online:
-                await Sensor.BringOnlineAsync();
-                break;
-            case Application.SensorStatus.Offline:
-                await Sensor.TakeOfflineAsync();
-                break;
-        };
+        Sensor = new ScaleSensor(new Application.SensorStatus(InitialStatus));
+        Sensor.OnChange += async (obj, args) => await InvokeAsync(StateHasChanged);
+
+        await Sensor.InitializeAsync();
 
         hubConnection = new HubConnectionBuilder()
            .WithUrl(HubConnectionFactory.FormatUrl(ScaleHub.Endpoint))
@@ -45,12 +44,75 @@
         {
             if (scaleId == ScaleId)
             {
-                await Sensor.BringOnlineAsync();
-                await InvokeAsync(StateHasChanged);
+                if (WasManuallySet && Status != SensorStatusOption.Online)
+                {
+                    WasManuallySet = false;
+                    return;
+                }
+                    
+                await Sensor.SetAsOnlineAsync();
             }
         });
 
         await hubConnection.StartAsync();
+    }
+
+    public async Task ClickAsync()
+    {
+        switch (Status)
+        {
+            case SensorStatusOption.Unknown:
+                Snackbar.Add("Waiting on connection to sensor...", Severity.Info);
+                break;
+            case SensorStatusOption.Online:
+                await DisableSensorAsync();
+                break;
+            case SensorStatusOption.Offline:
+                await EnableSensorAsync();
+                break;
+        };
+    }
+
+    protected async Task DisableSensorAsync()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+          "Sensor Warning",
+          "Take sensor offline? This will prevent periodic sensor weight changes from being pushed to the application.",
+          yesText: "Take Offline", cancelText: "Cancel");
+
+        if (result == true)
+        {
+            if (Status == SensorStatusOption.Offline)
+            {
+                Snackbar.Add("Sensor already offline.", Severity.Info);
+                return;
+            }
+
+            var updateResult = await SensorManager.TakeOfflineAsync(ScaleId);
+
+            if (updateResult.Success)
+                await Sensor.SetAsOfflineAsync();
+
+            Snackbar.Add(updateResult.Message, updateResult.Success ? Severity.Info : Severity.Error);
+            WasManuallySet = true;
+        }
+    }
+
+    protected async Task EnableSensorAsync()
+    {
+        if (Status == SensorStatusOption.Online)
+        {
+            Snackbar.Add("Sensor already online.", Severity.Info);
+            return;
+        }
+
+        var updateResult = await SensorManager.BringOnlineAsync(ScaleId);
+
+        if (updateResult.Success)
+            await Sensor.SetAsOnlineAsync();
+
+        Snackbar.Add(updateResult.Message, updateResult.Success ? Severity.Success : Severity.Error);
+        WasManuallySet = true;
     }
 
     public async ValueTask DisposeAsync()

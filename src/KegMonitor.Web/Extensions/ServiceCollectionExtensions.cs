@@ -79,6 +79,17 @@ namespace KegMonitor.Web
             services.AddScoped<IScaleWeightHandler, ScaleWeightHandler>();
             services.AddSingleton<IHealthChecker, HealthChecker>();
 
+            services.AddSingleton<HttpClient>(serviceProvider =>
+            {
+                var handler = new SocketsHttpHandler()
+                {
+                    PooledConnectionLifetime = TimeSpan.FromMinutes(5),
+                };
+                return new HttpClient(handler);
+            });
+
+            services.AddSingleton<ISensorManager, SensorManager>();
+
             return services;
         }
     }

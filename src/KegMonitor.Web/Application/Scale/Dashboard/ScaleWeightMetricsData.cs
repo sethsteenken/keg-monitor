@@ -30,25 +30,25 @@ namespace KegMonitor.Web.Application
         public int Max { get; private set; }
         public decimal Average { get; private set; }
 
-        public SensorStatus SensorStatus
+        public SensorStatusOption SensorStatus
         {
             get
             {
                 if (WeightChangesForDisplay == null)
-                    return SensorStatus.Unknown;
+                    return SensorStatusOption.Unknown;
 
                 if (WeightChangesForDisplay.Any())
                 {
                     var latestTimeStamp = WeightChangesForDisplay.Select(w => w.TimeStamp).First();
 
                     if (latestTimeStamp >= DateTime.Now.AddSeconds(-15))
-                        return SensorStatus.Online;
+                        return SensorStatusOption.Online;
 
                     if (latestTimeStamp < DateTime.Now.AddSeconds(-30))
-                        return SensorStatus.Offline;
+                        return SensorStatusOption.Offline;
                 }
 
-                return SensorStatus.Unknown;
+                return SensorStatusOption.Unknown;
             }
         }
     }

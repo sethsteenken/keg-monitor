@@ -30,7 +30,7 @@
                         var editLink = $"/scale/edit/{scale.Id}/";
                     }
                     <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" Href="@editLink" />
-                    <SensorStatus Sensor="@scale.Sensor" ScaleId="@scale.Id" Status="@scale.WeightMetricsData.SensorStatus"></SensorStatus>
+                    <SensorStatus ScaleId="@scale.Id" InitialStatus="@scale.WeightMetricsData.SensorStatus"></SensorStatus>
                 </CardHeaderActions>
             </MudCardHeader>
             <MudCardContent>
@@ -121,6 +121,8 @@
     private HubConnection hubConnection;
     ScaleDashboardModel model = new ScaleDashboardModel();
     bool loading = false;
+
+    private IDictionary<int, SensorStatusOption> _initialStatuses = new Dictionary<int, SensorStatusOption>();
 
     protected override async Task OnInitializedAsync()
     {
