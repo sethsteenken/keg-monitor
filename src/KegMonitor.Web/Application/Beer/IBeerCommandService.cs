@@ -3,5 +3,6 @@
     public interface IBeerCommandService
     {
         Task<int> SaveAsync(BeerEditModel model);
+        Task DeleteAsync(int id);
     }
 }

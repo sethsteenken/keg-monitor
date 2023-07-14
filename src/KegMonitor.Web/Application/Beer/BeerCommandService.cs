@@ -49,5 +49,21 @@ namespace KegMonitor.Web.Application
 
             return beer.Id;
         }
+
+        public async Task DeleteAsync(int id)
+        {
+            var beer = await _dbContext.Beers.FirstOrDefaultAsync(s => s.Id == id);
+            if (beer == null)
+                throw new InvalidOperationException("Beer not found.");
+
+            await _dbContext.ScaleWeightChanges.Where(swc => swc.Beer != null && swc.Beer.Id == id)
+                                               .ExecuteDeleteAsync();
+
+            await _dbContext.BeerPours.Where(swc => swc.Beer.Id == id)
+                                      .ExecuteDeleteAsync();
+
+            _dbContext.Beers.Remove(beer);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }

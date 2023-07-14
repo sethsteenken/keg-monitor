@@ -169,7 +169,7 @@ else
     {
         bool? result = await DialogService.ShowMessageBox(
            "Deletion Warning",
-           "Deleting this Scale is a permanent action. Any previous weight recordings will be deleted. Any pour recordings under this Scale will have the Scale assignment removed from that pour.",
+           "Deleting this Scale is a permanent action. Any previous weight changes and pour metrics will be deleted.",
            yesText: "Delete", cancelText: "Cancel");
 
         if (result == true)
