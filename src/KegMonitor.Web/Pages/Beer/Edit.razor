@@ -82,7 +82,7 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        Title = Id == null ? "Add new Beer" : "Edit Beer";
+        Title = Id == null ? "Add New Beer" : "Edit Beer";
         model = await QueryService.BuildEditModelAsync(Id);
     }
 
