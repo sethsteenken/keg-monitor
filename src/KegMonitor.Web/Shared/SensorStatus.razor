@@ -17,17 +17,25 @@
     public int ScaleId { get; set; }
 
     [Parameter]
-    public bool Online { get; set; }
+    public Application.SensorStatus Status { get; set; } = Application.SensorStatus.Unknown;
 
     [Parameter]
     public ScaleSensor Sensor { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        if (Online)
-            await Sensor.BringOnlineAsync();
-        else
-            await Sensor.ResetMonitoringTimerAsync();
+        switch (Status)
+        {
+            case Application.SensorStatus.Unknown:
+                await Sensor.ResetMonitoringTimerAsync();
+                break;
+            case Application.SensorStatus.Online:
+                await Sensor.BringOnlineAsync();
+                break;
+            case Application.SensorStatus.Offline:
+                await Sensor.TakeOfflineAsync();
+                break;
+        };
 
         hubConnection = new HubConnectionBuilder()
            .WithUrl(HubConnectionFactory.FormatUrl(ScaleHub.Endpoint))

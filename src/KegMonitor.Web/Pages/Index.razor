@@ -30,7 +30,7 @@
                         var editLink = $"/scale/edit/{scale.Id}/";
                     }
                     <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" Href="@editLink" />
-                    <SensorStatus Sensor="@scale.Sensor" ScaleId="@scale.Id" Online="@scale.WeightMetricsData.HasRecentTimestamp"></SensorStatus>
+                    <SensorStatus Sensor="@scale.Sensor" ScaleId="@scale.Id" Status="@scale.WeightMetricsData.SensorStatus"></SensorStatus>
                 </CardHeaderActions>
             </MudCardHeader>
             <MudCardContent>
