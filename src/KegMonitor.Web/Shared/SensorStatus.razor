@@ -22,7 +22,7 @@
     public int ScaleId { get; set; }
 
     [Parameter]
-    public SensorStatusOption InitialStatus { get; set; }
+    public SensorStatusOption InitialStatus { get; set; } = SensorStatusOption.Unknown;
 
     [Parameter]
     public bool DisableManualToggle { get; set; } = false;

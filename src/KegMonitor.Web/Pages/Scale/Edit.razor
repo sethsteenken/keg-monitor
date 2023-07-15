@@ -3,32 +3,55 @@
 @using KegMonitor.Web.Hubs
 @using Microsoft.AspNetCore.SignalR.Client
 
-<PageHeader>Edit Scale #@Id</PageHeader>
+@{
+    string title = $"Edit Scale #{Id}";
+}
+
+<PageTitle>@title</PageTitle>
 
 @if (model != null)
 {
-    <MudText Typo="Typo.h5">Weight: @weight</MudText>
+    <MudCard Elevation="10" Class="my-6">
+        <MudCardHeader Class="pb-0">
+            <CardHeaderContent>
+                <MudText Typo="Typo.h4" Class="pb-1">@title</MudText>
+                <MudText Typo="Typo.h5">Weight: @weight</MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                @if (model.Active)
+                {
+                    <MudIconButton Icon="@Icons.Material.Filled.CheckBox"
+                                   Title="Scale is currently Active. Click to deactivate."
+                                   Color="Color.Success"
+                                   OnClick="ConfirmDeactivateAsync" />
+                }
+                else
+                {
+                    <MudIconButton Icon="@Icons.Material.Filled.Archive"
+                                   Title="Scale is currently Inactive. Click to activate."
+                                   Color="Color.Error"
+                                   OnClick="ConfirmActivateAsync"/>
+                }
+                <SensorStatus ScaleId="@model.Id"></SensorStatus>
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent>
+            @if (model.Active)
+            {
+                <MudText>This Scale is currently <span class="green-text">Active</span> and cannot be edited.</MudText>
+            }
+            else
+            {
+                <MudText>This Scale is currently <span class="red-text">Inactive</span> and may be edited.</MudText>
+            }
+        </MudCardContent>
+    </MudCard>
+    
 
     <EditForm Model="@model" OnValidSubmit="SubmitAsync">
         <DataAnnotationsValidator />
 
         <MudGrid>
-            <MudItem xs="12">
-                <MudPaper Class="mud-width-full pa-5">
-                    @if (model.Active)
-                    {
-                        <MudText>This Scale is currently <span class="green-text">Active</span> and cannot be edited.</MudText>
-                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Archive" Color="Color.Error" 
-                            OnClick="ConfirmDeactivateAsync">Deactivate</MudButton>
-                    }
-                    else
-                    {
-                        <MudText>This Scale is currently <span class="red-text">Inactive</span> and may be edited.<br/></MudText>
-                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" 
-                            OnClick="ConfirmActivateAsync">Activate</MudButton>
-                    }
-                </MudPaper>
-            </MudItem>
             <MudItem xs="12">
                 <MudPaper Class="mud-width-full pa-5">
                     <MudText Typo="Typo.h5">Beer</MudText>
