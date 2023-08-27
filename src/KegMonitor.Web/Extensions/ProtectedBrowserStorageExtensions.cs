@@ -4,8 +4,6 @@ namespace KegMonitor.Web
 {
     public static class ProtectedBrowserStorageExtensions
     {
-        public const bool DefaultDarkMode = true;
-
         public static async Task<bool> GetOrSetDarkThemeAsync(
             this ProtectedBrowserStorage storage, bool value)
         {

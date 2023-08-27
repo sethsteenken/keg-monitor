@@ -1,0 +1,33 @@
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+
+<MudSwitch CheckedChanged="Toggle" Checked="@isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Dark Mode" />
+
+@inject ProtectedSessionStorage ProtectedLocalStore
+
+@code {
+    public const bool DarkModeDefault = true;
+    bool isDarkMode = DarkModeDefault;
+
+    [Parameter]
+    public EventCallback<bool> OnChange { get; set; }
+
+    protected async Task Toggle()
+    {
+        isDarkMode = !isDarkMode;
+        await ProtectedLocalStore.SetDarkThemeAsync(isDarkMode);
+        await OnChange.InvokeAsync(isDarkMode);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        isDarkMode = await ProtectedLocalStore.GetOrSetDarkThemeAsync(isDarkMode);
+        if (isDarkMode != DarkModeDefault)
+        {
+            await OnChange.InvokeAsync(isDarkMode);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+}
