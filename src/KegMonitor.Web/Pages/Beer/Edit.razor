@@ -51,9 +51,12 @@
                     <MudButtonGroup OverrideStyles="false">
                         <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary"
                                    StartIcon="@Icons.Material.Filled.Save">Save</MudButton>
-                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled"
-                                   Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"
-                                   OnClick="DeleteAsync">Delete</MudButton>
+                        @if (!IsNew)
+                        {
+                            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled"
+                                       Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"
+                                       OnClick="DeleteAsync">Delete</MudButton>
+                        }
                     </MudButtonGroup>
                 </div>
             </MudItem>
@@ -80,9 +83,11 @@ else
 
     BeerEditModel model;
 
+    protected bool IsNew => Id == null;
+
     protected override async Task OnParametersSetAsync()
     {
-        Title = Id == null ? "Add New Beer" : "Edit Beer";
+        Title = IsNew ? "Add New Beer" : "Edit Beer";
         model = await QueryService.BuildEditModelAsync(Id);
     }
 
@@ -102,7 +107,7 @@ else
 
     protected async Task DeleteAsync()
     {
-        if (model.Id == null)
+        if (IsNew)
             return;
 
         bool? result = await DialogService.ShowMessageBox(
