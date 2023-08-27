@@ -16,7 +16,13 @@
         <MudCardContent>
             @if (scale.Beer != null)
             {
-                <MudText Typo="Typo.h4" Class="pb-1">@scale.Beer.Name</MudText>
+                <div class="d-flex">
+                    <MudText Typo="Typo.h4" Class="pb-1">@scale.Beer.Name</MudText>
+                    <div class="ml-auto">
+                        <SensorStatus ScaleId="@scale.Id" DisableManualToggle="true"></SensorStatus>
+                    </div>
+                </div>
+                
                 <MudText Typo="Typo.h6" Class="pb-1">@scale.Beer.Type @(scale.Beer.ABV)% ABV</MudText>
                 <MudText Class="pb-1" Typo="Typo.body2">@scale.Beer.Description</MudText>
             }
