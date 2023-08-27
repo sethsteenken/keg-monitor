@@ -7,8 +7,10 @@
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudImage Src="/img/beer-tap.png" Alt="Beer tap" Class="rounded-lg" Fluid="true" ObjectFit="ObjectFit.Contain" Height="50" Width="50"></MudImage>
-        <MudLink Typo="Typo.h5" Class="ml-3" Href="/" Color="Color.Default">Keg Monitor</MudLink>
+        <MudText Typo="Typo.h5" Class="ml-3">Keg Monitor</MudText>
         <MudSpacer />
+        <MudIconButton Icon="@Icons.Material.Filled.SpaceDashboard"
+                       ButtonType="ButtonType.Button" OnClick="OnDashboardClick"></MudIconButton>
         <DarkModeToggle OnChange="(darkMode) => isDarkMode = darkMode"></DarkModeToggle>
     </MudAppBar>
     <MudMainContent>
@@ -18,8 +20,14 @@
     </MudMainContent>
 </MudLayout>
 
+@inject NavigationManager NavManager
 
 @code {
     bool isDarkMode = DarkModeToggle.DarkModeDefault;
     MudTheme theme = new MudTheme();
+
+    protected void OnDashboardClick()
+    {
+        NavManager.NavigateTo("/", forceLoad: false);
+    }
 }
