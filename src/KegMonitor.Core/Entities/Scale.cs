@@ -35,6 +35,9 @@
         public IEnumerable<ScaleWeightChange> WeightChanges { get; private set; } = new List<ScaleWeightChange>();
         public DateTime LastUpdatedDate { get; set; }
 
+        public DateTime? LastEnabledDate { get; set; }
+        public DateTime? LastDisabledDate { get; set; }
+
         public decimal CalculatePercentage(int weight)
         {
             var weightDiff = FullWeight - EmptyWeight;
@@ -47,6 +50,9 @@
         public bool IsPour(int weight)
         {
             if (CurrentWeight == weight)
+                return false;
+
+            if (LastEnabledDate != null && LastEnabledDate.Value > DateTime.UtcNow.AddSeconds(-10))
                 return false;
 
             var difference = Math.Abs(CurrentWeight - weight);
@@ -78,7 +84,7 @@
                     Beer.AddPour(this, timeStamp);
             }
 
-            return new ScaleUpdateResult(Recorded: true, PourOccurred: isPourEvent);
+            return new ScaleUpdateResult(PourOccurred: isPourEvent);
         }
     }
 }

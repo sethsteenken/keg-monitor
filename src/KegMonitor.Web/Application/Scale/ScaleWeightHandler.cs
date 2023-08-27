@@ -44,7 +44,7 @@ namespace KegMonitor.Web.Application
 
             await context.SaveChangesAsync();
 
-            _logger.LogInformation($"Scale {scale.Id} - Update Result: Recorded?: {weightRecordingResult.Recorded} , Pour?: {weightRecordingResult.PourOccurred}");
+            _logger.LogInformation($"Scale {scale.Id} - Pour?: {weightRecordingResult.PourOccurred}");
 
             foreach (var notifier in _weightChangeNotifiers)
             {

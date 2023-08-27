@@ -39,6 +39,9 @@ namespace KegMonitor.Web.Application
                 if (jsonResponse.TelePeriod != _period)
                     return SensorUpdateResult.Failed($"Sensor failed to come online. TelePeriod set to {jsonResponse.TelePeriod}.");
 
+                scale.LastEnabledDate = DateTime.UtcNow;
+                await context.SaveChangesAsync();
+
                 return SensorUpdateResult.Succeeded("Sensor has been brought online successfully.");
             }
             catch (Exception ex)
@@ -66,6 +69,9 @@ namespace KegMonitor.Web.Application
                 var jsonResponse = await response.Content.ReadFromJsonAsync<SensorTelePeriodCommandResult>();
                 if (jsonResponse.TelePeriod != 0)
                     return SensorUpdateResult.Failed($"Sensor failed to go offline. TelePeriod set to {jsonResponse.TelePeriod}.");
+
+                scale.LastDisabledDate = DateTime.UtcNow;
+                await context.SaveChangesAsync();
 
                 return SensorUpdateResult.Succeeded("Sensor has been taken offline successfully.");
             }

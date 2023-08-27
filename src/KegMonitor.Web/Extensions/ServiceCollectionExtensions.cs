@@ -37,7 +37,7 @@ namespace KegMonitor.Web
 
                 client.ApplicationMessageReceivedAsync += async msg =>
                 {
-                    var payload = JsonSerializer.Deserialize<SensorPayload>(msg.ApplicationMessage.Payload);
+                    var payload = JsonSerializer.Deserialize<SensorPayload>(msg.ApplicationMessage.PayloadSegment);
 
                     await using (var scope = serviceProvider.CreateAsyncScope())
                     {
