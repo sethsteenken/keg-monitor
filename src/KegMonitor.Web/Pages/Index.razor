@@ -18,96 +18,98 @@
         <MudText Typo="Typo.body1" Class="pb-1">No Scales found. Click <MudLink Href="/scale/add/" Underline="Underline.Always">here</MudLink> to add a Scale.</MudText>
     }
 
-    @foreach (var scale in model.Scales)
-    {
-        <MudCard Elevation="10" Class="mb-6">
-            <MudCardHeader Class="pb-0">
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h4" Class="pb-1">Scale #@scale.Id</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    @{
-                        var editLink = $"/scale/edit/{scale.Id}/";
-                    }
-                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" Href="@editLink" />
-                    <SensorStatus ScaleId="@scale.Id" InitialStatus="@scale.WeightMetricsData.SensorStatus"></SensorStatus>
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText>Weight: <MudText Color="Color.Primary" Inline=true>@scale.Weight</MudText> / <MudText Color="Color.Secondary" Inline=true>@scale.Percentage%</MudText></MudText>
+    <MudExpansionPanels MultiExpansion="true" Class="mb-4">
+        @foreach (var scale in model.Scales)
+        {
+            <MudExpansionPanel HideIcon="true" Class="mb-2" IsInitiallyExpanded="true">
+                <TitleContent>
+                    <div class="d-flex">
+                        <MudText Typo="Typo.h4" Class="pb-1">Scale #@scale.Id</MudText>
+                        <div class="ml-auto">
+                            @{
+                                var editLink = $"/scale/edit/{scale.Id}/";
+                            }
+                            <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" Href="@editLink" />
+                            <SensorStatus ScaleId="@scale.Id" InitialStatus="@scale.WeightMetricsData.SensorStatus"></SensorStatus>
+                        </div>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    <MudText>Weight: <MudText Color="Color.Primary" Inline=true>@scale.Weight</MudText> / <MudText Color="Color.Secondary" Inline=true>@scale.Percentage%</MudText></MudText>
 
-                @if (scale.Beer != null)
-                {
-                    <MudText Typo="Typo.h3" Class="pb-1">@scale.Beer.Name</MudText>
-                    <MudText Typo="Typo.h5" Class="pb-1">@scale.Beer.Type @(scale.Beer.ABV)%</MudText>
-                    <MudText Typo="Typo.h5" Class="pb-1">Gravity: @scale.Beer.OG - @scale.Beer.FG</MudText>
-                    <MudText Class="pb-1">@scale.Beer.Description</MudText>
-                }
-
-                @if (scale.Active)
-                {
-                    <MudProgressLinear Color="@scale.Color" Rounded="true" Size="Size.Large" @bind-Value="@scale.Percentage" />
-                }
-                else
-                {
-                    <MudText Typo="Typo.h4" Class="pb-1 red-text">Inactive</MudText>
-                    <MudProgressLinear Color="Color.Dark" Rounded="true" Size="Size.Large" Value="0" />
-                }
-
-                @if (scale.WeightMetricsData != null)
-                {
-                    <MudStack Row="true" Class="my-2">
-                        <MudPaper Class="pa-2">Weight: @scale.WeightMetricsData.CurrentWeight</MudPaper>
-                        <MudPaper Class="pa-2">Count: @scale.WeightMetricsData.Count</MudPaper>
-                        <MudPaper Class="pa-2">Average:  @scale.WeightMetricsData.Average</MudPaper>
-                        <MudPaper Class="pa-2">Min:  @scale.WeightMetricsData.Min</MudPaper>
-                        <MudPaper Class="pa-2">Max:  @scale.WeightMetricsData.Max</MudPaper>
-                    </MudStack>
-
-                    <MudTable Items="@scale.WeightMetricsData.WeightChangesForDisplay" Breakpoint="Breakpoint.None"
-                      FixedHeader="true" Height="400px" Bordered="true" Dense="true" Hover="true">
-                        <HeaderContent>
-                            <MudTh>Timestamp</MudTh>
-                            <MudTh>Weight</MudTh>
-                            <MudTh>Pour?</MudTh>
-                        </HeaderContent>
-                        <RowTemplate>
-                            <MudTd DataLabel="Timestamp">@context.TimeStamp</MudTd>
-                            <MudTd DataLabel="Weight">@context.Weight</MudTd>
-                            <MudTd DataLabel="Pour">
-                                @if (context.IsPourEvent)
-                                {
-                                    <MudIcon Icon="@Icons.Material.Sharp.CheckCircle" Color="Color.Success" />
-                                }
-                            </MudTd>
-                        </RowTemplate>
-                    </MudTable>
-
-                    @if (scale.WeightMetricsData.Chart != null)
+                    @if (scale.Beer != null)
                     {
-                        <MudChart ChartType="ChartType.Line"
-                              ChartSeries="new List<ChartSeries>() { scale.WeightMetricsData.Chart.Data }"
-                              ChartOptions="@scale.WeightMetricsData.Chart.Options"
-                              XAxisLabels="@scale.WeightMetricsData.Chart.XLabels"
-                              Width="100%"
-                              Height="350px"></MudChart>
+                        <MudText Typo="Typo.h3" Class="pb-1">@scale.Beer.Name</MudText>
+                        <MudText Typo="Typo.h5" Class="pb-1">@scale.Beer.Type @(scale.Beer.ABV)%</MudText>
+                        <MudText Typo="Typo.h5" Class="pb-1">Gravity: @scale.Beer.OG - @scale.Beer.FG</MudText>
+                        <MudText Class="pb-1">@scale.Beer.Description</MudText>
                     }
 
-                    <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined" Class="d-flex justify-center flex-grow-1">
-                        <MudButton OnClick="() => UpdateWeightMetricsAsync(scale.Id, 20)">20</MudButton>
-                        <MudButton OnClick="() => UpdateWeightMetricsAsync(scale.Id, 100)">100</MudButton>
-                        <MudButton OnClick="() => UpdateWeightMetricsAsync(scale.Id, 500)">500</MudButton>
-                    </MudButtonGroup>
-                }
-            </MudCardContent>
-        </MudCard>
-    }
+                    @if (scale.Active)
+                    {
+                        <MudProgressLinear Color="@scale.Color" Rounded="true" Size="Size.Large" @bind-Value="@scale.Percentage" />
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.h4" Class="pb-1 red-text">Inactive</MudText>
+                        <MudProgressLinear Color="Color.Dark" Rounded="true" Size="Size.Large" Value="0" />
+                    }
+
+                    @if (scale.WeightMetricsData != null)
+                    {
+                        <MudStack Row="true" Class="my-2">
+                            <MudPaper Class="pa-2">Weight: @scale.WeightMetricsData.CurrentWeight</MudPaper>
+                            <MudPaper Class="pa-2">Count: @scale.WeightMetricsData.Count</MudPaper>
+                            <MudPaper Class="pa-2">Average:  @scale.WeightMetricsData.Average</MudPaper>
+                            <MudPaper Class="pa-2">Min:  @scale.WeightMetricsData.Min</MudPaper>
+                            <MudPaper Class="pa-2">Max:  @scale.WeightMetricsData.Max</MudPaper>
+                        </MudStack>
+
+                        <MudTable Items="@scale.WeightMetricsData.WeightChangesForDisplay" Breakpoint="Breakpoint.None" 
+                                  FixedHeader="true" Height="400px" Bordered="true" Dense="true" Hover="true">
+                            <HeaderContent>
+                                <MudTh>Timestamp</MudTh>
+                                <MudTh>Weight</MudTh>
+                                <MudTh>Pour?</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Timestamp">@context.TimeStamp</MudTd>
+                                <MudTd DataLabel="Weight">@context.Weight</MudTd>
+                                <MudTd DataLabel="Pour">
+                                    @if (context.IsPourEvent)
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Sharp.CheckCircle" Color="Color.Success" />
+                                    }
+                                </MudTd>
+                            </RowTemplate>
+                        </MudTable>
+
+                        @if (scale.WeightMetricsData.Chart != null)
+                        {
+                            <MudChart ChartType="ChartType.Line"
+                                      ChartSeries="new List<ChartSeries>() { scale.WeightMetricsData.Chart.Data }"
+                                      ChartOptions="@scale.WeightMetricsData.Chart.Options"
+                                      XAxisLabels="@scale.WeightMetricsData.Chart.XLabels"
+                                      Width="100%"
+                                      Height="350px"></MudChart>
+                        }
+
+                        <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined" Class="d-flex justify-center flex-grow-1">
+                            <MudButton OnClick="() => UpdateWeightMetricsAsync(scale.Id, 20)">20</MudButton>
+                            <MudButton OnClick="() => UpdateWeightMetricsAsync(scale.Id, 100)">100</MudButton>
+                            <MudButton OnClick="() => UpdateWeightMetricsAsync(scale.Id, 500)">500</MudButton>
+                        </MudButtonGroup>
+                    }
+                </ChildContent>
+            </MudExpansionPanel>
+        }
+    </MudExpansionPanels>
 
     <Logs></Logs>
 
     <div class="d-flex justify-center pb-6">
         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.DeleteForever" Color="Color.Error"
-                   OnClick="PurgeWeightMetricsAsync">Purge Weight Metrics</MudButton>
+               OnClick="PurgeWeightMetricsAsync">Purge Weight Metrics</MudButton>
     </div>
 }
 
