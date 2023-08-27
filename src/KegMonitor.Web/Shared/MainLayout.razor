@@ -43,7 +43,7 @@
 
 @code {
     bool drawerOpen = true;
-    bool isDarkMode = true;
+    bool isDarkMode = ProtectedBrowserStorageExtensions.DefaultDarkMode;
 
     MudTheme theme = new MudTheme();
     IEnumerable<int> scaleIds = new List<int>();
@@ -61,7 +61,12 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender)
+            return;
+
         isDarkMode = await ProtectedLocalStore.GetOrSetDarkThemeAsync(isDarkMode);
+        if (isDarkMode != ProtectedBrowserStorageExtensions.DefaultDarkMode)
+            StateHasChanged();
     }
 
     protected override async Task OnInitializedAsync()

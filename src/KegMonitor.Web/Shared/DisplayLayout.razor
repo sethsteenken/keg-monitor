@@ -10,7 +10,7 @@
         <MudImage Src="/img/beer-tap.png" Alt="Beer tap" Class="rounded-lg" Fluid="true" ObjectFit="ObjectFit.Contain" Height="50" Width="50"></MudImage>
         <MudLink Typo="Typo.h5" Class="ml-3" Href="/" Color="Color.Default">Keg Monitor</MudLink>
         <MudSpacer />
-        <MudSwitch CheckedChanged="ToggleDarkMode"Checked="@isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Dark Mode" />
+        <MudSwitch CheckedChanged="ToggleDarkMode" Checked="@isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Dark Mode" />
     </MudAppBar>
     <MudMainContent>
         <MudContainer>
@@ -22,7 +22,7 @@
 @inject ProtectedSessionStorage ProtectedLocalStore
 
 @code {
-    bool isDarkMode = true;
+    bool isDarkMode = ProtectedBrowserStorageExtensions.DefaultDarkMode;
 
     MudTheme theme = new MudTheme();
 
@@ -34,6 +34,11 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender)
+            return;
+
         isDarkMode = await ProtectedLocalStore.GetOrSetDarkThemeAsync(isDarkMode);
+        if (isDarkMode != ProtectedBrowserStorageExtensions.DefaultDarkMode)
+            StateHasChanged();
     }
 }
