@@ -35,6 +35,8 @@ namespace KegMonitor.Web.Application
                         Name = s.Beer.Name,
                         Type = s.Beer.Type,
                         ABV = s.Beer.ABV,
+                        OG = s.Beer.OG,
+                        FG = s.Beer.FG,
                         Description = s.Beer.Description,
                         ImagePath = s.Beer.ImagePath
                     }
@@ -72,7 +74,6 @@ namespace KegMonitor.Web.Application
             };
 
             var percentages = new List<double>();
-            
 
             for (int i = 0; i < numOfWeightChanges; i++)
             {
