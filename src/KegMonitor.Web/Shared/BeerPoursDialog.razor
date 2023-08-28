@@ -42,7 +42,7 @@
             pours = beerPours.OrderByDescending(p => p.TimeStamp).Select(p => new BeerPourDisplayItem()
             {
                 Name = $"Scale #{p.Scale.Id}",
-                TimeStamp = p.TimeStamp.ToLocalTime(),
+                TimeStamp = p.TimeStamp,
             }).ToList();
         }
         finally

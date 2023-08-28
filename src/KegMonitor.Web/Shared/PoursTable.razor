@@ -9,7 +9,7 @@
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="@ItemType">@context.Name</MudTd>
-            <MudTd DataLabel="Timestamp">@context.TimeStamp.ToString("MM/dd/yyyy h:mm:ss tt")</MudTd>
+            <MudTd DataLabel="Timestamp">@context.TimeStamp.ToLocalTime().ToString("MM/dd/yyyy h:mm:ss tt")</MudTd>
         </RowTemplate>
     </MudTable>
 }
