@@ -51,7 +51,7 @@
         var parameters = new DialogParameters<BeerPoursDialog>();
         parameters.Add(x => x.BeerId, beerId);
 
-        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
 
         DialogService.Show<BeerPoursDialog>($"{beerName} Pours", parameters, options);
     }
