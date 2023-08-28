@@ -24,6 +24,7 @@
                 var editLink = $"/beer/edit/{context.Id}/"; 
             }
             <MudIconButton Icon="@Icons.Material.Filled.Edit" Title="Edit" Href="@editLink"></MudIconButton>
+            <MudIconButton Icon="@Icons.Material.Filled.LocalDrink" Color="Color.Default" OnClick="() => ShowPoursDialog(context.Id, context.Name)" />
         </MudTd>
     </RowTemplate>
 </MudTable>
@@ -32,6 +33,7 @@
     Href="/beer/edit/" Size="Size.Large" Class="mt-4"  />
 
 @inject IBeerQueryService QueryService
+@inject IDialogService DialogService
 
 @code {
     private bool loading;
@@ -42,5 +44,15 @@
         loading = true;
         Beers = await QueryService.GetAllAsync();
         loading = false;
+    }
+
+    protected void ShowPoursDialog(int beerId, string beerName)
+    {
+        var parameters = new DialogParameters<BeerPoursDialog>();
+        parameters.Add(x => x.BeerId, beerId);
+
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        DialogService.Show<BeerPoursDialog>($"{beerName} Pours", parameters, options);
     }
 }

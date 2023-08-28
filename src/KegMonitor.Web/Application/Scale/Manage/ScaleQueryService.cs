@@ -1,4 +1,5 @@
-﻿using KegMonitor.Infrastructure.EntityFramework;
+﻿using KegMonitor.Core.Entities;
+using KegMonitor.Infrastructure.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 
 namespace KegMonitor.Web.Application
@@ -37,6 +38,13 @@ namespace KegMonitor.Web.Application
                 Endpoint = scale.Endpoint,
                 BeerOptions = beerOptions
             };
+        }
+
+        public Task<Scale> GetWithPoursAsync(int id)
+        {
+            return _dbContext.Scales.Include(s => s.Beer)
+                                        .ThenInclude(b => b.Pours)
+                                    .FirstOrDefaultAsync(s => s.Id == id);
         }
     }
 }

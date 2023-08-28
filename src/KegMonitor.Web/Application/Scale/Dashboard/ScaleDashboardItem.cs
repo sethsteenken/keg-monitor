@@ -1,4 +1,6 @@
-﻿namespace KegMonitor.Web.Application
+﻿using KegMonitor.Core.Entities;
+
+namespace KegMonitor.Web.Application
 {
     public class ScaleDashboardItem : ScaleDisplayItem
     {

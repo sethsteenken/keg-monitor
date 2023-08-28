@@ -1,0 +1,61 @@
+﻿@using KegMonitor.Core
+@using KegMonitor.Core.Entities;
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 500px; overflow-y: scroll">
+            @if (loading)
+            {
+                <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+            }
+            else
+            {
+                <PoursTable Pours="@pours" ItemType="Beer"></PoursTable>
+            }
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Close">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@inject IScaleQueryService ScaleQueryService
+
+@code {
+    [Parameter]
+    public int ScaleId { get; set; }
+
+    bool loading = false;
+    Scale scale;
+    List<BeerPourDisplayItem> pours;
+
+    [CascadingParameter] 
+    MudDialogInstance MudDialog { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        loading = true;
+
+        try
+        {
+            scale = await ScaleQueryService.GetWithPoursAsync(ScaleId);
+            if (scale == null)
+                throw new InvalidOperationException("Scale not found");
+
+            if (scale.Beer == null)
+                throw new InvalidOperationException("Scale does not currently have a Beer assigned.");
+
+            pours = scale.Beer.Pours.OrderByDescending(p => p.TimeStamp).Select(p => new BeerPourDisplayItem()
+            {
+                Name = p.Beer.Name,
+                TimeStamp = p.TimeStamp.ToLocalTime(),
+            }).ToList();
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    void Close() => MudDialog.Close(DialogResult.Ok(true));
+}

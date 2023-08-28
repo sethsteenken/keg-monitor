@@ -6,5 +6,6 @@ namespace KegMonitor.Web.Application
     {
         Task<BeerEditModel> BuildEditModelAsync(int? id);
         Task<IEnumerable<Beer>> GetAllAsync();
+        Task<IEnumerable<BeerPour>> GetPoursAsync(int beerId);
     }
 }

@@ -1,0 +1,55 @@
+﻿@using KegMonitor.Core
+@using KegMonitor.Core.Entities;
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 500px; overflow-y: scroll">
+            @if (loading)
+            {
+                <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+            }
+            else
+            {
+                <PoursTable Pours="@pours" ItemType="Scale"></PoursTable>
+            }
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Close">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@inject IBeerQueryService BeerQueryService
+
+@code {
+    [Parameter]
+    public int BeerId { get; set; }
+
+    bool loading = false;
+    List<BeerPourDisplayItem> pours;
+
+    [CascadingParameter] 
+    MudDialogInstance MudDialog { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        loading = true;
+
+        try
+        {
+            var beerPours = await BeerQueryService.GetPoursAsync(BeerId);
+
+            pours = beerPours.OrderByDescending(p => p.TimeStamp).Select(p => new BeerPourDisplayItem()
+            {
+                Name = $"Scale #{p.Scale.Id}",
+                TimeStamp = p.TimeStamp.ToLocalTime(),
+            }).ToList();
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    void Close() => MudDialog.Close(DialogResult.Ok(true));
+}

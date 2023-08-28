@@ -41,5 +41,15 @@ namespace KegMonitor.Web.Application
                                          .OrderByDescending(b => b.LastUpdatedDate)
                                          .ToListAsync();                                  
         }
+
+        public async Task<IEnumerable<BeerPour>> GetPoursAsync(int beerId)
+        {
+            return await _dbContext.BeerPours.Include(bp => bp.Beer)
+                                             .Include(bp => bp.Scale)
+                                             .AsNoTracking()
+                                             .Where(bp => bp.Beer.Id == beerId)
+                                             .OrderByDescending(bp => bp.TimeStamp)
+                                             .ToListAsync();
+        }
     }
 }

@@ -1,0 +1,27 @@
+﻿
+@if (Pours != null && Pours.Any())
+{
+    <MudTable Items="@Pours" Breakpoint="Breakpoint.Xs" Elevation="2"
+          Dense="true" Bordered="true" Hover="true">
+        <HeaderContent>
+            <MudTh>@ItemType</MudTh>
+            <MudTh>Timestamp</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="@ItemType">@context.Name</MudTd>
+            <MudTd DataLabel="Timestamp">@context.TimeStamp.ToLongTimeString()</MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+else
+{
+    <MudText Color="Color.Warning">No pours found.</MudText>
+}
+
+@code {
+    [Parameter]
+    public string ItemType { get; set; }
+
+    [Parameter]
+    public List<BeerPourDisplayItem> Pours { get; set; }
+}

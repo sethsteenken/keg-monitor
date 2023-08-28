@@ -10,7 +10,7 @@
         <MudText Typo="Typo.h5" Class="ml-3">Keg Monitor</MudText>
         <MudSpacer />
         <MudIconButton Icon="@Icons.Material.Filled.SpaceDashboard"
-                       ButtonType="ButtonType.Button" OnClick="OnDashboardClick"></MudIconButton>
+                       ButtonType="ButtonType.Button" Href="/"></MudIconButton>
         <DarkModeToggle OnChange="(darkMode) => isDarkMode = darkMode"></DarkModeToggle>
     </MudAppBar>
     <MudMainContent>
@@ -25,9 +25,4 @@
 @code {
     bool isDarkMode = DarkModeToggle.DarkModeDefault;
     MudTheme theme = new MudTheme();
-
-    protected void OnDashboardClick()
-    {
-        NavManager.NavigateTo("/", forceLoad: false);
-    }
 }

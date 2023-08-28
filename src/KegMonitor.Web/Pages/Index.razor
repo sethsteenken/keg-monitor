@@ -31,6 +31,10 @@
                             }
                             <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" Href="@editLink" />
                             <SensorStatus ScaleId="@scale.Id" InitialStatus="@scale.WeightMetricsData.SensorStatus"></SensorStatus>
+                            @if (scale.Beer != null)
+                            {
+                                <MudIconButton Icon="@Icons.Material.Filled.LocalDrink" Color="Color.Default" OnClick="() => ShowPoursDialog(scale.Id)" />
+                            }
                         </div>
                     </div>
                 </TitleContent>
@@ -202,6 +206,16 @@
                 loading = false;
             }
         }
+    }
+
+    protected void ShowPoursDialog(int scaleId)
+    {
+        var parameters = new DialogParameters<ScalePoursDialog>();
+        parameters.Add(x => x.ScaleId, scaleId);
+
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        DialogService.Show<ScalePoursDialog>($"Scale #{scaleId} Pours", parameters, options);
     }
 
     public async ValueTask DisposeAsync()
