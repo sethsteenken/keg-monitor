@@ -1,41 +1,103 @@
 version: "3.6"
 services:
-  kegmonitor:
-    container_name: "kegmonitor"
-    build:
-      context: .
-      dockerfile: src/KegMonitor.Web/Dockerfile
-    ports:
-      - "${PORT}:80/tcp"
-    network_mode: "bridge"
+  mqtt_broker:
+    container_name: "mqtt_broker"
+    command:
+      - "/usr/sbin/mosquitto"
+      - "-c"
+      - "/mosquitto/config/mosquitto.conf"
+    entrypoint:
+      - "/docker-entrypoint.sh"
+    image: "eclipse-mosquitto:latest"
+    ipc: "private"
     networks:
       server_net:
-        ipv4_address: ${IP_ADDRESS}
-    ipc: "private"
+        ipv4_address: 172.18.0.2
+    ports:
+      - "1883:1883/tcp"
+    restart: "unless-stopped"
+    volumes:
+      - "mqtt_broker_config:/mosquitto/config"
+      - "mqtt_broker_data:/mosquitto/data"
+      - "mqtt_broker_log:/mosquitto/log"
+    healthcheck:
+      test: "timeout 3 mosquitto_sub -h localhost -p 1883 -u ${MQTT_HEALTH_PROBE_USER} -P ${MQTT_HEALTH_PROBE_PASSWORD} -t 'topic' -E -i probe"
+      interval: 30s
+      timeout: 5s
+
+  postgresql:
+    container_name: "postgresql"
+    command:
+      - "postgres"
+    entrypoint:
+      - "docker-entrypoint.sh"
+    environment:
+      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+      - "POSTGRES_USER=${POSTGRES_USER}"
+    image: "postgres:${POSTGRES_VERSION}"
+    networks:
+      server_net:
+        ipv4_address: 172.18.0.3
+    ports:
+      - "5432:5432/tcp"
+    restart: "unless-stopped"
+    volumes:
+      - "postgresql_data:/var/lib/postgresql/data"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  kegmonitor:
+    container_name: "kegmonitor"
+    image: "sethsteenken/kegmonitor:latest"
+    ports:
+      - "7101:80/tcp"
+    dns:
+      - 1.1.1.1
+    networks:
+      server_net:
+        ipv4_address: 172.18.0.4
     environment:
       - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
       - "TZ=${TIMEZONE}"
       - "ASPNETCORE_ENVIRONMENT=Production"
-      - "ConnectionStrings__DefaultConnection=${CONNECTION_STRING}"
-      - "WebDomain=${DOMAIN}"
+      - "ConnectionStrings__DefaultConnection=${KEGMONITOR_CONN_STRING}"
+      - "WebDomain=https://${KEGMONITOR_DOMAIN}"
       - "MigrateDatabaseToLatest=true"
-      - "Mqtt__ClientId=${MQTT_CLIENT_ID}"
-      - "Mqtt__IpAddress=${MQTT_IPADDRESS}"
-      - "Mqtt__Port=${MQTT_PORT}"
-      - "Mqtt__Username=${MQTT_USERNAME}"
-      - "Mqtt__Password=${MQTT_PASSWORD}"
+      - "Mqtt__ClientId=KM_Web_Sub"
+      - "Mqtt__IpAddress=172.18.0.2"
+      - "Mqtt__Port=1883"
+      - "Mqtt__Username=keg_monitor_web_user"
+      - "Mqtt__Password=${KEGMONITOR_MQTT_PASSWORD}"
     volumes:
       - "keg_monitor_app_data:/app/wwwroot/uploads"
     working_dir: "/app"
-    restart: "always"
+    restart: "unless-stopped"
     healthcheck:
       test: "curl --fail http://localhost/health || exit 1"
       interval: 60s
       retries: 2
       start_period: 20s
+
 volumes:
+  mqtt_broker_config:
+    name: mqtt_broker_config
+  mqtt_broker_data:
+    name: mqtt_broker_data
+  mqtt_broker_log:
+    name: mqtt_broker_log
+  postgresql_data:
+    name: postgresql_data
   keg_monitor_app_data:
-    external: true
+    name: keg_monitor_app_data
+ 
 networks:
-  server_net:
-    external: true
+  kegs_server_net:
+    name: kegs_server_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+          gateway: 172.18.0.1
