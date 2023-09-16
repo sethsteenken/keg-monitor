@@ -14,6 +14,12 @@ After homebrewing for many years, I was able to acquire a kegerator with two tap
 
 Also, massive shoutout and credit to Matt over at the [Troubled Brewing YouTube Channel](https://www.youtube.com/@TroubleBrewing/featured) for the [instructional video](https://www.youtube.com/watch?v=QF1B8yD9jy4) on building the smart scales that helped jumpstart this project. Seriously could not have completed this project without Matt's amazing video.
 
+## Architecture
+
+The Keg Monitor application is a [.NET Blazor](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor) web application that is compiled via a Dockerfile to run as a container. The [latest container image](https://hub.docker.com/r/sethsteenken/kegmonitor) for the application is pulled from Docker Hub when deploying. The keg scale readings come from load cells connected to an amplifier which connects to a microchip like a NodeMCU. The microchip connects to the network wirelessly to periodically push the current weight reading from the load cells via the MQTT protocol. These readings are received by an [MQTT broker](https://mosquitto.org/). The Keg Monitor application subscribes to this broker in order to be notified of weight changes. A [PostgreSQL](https://www.postgresql.org/) database is used by the application to store weight changes and beer data.
+
+<img src="assets/architecture_diagram.png" alt="Architecture diagram" width="1000">
+
 ## Getting Started
 
 Getting the full keg monitoring application and dependences installed and running will require some hardware, minor technical and networking knowledge, and some beer of course.
