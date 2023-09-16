@@ -1,12 +1,22 @@
-# Keg Monitor
+# <img src="assets/logo.png" alt="Logo" width="40" height="40"> Keg Monitor 
 
 Keg monitoring and management system using an MQTT broker and IoT smart scales to report keg weight values and changes. Compliment a kegerator with this system to display what beer is on tap, how much beer remains within each keg, and detect when a beer is poured.
 
-Massive shoutout and credit to Matt over at the [Troubled Brewing YouTube Channel](https://www.youtube.com/@TroubleBrewing/featured) for the [instructional video](https://www.youtube.com/watch?v=QF1B8yD9jy4) on building the smart scales that helped jumpstart this project. 
+[![Build Status](https://dev.azure.com/sethsteenken/KegMonitor/_apis/build/status%2Fsethsteenken.keg-monitor)](https://dev.azure.com/sethsteenken/KegMonitor/_build/latest?definitionId=3)
+![Docker Pulls](https://img.shields.io/docker/pulls/sethsteenken/kegmonitor)
+![Docker Image Version (latest semver)](https://img.shields.io/docker/v/sethsteenken/kegmonitor)
+
+<img src="assets/screenshot_display.png" width="600" height="600" alt="Display Screen">
+
+## Inspirational Credit
+
+After homebrewing for many years, I was able to acquire a kegerator with two taps to enjoy the beer I would brew. Gone are the bottling days! After a year or so of not really knowing how much was left in a keg, I wanted to have a more sophisticated and technically focused solution. This project was born.
+
+Also, massive shoutout and credit to Matt over at the [Troubled Brewing YouTube Channel](https://www.youtube.com/@TroubleBrewing/featured) for the [instructional video](https://www.youtube.com/watch?v=QF1B8yD9jy4) on building the smart scales that helped jumpstart this project. Seriously could not have completed this project without Matt's amazing video.
 
 ## Getting Started
 
-Getting the full keg monitoring application and dependences up and running will require some hardware, minor technical and networking knowledge, and some beer of course.
+Getting the full keg monitoring application and dependences installed and running will require some hardware, minor technical and networking knowledge, and some beer of course.
 
 ### Prerequisites
 
@@ -67,3 +77,24 @@ Setup steps:
   * web app user keg_monitor_web_user
   * client KM_Web_Sub
   * See [documentation for the MQTT broker](https://mosquitto.org/)
+* Connect IoT load cells to broker  
+  * Follow the last half of Matt's [instructional video](https://www.youtube.com/watch?v=QF1B8yD9jy4) to configure the load cells to report current weight to a broker
+  * In place of the Home Assistant configuration, simply use Tasmota to configure and point the load cell readings to the Mosquitto MQTT Broker container
+
+## Features
+
+Dashboard to view detailed keg scale information, weight changes, connection status, and pours at a glance.
+
+<img src="assets/screenshot_dashboard.png" width="400" height="400" alt="Dashboard Screen">
+
+Display page to display active keg scales, the beer in those kegs, percentage remaining, and a pour popup indicator.
+
+<img src="assets/screenshot_display.png" width="400" height="400" alt="Display Screen">
+
+Add and edit scales for as many kegs as you need
+
+<img src="assets/screenshot_scale_edit.png" width="400" height="400" alt="Scale Edit Screen">
+
+And keep a list of beers to assign to your keg scales
+
+<img src="assets/screenshot_beer_list.png" width="400" height="300" alt="Beer List Screen">
