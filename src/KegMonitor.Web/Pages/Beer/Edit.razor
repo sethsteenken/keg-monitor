@@ -68,7 +68,6 @@ else
     <MudText>Beer not found.</MudText>
 }
 
-@inject ISnackbar Snackbar
 @inject IBeerCommandService CommandService
 @inject IBeerQueryService QueryService
 @inject IFileUploader FileUploader
@@ -95,8 +94,7 @@ else
     {
         Id = await CommandService.SaveAsync(model);
         model.Id = Id;
-        Snackbar.Add("Beer saved successfully.", Severity.Success, config => config.CloseAfterNavigation = true);
-        StateHasChanged();
+        RedirectToList();
     }
 
     protected async Task UploadFilesAsync(InputFileChangeEventArgs e)
@@ -118,7 +116,12 @@ else
         if (result == true)
         {
             await CommandService.DeleteAsync(model.Id.Value);
-            NavManager.NavigateTo("/beer/", forceLoad: true);
+            RedirectToList();
         }
+    }
+
+    protected void RedirectToList()
+    {
+        NavManager.NavigateTo("/beer/", forceLoad: true);
     }
 }
