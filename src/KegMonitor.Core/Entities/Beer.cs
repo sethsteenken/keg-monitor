@@ -23,6 +23,8 @@
 
         public string SelectionName => $"{Name} ({Type}) {ABV}%";
 
+        public string ImagePathOrDefault => string.IsNullOrWhiteSpace(ImagePath) ? "/img/beer_default.jpg" : ImagePath;
+
         public DateTime LastUpdatedDate { get; set; }
 
         public IEnumerable<BeerPour> Pours { get; private set; } = new List<BeerPour>();

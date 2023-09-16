@@ -37,8 +37,7 @@ namespace KegMonitor.Web.Application
                         ABV = s.Beer.ABV,
                         OG = s.Beer.OG,
                         FG = s.Beer.FG,
-                        Description = s.Beer.Description,
-                        ImagePath = s.Beer.ImagePath
+                        Description = s.Beer.Description
                     }
                 }).ToList()
             };

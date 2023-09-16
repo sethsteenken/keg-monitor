@@ -17,7 +17,7 @@
         <MudTd DataLabel="Type">@context.Type</MudTd>
         <MudTd DataLabel="ABV">@(context.ABV)%</MudTd>
         <MudTd DataLabel="Image">
-            <MudImage Width="200" Height="60" Alt="@context.Name" Src="@context.ImagePath" Elevation="15" Class="rounded-lg" ObjectFit="ObjectFit.Cover"></MudImage>
+            <MudImage Width="200" Height="60" Alt="@context.Name" Src="@context.ImagePathOrDefault" Elevation="15" Class="rounded-lg" ObjectFit="ObjectFit.Cover"></MudImage>
         </MudTd>
         <MudTd DataLabel="Manage">
             @{
