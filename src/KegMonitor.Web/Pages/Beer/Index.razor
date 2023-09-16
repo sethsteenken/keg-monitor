@@ -9,6 +9,7 @@
         <MudTh>Name</MudTh>
         <MudTh>Type</MudTh>
         <MudTh>ABV</MudTh>
+        <MudTh>Tap Date</MudTh>
         <MudTh>Image</MudTh>
         <MudTh>Manage</MudTh>
     </HeaderContent>
@@ -16,6 +17,7 @@
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Type">@context.Type</MudTd>
         <MudTd DataLabel="ABV">@(context.ABV)%</MudTd>
+        <MudTd DataLabel="TapDate">@(context.TapDate?.ToShortDateString())</MudTd>
         <MudTd DataLabel="Image">
             <MudImage Width="200" Height="60" Alt="@context.Name" Src="@context.ImagePathOrDefault" Elevation="15" Class="rounded-lg" ObjectFit="ObjectFit.Cover"></MudImage>
         </MudTd>

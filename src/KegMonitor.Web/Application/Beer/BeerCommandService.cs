@@ -1,4 +1,5 @@
-﻿using KegMonitor.Core.Entities;
+﻿using KegMonitor.Core;
+using KegMonitor.Core.Entities;
 using KegMonitor.Infrastructure.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,13 +41,17 @@ namespace KegMonitor.Web.Application
             beer.OG = model.OG;
             beer.FG = model.FG;
             beer.ImagePath = model.ImagePath;
+
+            // set Kind to UTC - required by postgres
+            beer.TapDate = model.TapDate?.Date.ToUtcKindDate();
+            
             beer.LastUpdatedDate = DateTime.UtcNow;
 
             if (isNew)
                 await _dbContext.Beers.AddAsync(beer);
 
             await _dbContext.SaveChangesAsync();
-
+            
             return beer.Id;
         }
 

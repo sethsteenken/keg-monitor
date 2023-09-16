@@ -28,6 +28,9 @@
                                      @bind-Value="model.FG" For="@(() => model.FG)"
                                      Variant="Variant.Text" Step=".001M"
                                      Class="pb-2" />
+                    <MudDatePicker Label="Tap Date" HelperText="Date beer was tapped"
+                                   @bind-Date="model.TapDate" For="@(() => model.TapDate)"
+                               Class="pb-2" Editable="true" DisableToolbar="true" DateFormat="MM-dd-yyyy" />
                     <MudTextField Label="Description" HelperText="Describe beer type, hops, etc." Variant="Variant.Text" 
                                   @bind-Value="model.Description" For="@(() => model.Description)" Lines="5" />
                 </MudPaper>

@@ -30,6 +30,7 @@ namespace KegMonitor.Web.Application
                 ABV = beer.ABV,
                 OG = beer.OG,
                 FG = beer.FG,
+                TapDate = beer.TapDate,
                 Description = beer.Description,
                 ImagePath = beer.ImagePath
             };
