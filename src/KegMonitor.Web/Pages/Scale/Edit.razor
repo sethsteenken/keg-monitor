@@ -61,7 +61,7 @@
                            Disabled="model.Active" Clearable="true" Class="pb-2">
                         @foreach (Beer beer in model.BeerOptions)
                         {
-                            <MudSelectItem Value="@((int?)beer.Id)">@beer.SelectionName</MudSelectItem>
+                            <MudSelectItem Value="@((int?)beer.Id)">@beer.FullName</MudSelectItem>
                         }
                     </MudSelect>
                 </MudPaper>

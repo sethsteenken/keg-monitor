@@ -21,7 +21,7 @@
         public string? ImagePath { get; set; }
         public DateTime? TapDate { get; set; }
 
-        public string SelectionName => $"{Name} ({Type}) {ABV}%";
+        public string FullName => $"{Name}{TapDate?.ToString(" (yyyy)")}";
 
         public string ImagePathOrDefault => string.IsNullOrWhiteSpace(ImagePath) ? "/img/beer_default.jpg" : ImagePath;
 
