@@ -6,10 +6,10 @@
 <MudTable Items="@Beers" Hover="true" Breakpoint="Breakpoint.None"
     Loading="@loading" LoadingProgressColor="Color.Info" Elevation="2" Bordered="true">
     <HeaderContent>
-        <MudTh>Name</MudTh>
-        <MudTh>Type</MudTh>
-        <MudTh>ABV</MudTh>
-        <MudTh>Tap Date</MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Beer, object>(b=>b.FullName)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Beer, object>(b=>b.Type)">Type</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Beer, object>(b=>b.ABV)">ABV</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Beer, object>(b=>b.TapDate)">Tap Date</MudTableSortLabel></MudTh>
         <MudTh>Image</MudTh>
         <MudTh>Manage</MudTh>
     </HeaderContent>

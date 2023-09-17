@@ -39,7 +39,7 @@ namespace KegMonitor.Web.Application
         public async Task<IEnumerable<Beer>> GetAllAsync()
         {
             return await _dbContext.Beers.AsNoTracking()
-                                         .OrderByDescending(b => b.LastUpdatedDate)
+                                         .OrderByDescending(b => b.Id)
                                          .ToListAsync();                                  
         }
 
