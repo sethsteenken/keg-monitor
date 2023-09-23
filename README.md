@@ -6,7 +6,7 @@ Keg monitoring and management system using an MQTT broker and IoT smart scales t
 [![Docker Pulls](https://img.shields.io/docker/pulls/sethsteenken/kegmonitor)](https://hub.docker.com/r/sethsteenken/kegmonitor)
 [![Docker Image Version (latest semver)](https://img.shields.io/docker/v/sethsteenken/kegmonitor)](https://hub.docker.com/r/sethsteenken/kegmonitor)
 
-<img src="assets/screenshot_display.png" width="600" height="600" alt="Display Screen">
+<img src="assets/screenshot_display.png" width="800" height="800" alt="Display Screen">
 
 ## Inspirational Credit
 
@@ -76,31 +76,39 @@ sudo docker compose up -d
 
 The containers should deploy successfully, but may result in unhealthy or stopped status. Perform the following setup steps:
 
-Setup steps:
+### Additional Setup Steps
 
 * Run commands on the MQTT broker container to establish the following:
   * health probe user healthcheck_user
   * web app user keg_monitor_web_user
   * client KM_Web_Sub
   * See [documentation for the MQTT broker](https://mosquitto.org/)
+* Setup PostgreSQL
+  * Test connection to Postgres by using [pg_ready](https://www.postgresql.org/docs/current/app-pg-isready.html) or [psql](https://www.postgresql.org/docs/current/app-psql.html) directly.
 * Connect IoT load cells to broker  
   * Follow the last half of Matt's [instructional video](https://www.youtube.com/watch?v=QF1B8yD9jy4) to configure the load cells to report current weight to a broker
-  * In place of the Home Assistant configuration, simply use Tasmota to configure and point the load cell readings to the Mosquitto MQTT Broker container
+  * In place of the Home Assistant configuration, simply use Tasmota to configure and point the load cell readings to the Mosquitto MQTT Broker container (host IP address with port 1883)
+
+### Docker Troubleshooting
+
+Review [Docker commands](https://docs.docker.com/engine/reference/commandline/cli/) (there's also a [cheat sheet](https://docs.docker.com/get-started/docker_cheatsheet.pdf) for these) to troubleshoot containers that may fail to start.
+
+Can optionally install a GUI application like [Portainer](https://www.portainer.io/) to help manage your containers.
 
 ## Features
 
-Dashboard to view detailed keg scale information, weight changes, connection status, and pours at a glance.
+Dashboard to view detailed keg scale information, weight changes, connection status, and pours at a glance. Review weight recordings and average calculations to note differences in subtle weight changes due to varying temperatures in the kegerator.
 
-<img src="assets/screenshot_dashboard.png" width="400" height="400" alt="Dashboard Screen">
+<img src="assets/screenshot_dashboard.png" width="800" height="800" alt="Dashboard Screen">
 
 Display page to display active keg scales, the beer in those kegs, percentage remaining, and a pour popup indicator.
 
-<img src="assets/screenshot_display.png" width="400" height="400" alt="Display Screen">
+<img src="assets/screenshot_display.png" width="800" height="800" alt="Display Screen">
 
 Add and edit scales for as many kegs as you need
 
-<img src="assets/screenshot_scale_edit.png" width="400" height="400" alt="Scale Edit Screen">
+<img src="assets/screenshot_scale_edit.png" width="800" height="800" alt="Scale Edit Screen">
 
 And keep a list of beers to assign to your keg scales
 
-<img src="assets/screenshot_beer_list.png" width="400" height="300" alt="Beer List Screen">
+<img src="assets/screenshot_beer_list.png" width="800" height="600" alt="Beer List Screen">
