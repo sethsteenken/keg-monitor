@@ -20,6 +20,17 @@ namespace KegMonitor.Web.Application
         public decimal OG { get; set; }
         public decimal FG { get; set; }
 
+        public decimal CalculatedABV
+        {
+            get
+            {
+                if (OG <= 0 || FG <= 0) 
+                    return 0;
+
+                return (OG - FG) * 131.25M;
+            }
+        }
+
         public DateTime? TapDate { get; set; }
 
         public string Description { get; set; }

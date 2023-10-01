@@ -28,6 +28,11 @@
                                      @bind-Value="model.FG" For="@(() => model.FG)"
                                      Variant="Variant.Text" Step=".001M"
                                      Class="pb-2" />
+                    <MudNumericField Label="Calculated ABV" HelperText="ABV by Gravities"
+                                     For="@(() => model.CalculatedABV)"
+                                     Value="model.CalculatedABV"
+                                     Variant="Variant.Text" Step=".001M"
+                                     Class="pb-2" Disabled="true" />
                     <MudDatePicker Label="Tap Date" HelperText="Date beer was tapped"
                                    @bind-Date="model.TapDate" For="@(() => model.TapDate)"
                                Class="pb-2" Editable="true" DisableToolbar="true" DateFormat="MM-dd-yyyy" />
