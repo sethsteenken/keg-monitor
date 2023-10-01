@@ -136,6 +136,9 @@
         loading = true;
         model = await QueryService.BuildModelAsync();
 
+        if (model.Scales.Count() == 1)
+            model.Scales.First().IsExpanded = true;
+
         hubConnection = new HubConnectionBuilder()
             .WithUrl(HubConnectionFactory.FormatUrl(ScaleHub.Endpoint))
             .Build();
