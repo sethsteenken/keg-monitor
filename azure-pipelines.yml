@@ -4,7 +4,12 @@
 # https://aka.ms/yaml
 
 trigger:
-- main
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - src
 
 pool: "Azure Pipelines"
 
