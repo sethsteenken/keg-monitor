@@ -21,7 +21,7 @@
     <MudExpansionPanels MultiExpansion="true" Class="mb-4">
         @foreach (var scale in model.Scales)
         {
-            <MudExpansionPanel HideIcon="true" Class="mb-2" IsInitiallyExpanded="true">
+            <MudExpansionPanel HideIcon="true" Class="mb-2" IsInitiallyExpanded="@scale.IsExpanded">
                 <TitleContent>
                     <div class="d-flex">
                         <MudText Typo="Typo.h4" Class="pb-1">Scale #@scale.Id</MudText>
