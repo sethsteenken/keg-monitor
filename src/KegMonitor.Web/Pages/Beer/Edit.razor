@@ -49,8 +49,14 @@
                         <MudCardMedia Image="@model.ImagePath" Height="180" Alt="@model.ImagePath" />
                     }
                     <MudCardActions>
-                        <MudButton HtmlTag="label" Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.Image" for="fileInput">Upload</MudButton>
-                        <MudButton Variant="Variant.Text" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Image" OnClick="() => model.ImagePath = null">Delete</MudButton>
+                        @if (model.ImagePath == null)
+                        {
+                            <MudButton HtmlTag="label" Variant="Variant.Text" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.Image" for="fileInput">Upload</MudButton>
+                        }
+                        else
+                        {
+                            <MudButton Variant="Variant.Text" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Image" OnClick="DeleteFileAsync">Delete</MudButton>
+                        }
                     </MudCardActions>
                 </MudCard>
             </MudItem>
@@ -78,7 +84,7 @@ else
 
 @inject IBeerCommandService CommandService
 @inject IBeerQueryService QueryService
-@inject IFileUploader FileUploader
+@inject IFileHandler FileHandler
 @inject IDialogService DialogService
 @inject NavigationManager NavManager
 
@@ -107,8 +113,30 @@ else
 
     protected async Task UploadFilesAsync(InputFileChangeEventArgs e)
     {
-        model.ImagePath = await FileUploader.UploadAsync(e.File);
+        model.ImagePath = await FileHandler.UploadAsync(e.File);
         StateHasChanged();
+    }
+
+    protected async Task DeleteFileAsync()
+    {
+        if (string.IsNullOrWhiteSpace(model.ImagePath))
+            return;
+
+        bool? result = await DialogService.ShowMessageBox(
+           "Deletion Warning",
+           "Deleting this image is a permanent action and cannot be undone.",
+           yesText: "Delete", cancelText: "Cancel");
+
+        if (result == true)
+        {
+            await FileHandler.DeleteAsync(model.ImagePath);
+            model.ImagePath = null;
+
+            if (!IsNew)
+                await CommandService.RemoveImageAsync(model.Id.Value);
+
+            StateHasChanged();
+        }
     }
 
     protected async Task DeleteAsync()
@@ -118,7 +146,7 @@ else
 
         bool? result = await DialogService.ShowMessageBox(
            "Deletion Warning",
-           "Deleting this Beer is a permanent action. Any previous weight changes and pour metrics will be deleted.",
+           "Deleting this Beer is a permanent action. Any previous weight changes, pour metrics, and the image will be deleted.",
            yesText: "Delete", cancelText: "Cancel");
 
         if (result == true)

@@ -2,7 +2,7 @@
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Server;
 
-namespace KegMonitor.Web.Extensions
+namespace KegMonitor.Web
 {
     public static class MqttClientExtensions
     {

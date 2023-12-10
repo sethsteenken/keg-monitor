@@ -1,6 +1,5 @@
 ﻿using KegMonitor.Core.Entities;
 using KegMonitor.Infrastructure.EntityFramework;
-using KegMonitor.Web.Extensions;
 using Microsoft.EntityFrameworkCore;
 using MQTTnet.Client;
 using MQTTnet.Extensions.ManagedClient;

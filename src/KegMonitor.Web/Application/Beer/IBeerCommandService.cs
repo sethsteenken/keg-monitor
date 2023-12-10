@@ -4,5 +4,6 @@
     {
         Task<int> SaveAsync(BeerEditModel model);
         Task DeleteAsync(int id);
+        Task RemoveImageAsync(int id);
     }
 }

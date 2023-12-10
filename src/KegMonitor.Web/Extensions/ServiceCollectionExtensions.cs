@@ -56,9 +56,9 @@ namespace KegMonitor.Web
 
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            services.AddScoped<IFileUploader>(serviceProvider =>
+            services.AddScoped<IFileHandler>(serviceProvider =>
             {
-                return new FileUploader(serviceProvider.GetRequiredService<IWebHostEnvironment>(), "uploads");
+                return new LocalSystemFileHandler(serviceProvider.GetRequiredService<IWebHostEnvironment>(), "uploads");
             });
 
             services.AddScoped<IBeerQueryService, BeerQueryService>();

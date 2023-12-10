@@ -2,8 +2,10 @@
 
 namespace KegMonitor.Web.Application
 {
-    public interface IFileUploader
+    public interface IFileHandler
     {
         Task<string> UploadAsync(IBrowserFile file);
+        Task DeleteAsync(string fileName);
+
     }
 }

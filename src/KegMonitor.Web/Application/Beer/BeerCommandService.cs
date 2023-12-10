@@ -8,11 +8,14 @@ namespace KegMonitor.Web.Application
     public class BeerCommandService : IBeerCommandService
     {
         private readonly KegMonitorDbContext _dbContext;
+        private readonly IFileHandler _fileHandler;
 
         public BeerCommandService(
-            KegMonitorDbContext dbContext)
+            KegMonitorDbContext dbContext,
+            IFileHandler fileHandler)
         {
             _dbContext = dbContext;
+            _fileHandler = fileHandler;
         }
 
         public async Task<int> SaveAsync(BeerEditModel model)
@@ -61,6 +64,9 @@ namespace KegMonitor.Web.Application
             if (beer == null)
                 throw new InvalidOperationException("Beer not found.");
 
+            if (!string.IsNullOrWhiteSpace(beer.ImagePath))
+                await _fileHandler.DeleteAsync(beer.ImagePath);
+
             await _dbContext.ScaleWeightChanges.Where(swc => swc.Beer != null && swc.Beer.Id == id)
                                                .ExecuteDeleteAsync();
 
@@ -68,6 +74,18 @@ namespace KegMonitor.Web.Application
                                       .ExecuteDeleteAsync();
 
             _dbContext.Beers.Remove(beer);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task RemoveImageAsync(int id)
+        {
+            var beer = await _dbContext.Beers.FirstOrDefaultAsync(s => s.Id == id);
+            if (beer == null)
+                throw new InvalidOperationException("Beer not found.");
+
+            beer.ImagePath = null;
+            beer.LastUpdatedDate = DateTime.UtcNow;
+
             await _dbContext.SaveChangesAsync();
         }
     }
