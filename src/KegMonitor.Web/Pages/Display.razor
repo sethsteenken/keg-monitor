@@ -6,30 +6,43 @@
 
 <PageTitle>Keg Monitor</PageTitle>
 
-@foreach (var scale in scales)
+@if (scales != null && scales.Any())
 {
-    <MudCard Elevation="10" Class="my-4 mx-2">
-        @if (scale.Beer != null)
-        {
-            <MudCardMedia Image="@scale.Beer.ImagePath" Height="180" Alt="@scale.Beer.Name" />
-        }
-        <MudCardContent>
+    @foreach (var scale in scales)
+    {
+        <MudCard Elevation="10" Class="my-4 mx-2">
             @if (scale.Beer != null)
             {
-                <div class="d-flex">
-                    <MudText Typo="Typo.h4" Class="pb-1">@scale.Beer.Name</MudText>
-                    <div class="ml-auto">
-                        <SensorStatus ScaleId="@scale.Id" DisableManualToggle="true"></SensorStatus>
-                    </div>
-                </div>
-                
-                <MudText Typo="Typo.h6" Class="pb-1">@scale.Beer.Type @(scale.Beer.ABV)% ABV</MudText>
-                <MudText Class="pb-1" Typo="Typo.body2">@scale.Beer.Description</MudText>
+                <MudCardMedia Image="@scale.Beer.ImagePath" Height="180" Alt="@scale.Beer.Name" />
             }
-            <MudProgressLinear Color="@scale.Color" Rounded="true" Size="Size.Large" @bind-Value="@scale.Percentage" />
+            <MudCardContent>
+                @if (scale.Beer != null)
+                {
+                    <div class="d-flex">
+                        <MudText Typo="Typo.h4" Class="pb-1">@scale.Beer.Name</MudText>
+                            <div class="ml-auto">
+                                <SensorStatus ScaleId="@scale.Id" DisableManualToggle="true"></SensorStatus>
+                            </div>
+                        </div>
+
+                    <MudText Typo="Typo.h6" Class="pb-1">@scale.Beer.Type @(scale.Beer.ABV)% ABV</MudText>
+                    <MudText Class="pb-1" Typo="Typo.body2">@scale.Beer.Description</MudText>
+                }
+                <MudProgressLinear Color="@scale.Color" Rounded="true" Size="Size.Large" @bind-Value="@scale.Percentage" />
+            </MudCardContent>
+        </MudCard>
+    }
+}
+else
+{
+    <MudCard Elevation="10" Class="my-4 mx-2">
+        <MudCardContent>
+            <MudText Typo="Typo.h4" Class="pb-1">No active Scales found.</MudText>
+            <MudText Typo="Typo.body1" Class="pb-1"><MudLink Href="/scale/add/">Click here</MudLink> to add a new Scale or return to the Dashboard, select a Scale, and set the Scale to Active status.</MudText>
         </MudCardContent>
     </MudCard>
 }
+
 
 @inject ISnackbar Snackbar
 @inject HubConnectionFactory HubConnectionFactory
