@@ -36,7 +36,7 @@ namespace KegMonitor.Web.Application
                                             .SingleOrDefaultAsync(s => s.Topic == topic);
             if (scale == null)
             {
-                _logger.LogError($"Scale with topic '{topic}' not found.");
+                _logger.LogError("Scale with topic '{topic}' not found.", topic);
                 return;
             }
 

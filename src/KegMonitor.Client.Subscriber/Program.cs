@@ -34,7 +34,7 @@ try
     {
         msg.ApplicationMessage.TryGetScaleNumber(out int scaleNumber);
 
-        var payload = JsonSerializer.Deserialize<SensorPayload>(msg.ApplicationMessage.Payload);
+        var payload = JsonSerializer.Deserialize<SensorPayload>(msg.ApplicationMessage.PayloadSegment);
 
         Console.WriteLine($"Scale {scaleNumber} | {payload.Time} | {payload.HX711.WeightRaw}");
         return Task.CompletedTask;

@@ -56,7 +56,6 @@ namespace KegMonitor.Web.Application
             {
                 _logger.LogError(ex, "Failed to subscribe to MQTT broker. See exception for details.");
             }
-            
         }
     }
 }

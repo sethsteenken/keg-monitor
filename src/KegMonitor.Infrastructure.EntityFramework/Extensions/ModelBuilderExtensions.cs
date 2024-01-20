@@ -36,7 +36,7 @@ namespace KegMonitor.Infrastructure.EntityFramework
                 foreach (var property in properties)
                 {
                     var columnName = property.GetColumnName(
-                        StoreObjectIdentifier.Table(entityType.GetTableName() ?? string.Empty, property.DeclaringEntityType.GetSchema()));
+                        StoreObjectIdentifier.Table(entityType.GetTableName() ?? string.Empty, property.DeclaringType.GetSchema()));
                     property.SetColumnName(columnName.Underscore());
                 }
             }

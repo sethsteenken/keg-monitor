@@ -46,7 +46,7 @@ namespace KegMonitor.Web.Application
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error bringing sensor online.", ex);
+                _logger.LogError(ex, "Error bringing sensor online.");
                 return SensorUpdateResult.Failed(ex.Message);
             } 
         }
@@ -77,7 +77,7 @@ namespace KegMonitor.Web.Application
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error taking sensor offline.", ex);
+                _logger.LogError(ex, "Error taking sensor offline.");
                 return SensorUpdateResult.Failed(ex.Message);
             }
         }

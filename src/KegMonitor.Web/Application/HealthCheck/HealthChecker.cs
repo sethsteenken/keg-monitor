@@ -29,7 +29,7 @@ namespace KegMonitor.Web.Application
 
                 _logger.LogInformation("Health Check - testing database connection...");
                 await using var dbContext = _dbContextFactory.CreateDbContext();
-                await dbContext.Database.ExecuteSqlRawAsync("SELECT 1");
+                await dbContext.Database.ExecuteSqlRawAsync("SELECT 1", cancellationToken);
 
                 _logger.LogInformation("Health Check - successful.");
                 return true;
