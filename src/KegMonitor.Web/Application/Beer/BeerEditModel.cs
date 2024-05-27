@@ -32,9 +32,20 @@ namespace KegMonitor.Web.Application
         }
 
         public DateTime? TapDate { get; set; }
+        public DateTime? BrewDate { get; set; }
+        public DateTime? SecondaryDate { get; set; }
 
         public string Description { get; set; }
 
         public string ImagePath { get; set; }
+
+        public int? IBU { get; set; }
+        public string Ingredients { get; set; }
+        public string Recipe { get; set; }
+
+        [Url(ErrorMessage = "Url must be a valid URL.")]
+        public string Url { get; set; }
+
+        public string Notes { get; set; }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
-using System.Collections.Concurrent;
 
 namespace KegMonitor.SignalR
 {

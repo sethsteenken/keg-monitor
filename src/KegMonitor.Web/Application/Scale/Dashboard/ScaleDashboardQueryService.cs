@@ -37,6 +37,7 @@ namespace KegMonitor.Web.Application
                         ABV = s.Beer.ABV,
                         OG = s.Beer.OG,
                         FG = s.Beer.FG,
+                        IBU = s.Beer.IBU,
                         TapDate = s.Beer.TapDate?.ToShortDateString(),
                         Description = s.Beer.Description
                     }

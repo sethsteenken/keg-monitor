@@ -16,10 +16,20 @@
                     <MudTextField Label="Type" HelperText="Beer type (IPA, Porter, etc.)"
                                   @bind-Value="model.Type" For="@(() => model.Type)"
                                   Class="pb-2" />
+                    <MudNumericField Label="IBUs" HelperText="Level of bitterness and flavor"
+                                     @bind-Value="model.IBU" For="@(() => model.IBU)"
+                                     Variant="Variant.Text" Step="1"
+                                     Class="pb-2" />
+                    <MudTextField Label="Description" HelperText="Describe beer type, hops, etc." Variant="Variant.Text" 
+                                  @bind-Value="model.Description" For="@(() => model.Description)" Lines="5" />
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12">
+                <MudPaper Class="pa-5">
                     <MudNumericField Label="ABV" HelperText="Alcohol by Volume"
                                      @bind-Value="model.ABV" For="@(() => model.ABV)"
                                      Variant="Variant.Text" Step=".1M"
-                                     Class="pb-2"/>
+                                     Class="pb-2" />
                     <MudNumericField Label="OG" HelperText="Original Gravity"
                                      @bind-Value="model.OG" For="@(() => model.OG)"
                                      Variant="Variant.Text" Step=".001M"
@@ -33,11 +43,31 @@
                                      Value="model.CalculatedABV"
                                      Variant="Variant.Text" Step=".001M"
                                      Class="pb-2" Disabled="true" />
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12">
+                <MudPaper Class="pa-5">
+                    <MudDatePicker Label="Brew Date" HelperText="Date beer was brewed"
+                                   @bind-Date="model.BrewDate" For="@(() => model.BrewDate)"
+                                   Class="pb-2" Editable="true" DisableToolbar="true" DateFormat="MM-dd-yyyy" />
+                    <MudDatePicker Label="Secondary Date" HelperText="Date beer was transferred to secondary fermentation"
+                                   @bind-Date="model.SecondaryDate" For="@(() => model.SecondaryDate)"
+                                   Class="pb-2" Editable="true" DisableToolbar="true" DateFormat="MM-dd-yyyy" />
                     <MudDatePicker Label="Tap Date" HelperText="Date beer was tapped"
                                    @bind-Date="model.TapDate" For="@(() => model.TapDate)"
-                               Class="pb-2" Editable="true" DisableToolbar="true" DateFormat="MM-dd-yyyy" />
-                    <MudTextField Label="Description" HelperText="Describe beer type, hops, etc." Variant="Variant.Text" 
-                                  @bind-Value="model.Description" For="@(() => model.Description)" Lines="5" />
+                                   Class="pb-2" Editable="true" DisableToolbar="true" DateFormat="MM-dd-yyyy" />
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12">
+                <MudPaper Class="pa-5">
+                    <MudTextField Label="Ingredients" HelperText="Free-form list of ingredients used." Variant="Variant.Text"
+                                  @bind-Value="model.Ingredients" For="@(() => model.Ingredients)" Lines="5" />
+                    <MudTextField Label="Recipe" HelperText="Description and details of recipe." Variant="Variant.Text"
+                                  @bind-Value="model.Recipe" For="@(() => model.Recipe)" Lines="5" />
+                    <MudTextField Label="Recipe URL:" HelperText="URL to original recipe."
+                                  @bind-Value="model.Url" For="@(() => model.Url)" />
+                    <MudTextField Label="Notes" HelperText="Any additional notes regarding the brew." Variant="Variant.Text"
+                                  @bind-Value="model.Notes" For="@(() => model.Notes)" Lines="5" />
                 </MudPaper>
             </MudItem>
             <MudItem xs="12">

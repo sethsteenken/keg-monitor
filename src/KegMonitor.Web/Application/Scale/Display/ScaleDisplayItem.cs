@@ -14,9 +14,9 @@ namespace KegMonitor.Web.Application
         {
             get
             {
-                if (Percentage <= 10)
+                if (Percentage <= 15)
                     return Color.Error;
-                else if (Percentage <= 25)
+                else if (Percentage <= 30)
                     return Color.Warning;
                 else
                     return Color.Success;

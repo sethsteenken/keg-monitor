@@ -25,7 +25,11 @@
                             </div>
                         </div>
 
-                    <MudText Typo="Typo.h6" Class="pb-1">@scale.Beer.Type @(scale.Beer.ABV)% ABV</MudText>
+                    <MudText Typo="Typo.h6" Class="pb-1">@scale.Beer.Type - @(scale.Beer.ABV)% ABV</MudText>
+                    @if (scale.Beer.IBU != null && scale.Beer.IBU > 0)
+                    {
+                        <MudText Class="pb-1" Typo="Typo.body1">@(scale.Beer.IBU) IBUs</MudText>
+                    }
                     <MudText Class="pb-1" Typo="Typo.body2">@scale.Beer.Description</MudText>
                 }
                 <MudProgressLinear Color="@scale.Color" Rounded="true" Size="Size.Large" @bind-Value="@scale.Percentage" />

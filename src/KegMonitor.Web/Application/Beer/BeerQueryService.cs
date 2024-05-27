@@ -32,7 +32,14 @@ namespace KegMonitor.Web.Application
                 FG = beer.FG,
                 TapDate = beer.TapDate,
                 Description = beer.Description,
-                ImagePath = beer.ImagePath
+                ImagePath = beer.ImagePath,
+                BrewDate = beer.BrewDate,
+                SecondaryDate = beer.SecondaryDate,
+                IBU = beer.IBU,
+                Ingredients = beer.Ingredients,
+                Recipe = beer.Recipe,
+                Url = beer.Url,
+                Notes = beer.Notes
             };
         }
 

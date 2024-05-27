@@ -18,7 +18,15 @@
         public decimal ABV { get; set; }
         public decimal OG { get; set; }
         public decimal FG { get; set; }
+        public int? IBU { get; set; }
         public string? ImagePath { get; set; }
+        public string? Ingredients { get; set; }
+        public string? Recipe { get; set; }
+        public string? Url { get; set; }
+        public string? Notes { get; set; }
+
+        public DateTime? BrewDate { get; set; }
+        public DateTime? SecondaryDate { get; set; }
         public DateTime? TapDate { get; set; }
 
         public string FullName => $"{Name}{TapDate?.ToString(" (yyyy)")}";

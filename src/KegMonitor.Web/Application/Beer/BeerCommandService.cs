@@ -47,6 +47,14 @@ namespace KegMonitor.Web.Application
 
             // set Kind to UTC - required by postgres
             beer.TapDate = model.TapDate?.Date.ToUtcKindDate();
+            beer.BrewDate = model.BrewDate?.Date.ToUtcKindDate();
+            beer.SecondaryDate = model.SecondaryDate?.Date.ToUtcKindDate();
+
+            beer.IBU = model.IBU;
+            beer.Ingredients = model.Ingredients;
+            beer.Recipe = model.Recipe;
+            beer.Url = model.Url;
+            beer.Notes = model.Notes;
             
             beer.LastUpdatedDate = DateTime.UtcNow;
 

@@ -36,6 +36,7 @@ namespace KegMonitor.Web.Application
                     Name = s.Beer.Name,
                     Type = s.Beer.Type,
                     ABV = s.Beer.ABV,
+                    IBU = s.Beer.IBU,
                     Description = s.Beer.Description,
                     ImagePath = s.Beer.ImagePathOrDefault
                 }
