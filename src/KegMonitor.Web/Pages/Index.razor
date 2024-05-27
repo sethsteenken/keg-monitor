@@ -139,9 +139,7 @@
         if (model.Scales.Count() == 1)
             model.Scales.First().IsExpanded = true;
 
-        hubConnection = new HubConnectionBuilder()
-            .WithUrl(HubConnectionFactory.FormatUrl(ScaleHub.Endpoint))
-            .Build();
+        hubConnection = HubConnectionFactory.CreateConnection(ScaleHub.Endpoint);
 
         hubConnection.On<int, int>(ScaleHub.ReceiveWeight, async (scaleId, weight) =>
         {

@@ -40,9 +40,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        hubConnection = new HubConnectionBuilder()
-            .WithUrl(HubConnectionFactory.FormatUrl(LogHub.Endpoint))
-            .Build();
+        hubConnection = HubConnectionFactory.CreateConnection(LogHub.Endpoint);
 
         hubConnection.On<string, string, string>(LogHub.ReceiveMessage, (name, level, message) =>
         {

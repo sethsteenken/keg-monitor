@@ -130,9 +130,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        hubConnection = new HubConnectionBuilder()
-            .WithUrl(HubConnectionFactory.FormatUrl(ScaleHub.Endpoint))
-            .Build();
+        hubConnection = HubConnectionFactory.CreateConnection(ScaleHub.Endpoint);
 
         hubConnection.On<int, int>(ScaleHub.ReceiveWeight, (scaleId, newWeight) =>
         {

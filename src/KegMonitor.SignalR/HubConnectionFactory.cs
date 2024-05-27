@@ -3,11 +3,8 @@ using System.Collections.Concurrent;
 
 namespace KegMonitor.SignalR
 {
-    public class HubConnectionFactory : IAsyncDisposable
+    public class HubConnectionFactory
     {
-        private ConcurrentBag<HubConnection> _connections 
-            = new ConcurrentBag<HubConnection>();
-
         private readonly string _domain;
 
         public HubConnectionFactory(string domain)
@@ -15,31 +12,21 @@ namespace KegMonitor.SignalR
             _domain = domain;
         }
 
-        public async Task<HubConnection> GetConnectionAsync(string endpoint)
+        public HubConnection CreateConnection(string endpoint)
         {
-            var connection = new HubConnectionBuilder()
+            return new HubConnectionBuilder()
                                 .WithUrl(FormatUrl(endpoint))
                                 .Build();
+        }
 
+        public async Task<HubConnection> CreateAndStartConnectionAsync(string endpoint)
+        {
+            var connection = CreateConnection(endpoint);
             await connection.StartAsync();
-
-            _connections.Add(connection);
-
             return connection;
         }
 
-        public virtual async ValueTask DisposeAsync()
-        {
-            foreach (var connection in _connections)
-            {
-                if (connection is not null)
-                    await connection.DisposeAsync();
-            }
-
-            _connections.Clear();
-        }
-
-        public string FormatUrl(string endpoint)
+        private string FormatUrl(string endpoint)
         {
             return $"{_domain.TrimEnd('/')}/{endpoint?.TrimStart('/')}";
         }

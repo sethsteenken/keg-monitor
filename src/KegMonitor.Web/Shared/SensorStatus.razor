@@ -40,9 +40,7 @@
 
         await Sensor.InitializeAsync();
 
-        hubConnection = new HubConnectionBuilder()
-           .WithUrl(HubConnectionFactory.FormatUrl(ScaleHub.Endpoint))
-           .Build();
+        hubConnection = HubConnectionFactory.CreateConnection(ScaleHub.Endpoint);
 
         hubConnection.On<int, int>(ScaleHub.ReceiveWeight, async (scaleId, weight) =>
         {

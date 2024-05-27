@@ -57,9 +57,7 @@ else
     {
         scales = await QueryService.GetScalesAsync(activeOnly: true);
 
-        hubConnection = new HubConnectionBuilder()
-            .WithUrl(HubConnectionFactory.FormatUrl(ScaleHub.Endpoint))
-            .Build();
+        hubConnection = HubConnectionFactory.CreateConnection(ScaleHub.Endpoint);
 
         hubConnection.On<int, decimal>(ScaleHub.ReceiveWeightPercentage, async (scaleId, percentage) =>
         {

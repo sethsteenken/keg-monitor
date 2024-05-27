@@ -20,7 +20,7 @@ namespace KegMonitor.Web.Application
             if (scale == null)
                 throw new ArgumentNullException(nameof(scale));
 
-            var connection = await _hubConnectionFactory.GetConnectionAsync(ScaleHub.Endpoint);
+            await using var connection = await _hubConnectionFactory.CreateAndStartConnectionAsync(ScaleHub.Endpoint);
             await connection.SendAsync(nameof(ScaleHub.SendNewPour), scale.Id);
         }
     }
