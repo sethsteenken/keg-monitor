@@ -1,4 +1,5 @@
 ﻿using KegMonitor.Core;
+using KegMonitor.Core.Entities;
 
 namespace KegMonitor.Web.Application
 {
@@ -43,10 +44,10 @@ namespace KegMonitor.Web.Application
                 {
                     var latestTimeStamp = WeightChangesForDisplay.Select(w => w.TimeStamp).First();
 
-                    if (latestTimeStamp >= DateTime.Now.AddSeconds(-10))
+                    if (latestTimeStamp >= DateTime.Now.AddSeconds(-Scale.DefaultUpdateInterval))
                         return SensorStatusOption.Online;
 
-                    if (latestTimeStamp < DateTime.Now.AddSeconds(-20))
+                    if (latestTimeStamp < DateTime.Now.AddSeconds(-(Scale.DefaultUpdateInterval * 2)))
                         return SensorStatusOption.Offline;
                 }
 

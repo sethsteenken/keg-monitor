@@ -2,6 +2,8 @@
 {
     public class Scale : Entity
     {
+        public const int DefaultUpdateInterval = 10;
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         private Scale() { }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -47,12 +49,17 @@
             return (decimal)Math.Round((decimal)(weight - EmptyWeight) / (decimal)weightDiff * 100, 2);
         }
 
-        public bool IsPour(int weight)
+        public bool IsPour(int weight, DateTime timeStamp)
         {
             if (CurrentWeight == weight)
                 return false;
 
-            if (LastEnabledDate != null && LastEnabledDate.Value > DateTime.UtcNow.AddSeconds(-10))
+            // no pour if scale recently enabled
+            if (LastEnabledDate != null && LastEnabledDate.Value > timeStamp.AddSeconds(-DefaultUpdateInterval))
+                return false;
+
+            // no pour if very recent pour occurred - allow for some time to pass
+            if (Beer != null && Beer.Pours.Any() && Beer.Pours.OrderByDescending(p => p.TimeStamp).First().TimeStamp > timeStamp.AddSeconds(-(DefaultUpdateInterval + 2)))
                 return false;
 
             var difference = Math.Abs(CurrentWeight - weight);
@@ -70,7 +77,7 @@
         public ScaleUpdateResult UpdateWeight(int weight)
         {
             var timeStamp = DateTime.UtcNow;
-            bool isPourEvent = IsPour(weight);
+            bool isPourEvent = IsPour(weight, timeStamp);
 
             (WeightChanges as List<ScaleWeightChange>).Add(
                 new ScaleWeightChange(this, weight, timeStamp, Beer, isPourEvent));

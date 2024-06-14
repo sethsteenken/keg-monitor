@@ -33,6 +33,7 @@ namespace KegMonitor.Web.Application
                 
             await using var context = await _dbContextFactory.CreateDbContextAsync();
             var scale = await context.Scales.Include(s => s.Beer)
+                                            .ThenInclude(b => b.Pours)
                                             .SingleOrDefaultAsync(s => s.Topic == topic);
             if (scale == null)
             {
