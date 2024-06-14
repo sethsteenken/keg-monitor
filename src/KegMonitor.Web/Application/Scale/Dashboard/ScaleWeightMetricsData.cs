@@ -1,5 +1,6 @@
 ﻿using KegMonitor.Core;
 using KegMonitor.Core.Entities;
+using MudBlazor;
 
 namespace KegMonitor.Web.Application
 {
@@ -7,12 +8,14 @@ namespace KegMonitor.Web.Application
     {
         private readonly IEnumerable<WeightChangeEvent> _weightChanges;
 
-        public ScaleWeightMetricsData(IEnumerable<WeightChangeEvent> weightChanges, ScaleChart chart, int numWeightChanges)
+        public ScaleWeightMetricsData(Scale scale, int numOfWeightChangesRequested)
         {
-            _weightChanges = weightChanges ?? new List<WeightChangeEvent>();
+            var chart = new ChartSeries().BuildScaleChart(scale.Id, scale.WeightChanges, numOfWeightChangesRequested);
+
+            _weightChanges = scale.WeightChanges.Select(swc => new WeightChangeEvent(swc.Weight, swc.TimeStamp.ToLocalTime(), swc.IsPourEvent));
 
             Chart = chart;
-            NumWeightChanges = numWeightChanges;
+            NumWeightChanges = numOfWeightChangesRequested;
 
             WeightChangesForDisplay = _weightChanges.OrderByDescending(swc => swc.TimeStamp)
                                                     .Take(20);
@@ -21,6 +24,8 @@ namespace KegMonitor.Web.Application
             Min = _weightChanges.Any() ? _weightChanges.Select(wc => wc.Weight).Min() : 0;
             Max = _weightChanges.Any() ? _weightChanges.Select(wc => wc.Weight).Max() : 0;
             Average = _weightChanges.Any() ? (decimal)Math.Round(_weightChanges.Average(wc => (decimal)wc.Weight), 0) : 0;
+
+            SensorStatus = scale.SensorOnline ? SensorStatusOption.Online : SensorStatusOption.Offline;
         }
 
         public IEnumerable<WeightChangeEvent> WeightChangesForDisplay { get; }
@@ -33,26 +38,6 @@ namespace KegMonitor.Web.Application
         public int Max { get; private set; }
         public decimal Average { get; private set; }
 
-        public SensorStatusOption SensorStatus
-        {
-            get
-            {
-                if (WeightChangesForDisplay == null)
-                    return SensorStatusOption.Unknown;
-
-                if (WeightChangesForDisplay.Any())
-                {
-                    var latestTimeStamp = WeightChangesForDisplay.Select(w => w.TimeStamp).First();
-
-                    if (latestTimeStamp >= DateTime.Now.AddSeconds(-Scale.DefaultUpdateInterval))
-                        return SensorStatusOption.Online;
-
-                    if (latestTimeStamp < DateTime.Now.AddSeconds(-(Scale.DefaultUpdateInterval * 2)))
-                        return SensorStatusOption.Offline;
-                }
-
-                return SensorStatusOption.Unknown;
-            }
-        }
+        public SensorStatusOption SensorStatus { get; private set; }
     }
 }

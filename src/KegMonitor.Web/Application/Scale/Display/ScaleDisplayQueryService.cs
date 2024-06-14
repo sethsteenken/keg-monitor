@@ -18,7 +18,9 @@ namespace KegMonitor.Web.Application
         {
             await using var context = await _dbContextFactory.CreateDbContextAsync();
 
-            IQueryable<Scale> query = context.Scales.OrderBy(s => s.Id).Include(s => s.Beer);
+            IQueryable<Scale> query = context.Scales.OrderBy(s => s.Id)
+                                                    .Include(s => s.Beer)
+                                                    .Include(s => s.WeightChanges.OrderByDescending(wc => wc.TimeStamp).Take(1));
 
             if (activeOnly)
                 query = query.Where(s => s.Active);
@@ -31,6 +33,7 @@ namespace KegMonitor.Web.Application
                 Weight = s.CurrentWeight,
                 Percentage = (double)s.Percentage,
                 Active = s.Active,
+                SensorStatus = s.SensorOnline ? SensorStatusOption.Online : SensorStatusOption.Offline,
                 Beer = s.Beer == null ? null : new BeerDisplayItem()
                 {
                     Name = s.Beer.Name,

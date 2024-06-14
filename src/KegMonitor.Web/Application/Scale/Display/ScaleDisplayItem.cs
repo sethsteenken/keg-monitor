@@ -9,6 +9,7 @@ namespace KegMonitor.Web.Application
         public double Percentage { get; set; }
         public bool Active { get; set; }
         public BeerDisplayItem Beer { get; set; }
+        public SensorStatusOption SensorStatus { get; set; }
 
         public Color Color
         {

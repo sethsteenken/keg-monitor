@@ -40,6 +40,21 @@
         public DateTime? LastEnabledDate { get; set; }
         public DateTime? LastDisabledDate { get; set; }
 
+        public bool SensorOnline
+        {
+            get
+            {
+                if (WeightChanges == null || !WeightChanges.Any())
+                    return false;
+
+                var latestTimeStamp = WeightChanges.OrderByDescending(wc => wc.TimeStamp)
+                                                   .Select(w => w.TimeStamp)
+                                                   .First();
+
+                return latestTimeStamp >= DateTime.UtcNow.AddSeconds(-DefaultUpdateInterval)
+                    && (LastDisabledDate is null || LastDisabledDate.Value < latestTimeStamp); }
+        }
+
         public decimal CalculatePercentage(int weight)
         {
             var weightDiff = FullWeight - EmptyWeight;
