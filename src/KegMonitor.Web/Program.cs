@@ -1,7 +1,6 @@
 using KegMonitor.Infrastructure.EntityFramework;
 using KegMonitor.SignalR;
 using KegMonitor.Web;
-using KegMonitor.Web.Application;
 using KegMonitor.Web.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
@@ -32,8 +31,7 @@ builder.Services.AddMudServices(config =>
 // added to support signalr client
 builder.Services.AddResponseCompression(opts =>
 {
-    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
-        new[] { "application/octet-stream" });
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(["application/octet-stream"]);
 });
 
 builder.Services.AddKegMonitorDataAccess(builder.Configuration)
@@ -58,13 +56,7 @@ app.MapHub<ScaleHub>(ScaleHub.Endpoint);
 app.MapHub<LogHub>(LogHub.Endpoint);
 app.MapFallbackToPage("/_Host");
 
-if (bool.TryParse(app.Configuration["MigrateDatabaseToLatest"], out bool migrate) && migrate)
-{
-    await using (var context = app.Services.GetRequiredService<IDbContextFactory<KegMonitorDbContext>>().CreateDbContext())
-    {
-        await context.Database.MigrateAsync();
-    }
-}
+await app.InitializeDatabaseAsync();
+await app.InitializeMqttAsync();
 
-await app.Services.GetRequiredService<IMqttStartup>().InitializeAsync();
 await app.RunAsync();
