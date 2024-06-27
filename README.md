@@ -2,7 +2,7 @@
 
 Keg monitoring and management system using an MQTT broker and IoT smart scales to report keg weight values and changes. Compliment a kegerator with this system to display what beer is on tap, how much beer remains within each keg, and detect when a beer is poured.
 
-[![Build Status](https://dev.azure.com/sethsteenken/KegMonitor/_apis/build/status%2Fsethsteenken.keg-monitor)](https://dev.azure.com/sethsteenken/KegMonitor/_build/latest?definitionId=3)
+[![Workflow Status](https://github.com/sethsteenken/keg-monitor/actions/workflows/deploy-docker-image.yml/badge.svg)](https://github.com/sethsteenken/keg-monitor/actions/workflows/deploy-docker-image.yml)
 [![Docker Pulls](https://img.shields.io/docker/pulls/sethsteenken/kegmonitor)](https://hub.docker.com/r/sethsteenken/kegmonitor)
 [![Docker Image Version (latest semver)](https://img.shields.io/docker/v/sethsteenken/kegmonitor)](https://hub.docker.com/r/sethsteenken/kegmonitor)
 
