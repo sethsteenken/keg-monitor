@@ -53,8 +53,9 @@ namespace KegMonitor.Web.Application
         {
             await using var context = await _dbContextFactory.CreateDbContextAsync();
 
-            var scale = await context.Scales.Include(s => s.WeightChanges.OrderByDescending(wc => wc.TimeStamp).Take(numOfWeightChanges))
-                                           .SingleAsync();
+            var scale = await context.Scales.Include(s => s.WeightChanges.OrderByDescending(wc => wc.TimeStamp)
+                                                                         .Take(numOfWeightChanges))
+                                            .SingleAsync(s => s.Id == scaleId);
 
             return new ScaleWeightMetricsData(scale, numOfWeightChanges);
         }
