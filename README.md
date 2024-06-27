@@ -38,25 +38,26 @@ Getting the full keg monitoring application and dependences installed and runnin
 
 First, clone the repository or copy out the [docker-compose.yml](/docker-compose.yml). 
 
-```
+```bash
 git clone https://github.com/sethsteenken/keg-monitor.git
 ```
 
 Create new directory and copy docker-compose.yml.
 
-```
+```bash
 mkdir server
 cp docker-compose.yml /server/docker-compose.yml
 ```
 
 Create an .env file in this directory. Note: you will not see the file in the directory.
 
-```
+```bash
 touch .env
 ```
 
 Set .env with the following content. Fill in the empty environment variables with values related to your setup. Feel free to change any of these defaults.
-```
+
+```bash
 MQTT_HEALTH_PROBE_USER=healthcheck_user
 MQTT_HEALTH_PROBE_PASSWORD=<password for health probe for the mqtt broker>
 POSTGRES_USER=<postgres user>
@@ -70,7 +71,7 @@ TIMEZONE=America/New_York
 
 Deploy the application and dependent containers using [Docker Compose](https://docs.docker.com/compose/)
 
-```
+```bash
 sudo docker compose up -d
 ```
 
@@ -94,6 +95,10 @@ The containers should deploy successfully, but may result in unhealthy or stoppe
 Review [Docker commands](https://docs.docker.com/engine/reference/commandline/cli/) (there's also a [cheat sheet](https://docs.docker.com/get-started/docker_cheatsheet.pdf) for these) to troubleshoot containers that may fail to start.
 
 Can optionally install a GUI application like [Portainer](https://www.portainer.io/) to help manage your containers.
+
+### Testing MQTT Communications
+
+Use a tool like [MQTT Explorer](https://mqtt-explorer.com/) or [MQTTx](https://mqttx.app/) to test the MQTT broker connection and see the messages being sent from the scales.
 
 ## Features
 
