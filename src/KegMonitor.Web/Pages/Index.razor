@@ -21,7 +21,7 @@
     <MudExpansionPanels MultiExpansion="true" Class="mb-4">
         @foreach (var scale in model.Scales)
         {
-            <MudExpansionPanel HideIcon="true" Class="mb-2" IsInitiallyExpanded="@scale.IsExpanded">
+            <MudExpansionPanel HideIcon="true" Class="mb-2">
                 <TitleContent>
                     <div class="d-flex">
                         <MudText Typo="Typo.h4" Class="pb-1">Scale #@scale.Id</MudText>
@@ -33,7 +33,7 @@
                             <SensorStatus ScaleId="@scale.Id" InitialStatus="@scale.WeightMetricsData.SensorStatus"></SensorStatus>
                             @if (scale.Beer != null)
                             {
-                                <MudIconButton Icon="@Icons.Material.Filled.LocalDrink" Color="Color.Default" OnClick="() => ShowPoursDialog(scale.Id)" />
+                                <MudIconButton Icon="@Icons.Material.Filled.LocalDrink" Color="Color.Default" OnClick="() => ShowPoursDialogAsync(scale.Id)" />
                             }
                         </div>
                     </div>
@@ -53,7 +53,7 @@
 
                     @if (scale.Active)
                     {
-                        <MudProgressLinear Color="@scale.Color" Rounded="true" Size="Size.Large" @bind-Value="@scale.Percentage" />
+                        <MudProgressLinear Color="@scale.Color" Rounded="true" Size="Size.Large" Value="@scale.Percentage" />
                     }
                     else
                     {
@@ -211,14 +211,14 @@
         }
     }
 
-    protected void ShowPoursDialog(int scaleId)
+    protected async Task ShowPoursDialogAsync(int scaleId)
     {
         var parameters = new DialogParameters<ScalePoursDialog>();
         parameters.Add(x => x.ScaleId, scaleId);
 
         var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
 
-        DialogService.Show<ScalePoursDialog>($"Scale #{scaleId} Pours", parameters, options);
+        await DialogService.ShowAsync<ScalePoursDialog>($"Scale #{scaleId} Pours", parameters, options);
     }
 
     public async ValueTask DisposeAsync()

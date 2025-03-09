@@ -12,7 +12,7 @@ namespace KegMonitor.Web.Application
             YAxisLines = true,
             YAxisTicks = 1,
             YAxisFormat = String.Empty,
-            DisableLegend = true
+            ShowLegend = false
         };
     }
 }

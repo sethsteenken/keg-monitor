@@ -49,13 +49,13 @@
                 <MudPaper Class="pa-5">
                     <MudDatePicker Label="Brew Date" HelperText="Date beer was brewed"
                                    @bind-Date="model.BrewDate" For="@(() => model.BrewDate)"
-                                   Class="pb-2" Editable="true" DisableToolbar="true" DateFormat="MM-dd-yyyy" />
+                                   Class="pb-2" Editable="true" ShowToolbar=false DateFormat="MM-dd-yyyy" />
                     <MudDatePicker Label="Secondary Date" HelperText="Date beer was transferred to secondary fermentation"
                                    @bind-Date="model.SecondaryDate" For="@(() => model.SecondaryDate)"
-                                   Class="pb-2" Editable="true" DisableToolbar="true" DateFormat="MM-dd-yyyy" />
+                                   Class="pb-2" Editable="true" ShowToolbar=false DateFormat="MM-dd-yyyy" />
                     <MudDatePicker Label="Tap Date" HelperText="Date beer was tapped"
                                    @bind-Date="model.TapDate" For="@(() => model.TapDate)"
-                                   Class="pb-2" Editable="true" DisableToolbar="true" DateFormat="MM-dd-yyyy" />
+                                   Class="pb-2" Editable="true" ShowToolbar=false DateFormat="MM-dd-yyyy" />
                 </MudPaper>
             </MudItem>
             <MudItem xs="12">
@@ -76,7 +76,7 @@
                 <MudCard Elevation="10" Class="my-6 mx-2">
                     @if (model.ImagePath != null)
                     {
-                        <MudCardMedia Image="@model.ImagePath" Height="180" Alt="@model.ImagePath" />
+                        <MudCardMedia Image="@model.ImagePath" Height="180" Title="@model.ImagePath" />
                     }
                     <MudCardActions>
                         @if (model.ImagePath == null)

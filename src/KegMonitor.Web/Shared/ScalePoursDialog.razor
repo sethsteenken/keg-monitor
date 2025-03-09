@@ -15,7 +15,7 @@
         </MudContainer>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Close">Close</MudButton>
+        <MudButton OnClick="CloseAsync">Close</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -30,7 +30,7 @@
     List<BeerPourDisplayItem> pours;
 
     [CascadingParameter] 
-    MudDialogInstance MudDialog { get; set; }
+    MudDialog Dialog { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -57,5 +57,5 @@
         }
     }
 
-    void Close() => MudDialog.Close(DialogResult.Ok(true));
+    Task CloseAsync() => Dialog.CloseAsync(DialogResult.Ok(true));
 }

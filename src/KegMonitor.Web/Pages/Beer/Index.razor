@@ -25,8 +25,8 @@
             @{
                 var editLink = $"/beer/edit/{context.Id}/"; 
             }
-            <MudIconButton Icon="@Icons.Material.Filled.Edit" Title="Edit" Href="@editLink"></MudIconButton>
-            <MudIconButton Icon="@Icons.Material.Filled.LocalDrink" Color="Color.Default" OnClick="() => ShowPoursDialog(context.Id, context.Name)" />
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" title="Edit" Href="@editLink"></MudIconButton>
+            <MudIconButton Icon="@Icons.Material.Filled.LocalDrink" Color="Color.Default" OnClick="() => ShowPoursDialogAsync(context.Id, context.Name)" />
         </MudTd>
     </RowTemplate>
     <PagerContent>
@@ -51,13 +51,13 @@
         loading = false;
     }
 
-    protected void ShowPoursDialog(int beerId, string beerName)
+    protected async Task ShowPoursDialogAsync(int beerId, string beerName)
     {
         var parameters = new DialogParameters<BeerPoursDialog>();
         parameters.Add(x => x.BeerId, beerId);
 
         var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
 
-        DialogService.Show<BeerPoursDialog>($"{beerName} Pours", parameters, options);
+        await DialogService.ShowAsync<BeerPoursDialog>($"{beerName} Pours", parameters, options);
     }
 }

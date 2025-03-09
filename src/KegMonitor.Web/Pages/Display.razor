@@ -13,7 +13,7 @@
         <MudCard Elevation="10" Class="my-4 mx-2">
             @if (scale.Beer != null)
             {
-                <MudCardMedia Image="@scale.Beer.ImagePath" Height="180" Alt="@scale.Beer.Name" />
+                <MudCardMedia Image="@scale.Beer.ImagePath" Height="180" Title="@scale.Beer.Name" />
             }
             <MudCardContent>
                 @if (scale.Beer != null)
@@ -32,7 +32,7 @@
                     }
                     <MudText Class="pb-1" Typo="Typo.body2">@scale.Beer.Description</MudText>
                 }
-                <MudProgressLinear Color="@scale.Color" Rounded="true" Size="Size.Large" @bind-Value="@scale.Percentage" />
+                <MudProgressLinear Color="@scale.Color" Rounded="true" Size="Size.Large" Value="@scale.Percentage" />
             </MudCardContent>
         </MudCard>
     }

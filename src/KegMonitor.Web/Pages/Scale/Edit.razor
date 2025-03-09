@@ -21,14 +21,14 @@
                 @if (model.Active)
                 {
                     <MudIconButton Icon="@Icons.Material.Filled.CheckBox"
-                                   Title="Scale is currently Active. Click to deactivate."
+                                   title="Scale is currently Active. Click to deactivate."
                                    Color="Color.Success"
                                    OnClick="ConfirmDeactivateAsync" />
                 }
                 else
                 {
                     <MudIconButton Icon="@Icons.Material.Filled.Archive"
-                                   Title="Scale is currently Inactive. Click to activate."
+                                   title="Scale is currently Inactive. Click to activate."
                                    Color="Color.Error"
                                    OnClick="ConfirmActivateAsync"/>
                 }
