@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
 
 RUN apt-get update \
@@ -8,7 +8,7 @@ EXPOSE 80
 
 ENV ASPNETCORE_URLS=http://+:80
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 COPY ["src/KegMonitor.Web/KegMonitor.Web.csproj", "src/KegMonitor.Web/"]
 RUN dotnet restore "src/KegMonitor.Web/KegMonitor.Web.csproj"
