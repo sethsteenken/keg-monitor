@@ -77,7 +77,6 @@ namespace KegMonitor.Web
             services.AddScoped<IScaleWeightChangeNotifier, ScaleLatestWeightNotifier>();
             services.AddScoped<IPourNotifier, ScaleWebPourNotifier>();
             services.AddScoped<IScaleWeightHandler, ScaleWeightHandler>();
-            services.AddSingleton<IHealthChecker, HealthChecker>();
 
             services.AddSingleton<HttpClient>(serviceProvider =>
             {
