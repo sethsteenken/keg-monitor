@@ -9,13 +9,30 @@ using MudBlazor.Services;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.Services.AddSignalRLogging();
 
+// Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+builder.Services.AddRazorComponents()
+                .AddInteractiveServerComponents();
+
+builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApp(options =>
+                {
+                    builder.Configuration.Bind(Constants.AzureAd, options);
+                    // TODO - remove this line when token validation issue is fixed.
+                    //options.TokenValidationParameters.ValidateIssuer = false;
+                });
+
+builder.Services.AddControllersWithViews()
+                .AddMicrosoftIdentityUI();
+
+builder.Services.AddCascadingAuthenticationState();
+
 builder.Services.AddMudServices(config =>
 {
     config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomCenter;
@@ -28,10 +45,6 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.ShowTransitionDuration = 500;
     config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 });
-
-builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
-builder.Services.AddAuthorization();
 
 // added to support signalr client
 builder.Services.AddResponseCompression(opts =>
@@ -53,11 +66,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseStaticFiles();
-app.UseRouting();
+app.MapStaticAssets();
+app.UseAntiforgery();
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.MapControllers();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
 app.MapBlazorHub();
 app.MapDefaultControllerRoute();
