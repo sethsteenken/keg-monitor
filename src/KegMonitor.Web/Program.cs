@@ -1,15 +1,19 @@
 using KegMonitor.Infrastructure.EntityFramework;
 using KegMonitor.SignalR;
 using KegMonitor.Web;
+using KegMonitor.Web.Application;
+using KegMonitor.Web.Application.HealthCheck;
 using KegMonitor.Web.Hubs;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor;
 using MudBlazor.Services;
+using System.Net;
+using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: false);
 
 builder.Logging.Services.AddSignalRLogging();
 
@@ -17,16 +21,12 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices(config =>
 {
-    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomCenter;
-
-    config.SnackbarConfiguration.PreventDuplicates = false;
-    config.SnackbarConfiguration.NewestOnTop = false;
-    config.SnackbarConfiguration.ShowCloseIcon = true;
-    config.SnackbarConfiguration.VisibleStateDuration = 10000;
-    config.SnackbarConfiguration.HideTransitionDuration = 500;
-    config.SnackbarConfiguration.ShowTransitionDuration = 500;
-    config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
+    config.SnackbarConfiguration.SetConfigValues();
 });
+
+builder.Services.AddHealthChecks()
+                .AddCheck<SqlConnectionHealthCheck>("SQL Connection Health Check")
+                .AddCheck<MqttConnectionHealthCheck>("MQTT Connection Health Check");
 
 // added to support signalr client
 builder.Services.AddResponseCompression(opts =>
@@ -51,7 +51,10 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 app.UseRouting();
 app.MapBlazorHub();
-app.MapDefaultControllerRoute();
+
+app.MapHealthChecks("/health")
+    .RequireHost("localhost");
+
 app.MapHub<ScaleHub>(ScaleHub.Endpoint);
 app.MapHub<LogHub>(LogHub.Endpoint);
 app.MapFallbackToPage("/_Host");
