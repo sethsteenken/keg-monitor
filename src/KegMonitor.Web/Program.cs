@@ -4,21 +4,17 @@ using KegMonitor.Web;
 using KegMonitor.Web.Application;
 using KegMonitor.Web.Components;
 using KegMonitor.Web.Hubs;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
-using MudBlazor.Services;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
-using System.Net;
-using System.Threading.Tasks;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.Services.AddSignalRLogging();
 
-// Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
@@ -31,9 +27,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                     //options.TokenValidationParameters.ValidateIssuer = false;
                 });
 
-builder.Services.AddControllersWithViews()
-                .AddMicrosoftIdentityUI();
-
+builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
 builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddMudServices(config =>
@@ -66,6 +60,9 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
