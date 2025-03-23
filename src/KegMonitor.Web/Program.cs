@@ -2,13 +2,10 @@ using KegMonitor.Infrastructure.EntityFramework;
 using KegMonitor.SignalR;
 using KegMonitor.Web;
 using KegMonitor.Web.Application;
-using KegMonitor.Web.Application.HealthCheck;
+using KegMonitor.Web.Components;
 using KegMonitor.Web.Hubs;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
-using MudBlazor;
 using MudBlazor.Services;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
@@ -68,21 +65,19 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.MapStaticAssets();
+app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 app.UseAntiforgery();
-
-app.MapControllers();
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-
-app.MapBlazorHub();
 
 app.MapHealthChecks("/health")
     .RequireHost("localhost");
 
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
+
 app.MapHub<ScaleHub>(ScaleHub.Endpoint);
 app.MapHub<LogHub>(LogHub.Endpoint);
-app.MapFallbackToPage("/_Host");
 
 await app.InitializeDatabaseAsync();
 await app.InitializeMqttAsync();

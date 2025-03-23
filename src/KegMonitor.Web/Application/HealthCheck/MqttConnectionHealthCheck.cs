@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 using MQTTnet.Extensions.ManagedClient;
 
-namespace KegMonitor.Web.Application.HealthCheck
+namespace KegMonitor.Web.Application
 {
     public class MqttConnectionHealthCheck : IHealthCheck
     {
