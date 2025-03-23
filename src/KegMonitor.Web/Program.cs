@@ -20,14 +20,9 @@ builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApp(options =>
-                {
-                    builder.Configuration.Bind(Constants.AzureAd, options);
-                    // TODO - remove this line when token validation issue is fixed.
-                    //options.TokenValidationParameters.ValidateIssuer = false;
-                });
+                .AddMicrosoftIdentityWebApp(builder.Configuration);
 
-builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
+//builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
 builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddMudServices(config =>
