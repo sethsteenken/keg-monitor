@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using System.Security.Claims
+@inherits LayoutComponentBase
 
 <MudThemeProvider Theme="@theme" @bind-IsDarkMode="@isDarkMode" />
 <MudDialogProvider />
@@ -10,6 +11,17 @@
         <MudImage Src="/img/beer-tap.png" Alt="Beer tap" Class="rounded-lg" Fluid="true" ObjectFit="ObjectFit.Contain" Height="50" Width="50"></MudImage>
         <MudText Typo="Typo.h5" Class="ml-3">Keg Monitor</MudText>
         <MudSpacer />
+         <MudTooltip ShowOnClick="true" ShowOnHover="false" ShowOnFocus="false"> 
+             <ChildContent> 
+                 <MudIconButton Icon="@Icons.Material.Filled.Person" /> 
+             </ChildContent> 
+             <TooltipContent> 
+                 <MudPaper Class="pa-6 ma-n2"> 
+                     <MudText Class="pb-2">Logged in as:<br />@user.Claims.First(c => c.Type == "name").Value</MudText> 
+                     <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="Logout">Logout</MudButton> 
+                 </MudPaper> 
+             </TooltipContent> 
+         </MudTooltip> 
         <DarkModeToggle OnChange="(darkMode) => isDarkMode = darkMode"></DarkModeToggle>
     </MudAppBar>
     <MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
@@ -38,21 +50,41 @@
 </MudLayout>
 
 @inject IScaleDashboardQueryService QueryService
+@inject NavigationManager NavManager
 
 @code {
+    ClaimsPrincipal user;
     bool drawerOpen = true;
     bool isDarkMode = DarkModeToggle.DarkModeDefault;
 
     MudTheme theme = new MudTheme();
     IEnumerable<int> scaleIds = new List<int>();
 
+    [CascadingParameter]
+    public required Task<AuthenticationState> AuthenticationState { get; set; }
+
+    bool profilePopoverOpen = false;
+
     void DrawerToggle()
     {
         drawerOpen = !drawerOpen;
     }
 
+    void ProfilePopoverToggle()
+    {
+        profilePopoverOpen = !profilePopoverOpen;
+    }
+
     protected override async Task OnInitializedAsync()
     {
+        var authenticationState = await AuthenticationState;
+        user = authenticationState.User;
+
         scaleIds = await QueryService.GetScaleIdsAsync();
+    }
+
+    void Logout()
+    {
+        NavManager.NavigateTo("MicrosoftIdentity/Account/SignOut", true);
     }
 }

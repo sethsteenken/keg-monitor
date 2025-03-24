@@ -22,7 +22,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(builder.Configuration);
 
-//builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
+builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
 builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddMudServices(config =>
@@ -65,6 +65,7 @@ app.UseAntiforgery();
 app.MapHealthChecks("/health")
     .RequireHost("localhost");
 
+app.MapControllers();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
