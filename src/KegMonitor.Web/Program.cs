@@ -14,8 +14,11 @@ using Microsoft.Identity.Web.UI;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-var requireAuthentication = bool.Parse(builder.Configuration["RequireAuthentication"]);
-
+bool requireAuthentication;
+if (!bool.TryParse(builder.Configuration["RequireAuthentication"], out requireAuthentication))
+{
+    requireAuthentication = false; // default value
+}
 builder.Logging.Services.AddSignalRLogging();
 
 builder.Services.AddRazorPages();
