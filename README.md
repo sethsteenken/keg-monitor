@@ -34,6 +34,22 @@ Getting the full keg monitoring application and dependences installed and runnin
   * It is recommended to run Linux and the commands below will be for Linux distributions; however, Windows can be supported running Docker for Windows or using WSL.
   * [Docker](https://www.docker.com/) or other flavor of running containers
 
+### Authentication (Optional)
+
+Authentication can optionally be enabled. This application does not store sensitive information like emails, usernames, or passwords. It leverages [Microsoft Entra](https://www.microsoft.com/en-us/security/business/identity-access/microsoft-entra-id) as an authentication provider. Authentication for the keg monitor application can be enabled by performing the following steps: 
+
+* Use an existing or [create a new Microsoft Entra ID tenant](https://learn.microsoft.com/en-us/entra/fundamentals/create-new-tenant)
+* [Register and application within the tenant](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/walkthrough-register-app-azure-active-directory)
+* Note the Tenant Id, Tenant domain, Client Id, and Client Secret
+* Set the following environment variables prior to executing `docker compose up` below:
+  * `AzureAd__TenantId`
+  * `AzureAd__ClientId`
+  * `AzureAd__Domain`
+  * `AzureAd__ClientCredentials__0__ClientSecret`
+  * Then set `RequireAuthentication` environment variable to `true`. 
+
+This will force an authenticated user to access the application. The user will be sent to login screen to login with a valid Microsoft account and is associated with your Microsoft Entra ID tenant. Upon successful login, the user will be redirected back to the application.
+
 ### Installation
 
 First, clone the repository or copy out the [docker-compose.yml](/docker-compose.yml). 
@@ -67,6 +83,7 @@ KEGMONITOR_CONN_STRING="Host=postgresql;Database=keg-monitor;Username=<postgres 
 KEGMONITOR_DOMAIN=<custom local domain or IP address for the web application>
 KEGMONITOR_MQTT_PASSWORD=<password for the mqtt broker app user>
 TIMEZONE=America/New_York
+REQUIRE_AUTHENTICATION=false
 ```
 
 Deploy the application and dependent containers using [Docker Compose](https://docs.docker.com/compose/)

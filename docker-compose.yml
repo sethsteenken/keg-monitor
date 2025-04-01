@@ -71,6 +71,11 @@ services:
       - "Mqtt__Port=1883"
       - "Mqtt__Username=keg_monitor_web_user"
       - "Mqtt__Password=${KEGMONITOR_MQTT_PASSWORD}"
+      - "RequireAuthentication=${RequireAuthentication}"
+      - "AzureAd__TenantId=${AzureAd__TenantId}"
+      - "AzureAd__ClientId=${AzureAd__ClientId}"
+      - "AzureAd__Domain=${AzureAd__Domain}"
+      - "AzureAd__ClientCredentials__0__ClientSecret=${AzureAd__ClientCredentials__0__ClientSecret}"
     volumes:
       - "keg_monitor_app_data:/app/wwwroot/uploads"
     working_dir: "/app"
