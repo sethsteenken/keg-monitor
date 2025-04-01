@@ -10,6 +10,10 @@
         <MudImage Src="/img/beer-tap.png" Alt="Beer tap" Class="rounded-lg" Fluid="true" ObjectFit="ObjectFit.Contain" Height="50" Width="50"></MudImage>
         <MudText Typo="Typo.h5" Class="ml-3">Keg Monitor</MudText>
         <MudSpacer />
+        @if (requireAuthentication)
+        {
+            <ProfileIcon />
+        }
         <DarkModeToggle OnChange="(darkMode) => isDarkMode = darkMode"></DarkModeToggle>
     </MudAppBar>
     <MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
@@ -38,10 +42,12 @@
 </MudLayout>
 
 @inject IScaleDashboardQueryService QueryService
+@inject IConfiguration Configuration
 
 @code {
     bool drawerOpen = true;
     bool isDarkMode = DarkModeToggle.DarkModeDefault;
+    bool requireAuthentication = false;
 
     MudTheme theme = new MudTheme();
     IEnumerable<int> scaleIds = new List<int>();
@@ -53,6 +59,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        requireAuthentication = bool.Parse(Configuration["RequireAuthentication"]);
         scaleIds = await QueryService.GetScaleIdsAsync();
     }
 }

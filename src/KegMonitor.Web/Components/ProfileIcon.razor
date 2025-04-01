@@ -1,0 +1,31 @@
+﻿<MudTooltip ShowOnClick="true" ShowOnHover="false" ShowOnFocus="false">
+    <ChildContent>
+        <MudIconButton Icon="@Icons.Material.Filled.Person" />
+    </ChildContent>
+    <TooltipContent>
+        <MudPaper Class="pa-6 ma-n2">
+            <MudText Class="pb-2">Logged in as:<br />@(user.Claims.FirstOrDefault(c => c.Type == "name")?.Value ?? "Unknown User")</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="Logout">Logout</MudButton>
+        </MudPaper>
+    </TooltipContent>
+</MudTooltip>
+
+@inject NavigationManager NavManager
+
+@code {
+    System.Security.Claims.ClaimsPrincipal user;
+
+    [CascadingParameter]
+    public required Task<AuthenticationState> AuthenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationState;
+        user = authenticationState.User;
+    }
+
+    void Logout()
+    {
+        NavManager.NavigateTo("MicrosoftIdentity/Account/SignOut", true);
+    }
+}
