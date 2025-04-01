@@ -13,4 +13,4 @@
 @using KegMonitor.SignalR;
 @using MudBlazor
 
-@attribute [Authorize]
+@attribute [Authorize(Policy = "EnvironmentDependentAuth")]

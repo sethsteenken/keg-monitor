@@ -2,9 +2,11 @@ using KegMonitor.Infrastructure.EntityFramework;
 using KegMonitor.SignalR;
 using KegMonitor.Web;
 using KegMonitor.Web.Application;
+using KegMonitor.Web.Authorization;
 using KegMonitor.Web.Components;
 using KegMonitor.Web.Hubs;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
@@ -12,6 +14,7 @@ using Microsoft.Identity.Web.UI;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+var requireAuthentication = bool.Parse(builder.Configuration["RequireAuthentication"]);
 
 builder.Logging.Services.AddSignalRLogging();
 
@@ -19,11 +22,30 @@ builder.Services.AddRazorPages();
 builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
-builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApp(builder.Configuration);
+builder.Services.AddScoped<IAuthorizationHandler, AllowAnonymousAuthorizationHandler>();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("EnvironmentDependentAuth", policyBuilder =>
+    {
+        if (requireAuthentication)
+            policyBuilder.RequireAuthenticatedUser();
+        else
+            policyBuilder.AddRequirements(new AllowAnonymousAuthorizationRequirement());
+    });
+});
 
-builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
-builder.Services.AddCascadingAuthenticationState();
+if (requireAuthentication) 
+{ 
+    builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                    .AddMicrosoftIdentityWebApp(builder.Configuration);
+
+    builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
+    builder.Services.AddCascadingAuthenticationState();
+}
+else
+{
+    builder.Services.AddAuthentication();
+}
 
 builder.Services.AddMudServices(config =>
 {
@@ -65,7 +87,9 @@ app.UseAntiforgery();
 app.MapHealthChecks("/health")
     .RequireHost("localhost");
 
-app.MapControllers();
+if (requireAuthentication)
+    app.MapControllers();
+
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
