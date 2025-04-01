@@ -4,7 +4,7 @@
     </ChildContent>
     <TooltipContent>
         <MudPaper Class="pa-6 ma-n2">
-            <MudText Class="pb-2">Logged in as:<br />@user.Claims.First(c => c.Type == "name").Value</MudText>
+            <MudText Class="pb-2">Logged in as:<br />@(user.Claims.FirstOrDefault(c => c.Type == "name")?.Value ?? "Unknown User")</MudText>
             <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="Logout">Logout</MudButton>
         </MudPaper>
     </TooltipContent>
