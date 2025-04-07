@@ -14,11 +14,8 @@ using Microsoft.Identity.Web.UI;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-bool requireAuthentication;
-if (!bool.TryParse(builder.Configuration["RequireAuthentication"], out requireAuthentication))
-{
-    requireAuthentication = false; // default value
-}
+
+bool requireAuthentication = builder.Configuration.GetValue<bool>("RequireAuthentication", false);
 builder.Logging.Services.AddSignalRLogging();
 
 builder.Services.AddRazorPages();
@@ -65,7 +62,9 @@ builder.Services.AddResponseCompression(opts =>
     opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(["application/octet-stream"]);
 });
 
-builder.Services.AddKegMonitorDataAccess(builder.Configuration)
+builder.Services.AddKegMonitorDataAccess(
+                    builder.Configuration.GetConnectionString("DefaultConnection"),
+                    useAzureManagedIdentity: requireAuthentication)   
                 .AddApplicationServices()
                 .AddMqttClientServices(builder.Configuration);
 
