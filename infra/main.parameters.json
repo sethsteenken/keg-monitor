@@ -7,6 +7,18 @@
       },
       "location": {
         "value": "${AZURE_LOCATION}"
+      },
+      "azureEntraClientId": {
+        "value": "${AZURE_ENTRA_CLIENT_ID}"
+      },
+      "azureEntraClientSecret": {
+        "value": "${AZURE_ENTRA_CLIENT_SECRET}"
+      },
+      "azureEntraDomain": {
+        "value": "${AZURE_ENTRA_DOMAIN}"
+      },
+      "imageTag": {
+        "value": "iac-azure"
       }
     }
   }

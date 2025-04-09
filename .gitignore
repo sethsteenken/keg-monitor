@@ -21,3 +21,4 @@ packages
 /src/KegMonitor.Web/appsettings.local.json
 /src/KegMonitor.Web/wwwroot/uploads
 /src/KegMonitor.Broker/appsettings.local.json
+.azure

@@ -7,7 +7,7 @@ param name string
 
 @minLength(1)
 @description('Primary location for all Azure resources.')
-param location string
+param location string = resourceGroup().location
 
 @description('Optional. Specifies the resource tags for all the resoources. Tag "zad-env-name" is automatically added to all resources.')
 param tags object = {}
@@ -27,6 +27,9 @@ param azureEntraTenantId string = subscription().tenantId
 
 @description('Specifies the Azure Entra domain. This is used to authenticate the application with Microsoft Entra ID.')
 param azureEntraDomain string
+
+@description('Specifies the image tag of the Docker image. Defaults to latest.')
+param imageTag string = 'latest'
 
 var defaultTags = {
   'azd-env-name': name
@@ -73,7 +76,7 @@ module appIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.
 
 var keyVaultName = take(toLower('kv${name}${resourceToken}'), 24)
 
-module keyvault 'br/public:avm/res/key-vault/vault:0.11.0' = {
+module keyVault 'br/public:avm/res/key-vault/vault:0.11.0' = {
   name: take('${name}-keyvault-deployment', 64)
   params: {
     name: keyVaultName
@@ -94,7 +97,7 @@ module keyvault 'br/public:avm/res/key-vault/vault:0.11.0' = {
         workspaceResourceId: logAnalyticsWorkspace.outputs.resourceId
       } 
     ]
-    roleAssignments: union(empty(userObjectId) ? [] : [
+    roleAssignments: concat(empty(userObjectId) ? [] : [
       {
         principalId: userObjectId
         principalType: 'User'
@@ -148,7 +151,7 @@ module storageAccount 'br/public:avm/res/storage/storage-account:0.17.0' = {
         workspaceResourceId: logAnalyticsWorkspace.outputs.resourceId
       }
     ]
-    roleAssignments: union(empty(userObjectId) ? [] : [
+    roleAssignments: concat(empty(userObjectId) ? [] : [
       {
         principalId: userObjectId
         principalType: 'User'
@@ -166,14 +169,14 @@ module storageAccount 'br/public:avm/res/storage/storage-account:0.17.0' = {
 
 var databaseName = 'kegmonitor'
 
-module flexibleServer 'br/public:avm/res/db-for-postgre-sql/flexible-server:0.11.0' = {
+module postgreSQL 'br/public:avm/res/db-for-postgre-sql/flexible-server:0.11.0' = {
   name: take('${name}-postgresql-deployment', 64)
   params: {
     name: take(toLower('psql${name}${resourceToken}'), 63)
     skuName: 'Standard_D2s_v3'
     tier: 'GeneralPurpose'
     geoRedundantBackup: 'Disabled'
-    highAvailability: 'SameZone'
+    highAvailability: 'Disabled'
     location: location
     publicNetworkAccess: 'Enabled'
     version: '15'
@@ -182,8 +185,6 @@ module flexibleServer 'br/public:avm/res/db-for-postgre-sql/flexible-server:0.11
     databases: [
       {
         name: databaseName
-        charset: 'utf8'
-        collation: 'en_US.UTF-8'
       }
     ]
     roleAssignments: empty(userObjectId) ? [] : [
@@ -193,7 +194,7 @@ module flexibleServer 'br/public:avm/res/db-for-postgre-sql/flexible-server:0.11
         roleDefinitionIdOrName: 'Owner'
       }
     ]
-    administrators: union(empty(userObjectId) ? [] : [
+    administrators: concat(empty(userObjectId) ? [] : [
       {
         objectId: userObjectId
         principalName: userObjectId
@@ -228,7 +229,7 @@ module appServicePlan 'br/public:avm/res/web/serverfarm:0.4.1' = {
     location: location
     tags: allTags
     kind: 'app'
-    skuName: 'P1v2'
+    skuName: 'B2'
     skuCapacity: 1
     reserved: true
     diagnosticSettings: [
@@ -246,28 +247,65 @@ module appServicePlan 'br/public:avm/res/web/serverfarm:0.4.1' = {
   }
 }
 
-var mqttPasswordSecretName = 'mqtt_password'
-var azureEntraClientSecretName = 'azure_entra_client_secret'
-var postgreSqlConnectionStringSecretName = 'postgres_connection_string'
+module eventGridNamespace 'br/public:avm/res/event-grid/namespace:0.7.1' = {
+  name:  take('${name}-event-grid-deployment', 64)
+  params: {
+    name: take(toLower('events${name}${resourceToken}'), 63)
+    diagnosticSettings: [
+      {
+        storageAccountResourceId: storageAccount.outputs.resourceId
+        workspaceResourceId: logAnalyticsWorkspace.outputs.resourceId
+      }
+    ]
+    location: location
+    tags: allTags
+    roleAssignments: union(empty(userObjectId) ? [] : [
+      {
+        principalId: userObjectId
+        principalType: 'User'
+        roleDefinitionIdOrName: 'EventGrid Contributor'
+      }
+    ], [
+      {
+        principalId: appIdentity.outputs.principalId
+        principalType: 'ServicePrincipal'
+        roleDefinitionIdOrName: 'EventGrid EventSubscription Reader'
+      }
+    ])
+  }
+}
+
+var mqttPasswordSecretName = 'mqtt-password'
+var azureEntraClientSecretName = 'azure-entra-client-secret'
+var postgreSqlConnectionStringSecretName = 'postgres-connection-string'
 
 resource mqttPasswordSecret 'Microsoft.KeyVault/vaults/secrets@2024-11-01' = {
-  name: '${keyvault.name}/${mqttPasswordSecretName}'
+  name: '${keyVaultName}/${mqttPasswordSecretName}'
+  dependsOn: [
+    keyVault
+  ]
   properties: {
     value: uniqueString(subscription().id, location, name, resourceToken, mqttPasswordSecretName)
   }
 }
 
 resource azureEntraClientSecretSecret 'Microsoft.KeyVault/vaults/secrets@2024-11-01' = {
-  name: '${keyvault.name}/${azureEntraClientSecretName}'
+  name: '${keyVaultName}/${azureEntraClientSecretName}'
+  dependsOn: [
+    keyVault
+  ]
   properties: {
     value: azureEntraClientSecret
   }
 }
 
 resource postgreSqlConnStringSecret 'Microsoft.KeyVault/vaults/secrets@2024-11-01' = {
-  name: '${keyvault.name}/${postgreSqlConnectionStringSecretName}'
+  name: '${keyVaultName}/${postgreSqlConnectionStringSecretName}'
+  dependsOn:[
+    keyVault
+  ]
   properties: {
-    value: 'Host=${flexibleServer.outputs.fqdn};Database=${databaseName};Username=${appIdentity.outputs.principalId}'
+    value: 'Host=${postgreSQL.outputs.fqdn};Database=${databaseName};Username=${appIdentity.outputs.principalId}'
   }
 }
 
@@ -285,7 +323,9 @@ module appService 'br/public:avm/res/web/site:0.15.1' = {
     storageAccountResourceId: storageAccount.outputs.resourceId
     storageAccountUseIdentityAuthentication: true
     managedIdentities: {
-      systemAssigned: true
+      userAssignedResourceIds: [
+        appIdentity.outputs.resourceId
+      ]
     }
     logsConfiguration: {
       applicationLogs: {
@@ -322,7 +362,7 @@ module appService 'br/public:avm/res/web/site:0.15.1' = {
     publicNetworkAccess: 'Enabled'
     appSettingsKeyValuePairs: {
       ASPNETCORE_ENVIRONMENT: 'Production'
-      ConnectionStrings__DefaultConnection: ''
+      ConnectionStrings__DefaultConnection: '@Microsoft.KeyVault(VaultName=${keyVaultName};SecretName=${postgreSqlConnectionStringSecretName})'
       WebDomain: 'https://${appServiceName}.azurewebsites.net'
       MigrateDatabaseToLatest: 'true'
       Mqtt__ClientId: 'KM_Web_Sub'
@@ -341,7 +381,7 @@ module appService 'br/public:avm/res/web/site:0.15.1' = {
       alwaysOn: true
       ftpsState: 'FtpsOnly'
       healthCheckPath: '/health'
-      linuxFxVersion: 'DOCKER|index.docker.io/sethsteenken/kegmonitor:latest'
+      linuxFxVersion: 'DOCKER|index.docker.io/sethsteenken/kegmonitor:${imageTag}'
     }
   }
 }
