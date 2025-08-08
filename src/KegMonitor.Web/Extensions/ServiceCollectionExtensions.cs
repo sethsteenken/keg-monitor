@@ -12,9 +12,9 @@ namespace KegMonitor.Web
 {
     internal static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddMqttClientServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddMqttClientServices(this IServiceCollection services, IConfigurationSection configuration)
         {
-            services.Configure<MqttBrokerSettings>(configuration.GetSection("Mqtt"));
+            services.Configure<MqttBrokerSettings>(configuration);
             services.AddSingleton<ManagedMqttClientOptions>(serviceProvider =>
             {
                 var settings = serviceProvider.GetRequiredService<IOptions<MqttBrokerSettings>>().Value;

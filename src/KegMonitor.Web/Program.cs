@@ -14,11 +14,10 @@ using Microsoft.Identity.Web.UI;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-bool requireAuthentication;
-if (!bool.TryParse(builder.Configuration["RequireAuthentication"], out requireAuthentication))
-{
+
+if (!bool.TryParse(builder.Configuration["RequireAuthentication"], out bool requireAuthentication))
     requireAuthentication = false; // default value
-}
+
 builder.Logging.Services.AddSignalRLogging();
 
 builder.Services.AddRazorPages();
@@ -55,9 +54,13 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.SetConfigValues();
 });
 
-builder.Services.AddHealthChecks()
-                .AddCheck<SqlConnectionHealthCheck>("SQL Connection Health Check")
-                .AddCheck<MqttConnectionHealthCheck>("MQTT Connection Health Check");
+var healthCheckServices = builder.Services.AddHealthChecks()
+                                          .AddCheck<SqlConnectionHealthCheck>("SQL Connection Health Check");
+
+var mqttConfiguration = builder.Configuration.GetSection("Mqtt");
+
+if (bool.TryParse(mqttConfiguration["Subscribe"], out bool subscribeToMqtt) && subscribeToMqtt)
+    healthCheckServices.AddCheck<MqttConnectionHealthCheck>("MQTT Connection Health Check");
 
 // added to support signalr client
 builder.Services.AddResponseCompression(opts =>
@@ -67,7 +70,7 @@ builder.Services.AddResponseCompression(opts =>
 
 builder.Services.AddKegMonitorDataAccess(builder.Configuration)
                 .AddApplicationServices()
-                .AddMqttClientServices(builder.Configuration);
+                .AddMqttClientServices(mqttConfiguration);
 
 var app = builder.Build();
 
@@ -88,13 +91,13 @@ app.UseStaticFiles();
 app.UseAntiforgery();
 
 app.MapHealthChecks("/health")
-    .RequireHost("localhost");
+   .RequireHost(app.Configuration["HealthCheckAllowedHosts"] ?? "*");
 
 if (requireAuthentication)
     app.MapControllers();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+   .AddInteractiveServerRenderMode();
 
 app.MapHub<ScaleHub>(ScaleHub.Endpoint);
 app.MapHub<LogHub>(LogHub.Endpoint);
