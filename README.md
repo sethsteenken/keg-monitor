@@ -1,10 +1,10 @@
-# <img src="assets/logo.png" alt="Logo" width="40" height="40"> Keg Monitor 
+# <img src="assets/logo.png" alt="Logo" width="40" height="40"> Keg Monitor
 
 Keg monitoring and management system using an MQTT broker and IoT smart scales to report keg weight values and changes. Compliment a kegerator with this system to display what beer is on tap, how much beer remains within each keg, and detect when a beer is poured.
 
 [![Workflow Status](https://github.com/sethsteenken/keg-monitor/actions/workflows/deploy-docker-image.yml/badge.svg)](https://github.com/sethsteenken/keg-monitor/actions/workflows/deploy-docker-image.yml)
 [![Docker Pulls](https://img.shields.io/docker/pulls/sethsteenken/kegmonitor)](https://hub.docker.com/r/sethsteenken/kegmonitor)
-[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/sethsteenken/kegmonitor)](https://hub.docker.com/r/sethsteenken/kegmonitor)
+[![Docker Image Version (latest)](https://img.shields.io/docker/v/sethsteenken/kegmonitor/latest)](https://hub.docker.com/r/sethsteenken/kegmonitor)
 
 <img src="assets/screenshot_display.png" width="800" height="800" alt="Display Screen">
 
