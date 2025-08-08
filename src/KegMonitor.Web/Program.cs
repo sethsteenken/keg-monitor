@@ -91,7 +91,7 @@ app.UseStaticFiles();
 app.UseAntiforgery();
 
 app.MapHealthChecks("/health")
-   .RequireHost(app.Configuration["HealthCheckAllowedHosts"] ?? "*");
+   .RequireHost((app.Configuration["HealthCheckAllowedHosts"] ?? "*").Split(';'));
 
 if (requireAuthentication)
     app.MapControllers();
