@@ -65,7 +65,7 @@ services:
       - "ASPNETCORE_ENVIRONMENT=Production"
       - "ConnectionStrings__DefaultConnection=${KEGMONITOR_CONN_STRING}"
       - "WebDomain=https://${KEGMONITOR_DOMAIN}"
-      - "AllowedHosts=${KEGMONITOR_DOMAIN}"
+      - "AllowedHosts=${KEGMONITOR_DOMAIN};localhost"
       - "MigrateDatabaseToLatest=true"
       - "Mqtt__ClientId=KM_Web_Sub"
       - "Mqtt__IpAddress=172.18.0.2"
